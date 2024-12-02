@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-tags: true
+          fetch-depth: 0
       - name: Setup bun
         uses: oven-sh/setup-bun@v2
       - name: Create release
@@ -30,7 +31,7 @@ jobs:
           git add .
           git commit -m "Sync OpenAPI spec" || true
           git push
-          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=1)
+          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=10)
           for tag in $TAGS; do
             if [ $(git tag -l $tag) ]; then
               echo "Tag $tag already exists"
