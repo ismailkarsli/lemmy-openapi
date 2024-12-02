@@ -18,8 +18,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Create release
         run: |
-          git config --global user.name ${{ github.actor }}
-          git config --global user.email ${{ github.actor }}@users.noreply.github.com
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
           git clone https://github.com/LemmyNet/lemmy-js-client.git
           git -C ./lemmy-js-client fetch --tags
           bun install
