@@ -2,11 +2,11 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.0.1"
+    "version": "0.20.0-alpha.18-18-g9df1b97"
   },
   "servers": [
     {
-      "url": "http://localhost:8536/api/v3"
+      "url": "https://lemmy.ml/api/v3"
     }
   ],
   "security": [
