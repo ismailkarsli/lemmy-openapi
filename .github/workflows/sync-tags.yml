@@ -25,7 +25,7 @@ jobs:
           git config --global user.email github-actions@github.com
           git clone https://github.com/LemmyNet/lemmy-js-client.git
           git -C ./lemmy-js-client fetch --tags
-          LATEST=$(git -C ./lemmy-js-client describe --tags $(git rev-list --tags --max-count=1))
+          LATEST=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=1)
           bun install
           LEMMY_VERSION=$LATEST bun run generate
           git add .
