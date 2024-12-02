@@ -160,7 +160,7 @@ const schema = {
 	},
 	servers: [
 		{
-			url: `${process.env.LEMMY_URL || "http://localhost:8536"}/api/${VERSION}`,
+			url: `${process.env.LEMMY_URL || "https://lemmy.ml"}/api/${VERSION}`,
 		},
 	],
 	security: [{ bearerAuth: [] }],

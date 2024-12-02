@@ -22,10 +22,11 @@ jobs:
           git config --global user.email github-actions@github.com
           git clone https://github.com/LemmyNet/lemmy-js-client.git
           git -C ./lemmy-js-client fetch --tags
+          LATEST=$(git -C ./lemmy-js-client describe --tags $(git rev-list --tags --max-count=1))
           bun install
-          bun run generate
+          LEMMY_VERSION=$LATEST bun run generate
           git add .
-          git commit -m "Sync OpenAPI spec at $(date)"
+          git commit -m "Sync OpenAPI spec"
           git push
           TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname)' --count=1)
           for tag in $TAGS; do
@@ -36,11 +37,10 @@ jobs:
             git checkout -b $tag
             git -C ./lemmy-js-client checkout $tag
             bun install
-            bun run generate
+            LEMMY_VERSION=$tag bun run generate
             git add .
             git commit -m "Release $tag"
             git tag $tag
-            git push origin $tag
             git push origin tag $tag
             git checkout main
           done
