@@ -1,4 +1,4 @@
-name: Sync tags
+name: Sync repo and generate tags
 
 on:
   workflow_dispatch:
@@ -18,7 +18,15 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Create release
         run: |
+          git config --global user.name ${{ github.actor }}
+          git config --global user.email ${{ github.actor }}@users.noreply.github.com
           git clone https://github.com/LemmyNet/lemmy-js-client.git
+          git -C ./lemmy-js-client fetch --tags
+          bun install
+          bun run generate
+          git add .
+          git commit -m "Sync OpenAPI spec at $(date)"
+          git push
           TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname)' --count=1)
           for tag in $TAGS; do
             if [ $(git tag -l $tag) ]; then
