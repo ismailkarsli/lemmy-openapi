@@ -158,11 +158,7 @@ const schema = {
 		title: "Lemmy API",
 		version: process.env.LEMMY_VERSION || "0.0.1",
 	},
-	servers: [
-		{
-			url: `${process.env.LEMMY_URL || "https://lemmy.ml"}/api/${VERSION}`,
-		},
-	],
+	servers: process.env.LEMMY_URL ? [{ url: `${process.env.LEMMY_URL}/api/${VERSION}` }] : undefined,
 	security: [{ bearerAuth: [] }],
 	externalDocs: {
 		description: "Official Lemmy documentation",
