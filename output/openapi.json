@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.16"
+    "version": "0.20.0-api-v4.10"
   },
   "security": [
     {
@@ -18,16 +18,19 @@
       "name": "Site"
     },
     {
-      "name": "User"
+      "name": "Admin"
     },
     {
-      "name": "User/Totp"
+      "name": "Account/Auth/Totp"
     },
     {
       "name": "Account"
     },
     {
-      "name": "Admin"
+      "name": "Account/Settings"
+    },
+    {
+      "name": "User"
     },
     {
       "name": "Modlog"
@@ -43,6 +46,9 @@
     },
     {
       "name": "Community/PendingFollows"
+    },
+    {
+      "name": "Account/Block"
     },
     {
       "name": "Post"
@@ -69,7 +75,13 @@
       "name": "PrivateMessage/Report"
     },
     {
-      "name": "User/Mention"
+      "name": "Account/Auth"
+    },
+    {
+      "name": "Person"
+    },
+    {
+      "name": "Account/Mention"
     },
     {
       "name": "Admin/RegistrationApplication"
@@ -91,6 +103,9 @@
     },
     {
       "name": "FederatedInstances"
+    },
+    {
+      "name": "Admin/Block"
     }
   ],
   "paths": {
@@ -171,12 +186,12 @@
         }
       }
     },
-    "/user/leave_admin": {
+    "/admin/leave": {
       "post": {
         "operationId": "leaveAdmin",
         "description": "Leave the Site admins.",
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -192,12 +207,12 @@
         }
       }
     },
-    "/user/totp/generate": {
+    "/account/auth/totp/generate": {
       "post": {
         "operationId": "generateTotpSecret",
         "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/user/totp/update` with a valid token to enable it.",
         "tags": [
-          "User/Totp"
+          "Account/Auth/Totp"
         ],
         "responses": {
           "200": {
@@ -213,12 +228,33 @@
         }
       }
     },
-    "/user/export_settings": {
+    "/account/my_user": {
+      "get": {
+        "operationId": "getMyUser",
+        "description": "Get data of current user.",
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyUserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/settings/export": {
       "get": {
         "operationId": "exportSettings",
         "description": "Export a backup of your user settings, including your saved content,\nfollowed communities, and blocks.",
         "tags": [
-          "User"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -227,12 +263,12 @@
         }
       }
     },
-    "/user/import_settings": {
+    "/account/settings/import": {
       "post": {
         "operationId": "importSettings",
         "description": "Import a backup of your user settings.",
         "tags": [
-          "User"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -327,7 +363,7 @@
         }
       }
     },
-    "/user/totp/update": {
+    "/account/auth/totp/update": {
       "post": {
         "operationId": "updateTotp",
         "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/user/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
@@ -341,7 +377,7 @@
           }
         },
         "tags": [
-          "User/Totp"
+          "Account/Auth/Totp"
         ],
         "responses": {
           "200": {
@@ -603,7 +639,7 @@
         }
       }
     },
-    "/community/block": {
+    "/account/block/community": {
       "post": {
         "operationId": "blockCommunity",
         "description": "Block a community.",
@@ -617,7 +653,7 @@
           }
         },
         "tags": [
-          "Community"
+          "Account/Block"
         ],
         "responses": {
           "200": {
@@ -1907,7 +1943,7 @@
         }
       }
     },
-    "/user/register": {
+    "/account/auth/register": {
       "post": {
         "operationId": "register",
         "description": "Register a new user.",
@@ -1921,7 +1957,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -1937,7 +1973,7 @@
         }
       }
     },
-    "/user/login": {
+    "/account/auth/login": {
       "post": {
         "operationId": "login",
         "description": "Log into lemmy.",
@@ -1951,7 +1987,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -1967,12 +2003,12 @@
         }
       }
     },
-    "/user/logout": {
+    "/account/auth/logout": {
       "post": {
         "operationId": "logout",
         "description": "Invalidate the currently used auth token.",
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -1988,13 +2024,13 @@
         }
       }
     },
-    "/user": {
+    "/person": {
       "get": {
         "operationId": "getPersonDetails",
         "description": "Get the details for a person.",
         "parameters": [],
         "tags": [
-          "User"
+          "Person"
         ],
         "responses": {
           "200": {
@@ -2032,21 +2068,12 @@
         }
       }
     },
-    "/user/mention/mark_as_read": {
+    "/account/mention/mark_as_read": {
       "post": {
-        "operationId": "markPersonMentionAsRead",
+        "operationId": "markPersonAllMentionAsRead",
         "description": "Mark a person mention as read.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MarkPersonMentionAsRead"
-              }
-            }
-          }
-        },
         "tags": [
-          "User/Mention"
+          "Account/Mention"
         ],
         "responses": {
           "200": {
@@ -2084,7 +2111,7 @@
         }
       }
     },
-    "/user/ban": {
+    "/admin/ban": {
       "post": {
         "operationId": "banPerson",
         "description": "Ban a person from your site.",
@@ -2098,7 +2125,7 @@
           }
         },
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -2114,12 +2141,12 @@
         }
       }
     },
-    "/user/banned": {
+    "/admin/banned": {
       "get": {
         "operationId": "getBannedPersons",
         "description": "Get a list of banned users",
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -2135,7 +2162,7 @@
         }
       }
     },
-    "/user/block": {
+    "/account/block/person": {
       "post": {
         "operationId": "blockPerson",
         "description": "Block a person.",
@@ -2149,7 +2176,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Block"
         ],
         "responses": {
           "200": {
@@ -2165,12 +2192,12 @@
         }
       }
     },
-    "/user/get_captcha": {
+    "/account/auth/get_captcha": {
       "get": {
         "operationId": "getCaptcha",
         "description": "Fetch a Captcha.",
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2186,7 +2213,7 @@
         }
       }
     },
-    "/user/delete_account": {
+    "/account/delete": {
       "post": {
         "operationId": "deleteAccount",
         "description": "Delete your account.",
@@ -2200,7 +2227,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account"
         ],
         "responses": {
           "200": {
@@ -2216,7 +2243,7 @@
         }
       }
     },
-    "/user/password_reset": {
+    "/account/auth/password_reset": {
       "post": {
         "operationId": "passwordReset",
         "description": "Reset your password.",
@@ -2230,7 +2257,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2246,7 +2273,7 @@
         }
       }
     },
-    "/user/password_change": {
+    "/account/auth/password_change": {
       "post": {
         "operationId": "passwordChangeAfterReset",
         "description": "Change your password from an email / token based reset.",
@@ -2260,7 +2287,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2297,7 +2324,7 @@
         }
       }
     },
-    "/user/save_user_settings": {
+    "/account/settings/save": {
       "put": {
         "operationId": "saveUserSettings",
         "description": "Save your user settings.",
@@ -2311,7 +2338,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -2400,7 +2427,7 @@
         }
       }
     },
-    "/user/verify_email": {
+    "/account/auth/verify_email": {
       "post": {
         "operationId": "verifyEmail",
         "description": "Verify your email",
@@ -2414,7 +2441,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -3034,21 +3061,21 @@
         }
       }
     },
-    "/site/block": {
+    "/account/block/instance": {
       "post": {
-        "operationId": "blockInstance",
-        "description": "Block an instance.",
+        "operationId": "userBlockInstance",
+        "description": "Block an instance as user.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BlockInstance"
+                "$ref": "#/components/schemas/UserBlockInstanceParams"
               }
             }
           }
         },
         "tags": [
-          "Site"
+          "Account/Block"
         ],
         "responses": {
           "200": {
@@ -3056,7 +3083,67 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BlockInstanceResponse"
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/block/instance": {
+      "post": {
+        "operationId": "adminBlockInstance",
+        "description": "Globally block an instance as admin.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminBlockInstanceParams"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin/Block"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/allow_instance": {
+      "post": {
+        "operationId": "adminAllowInstance",
+        "description": "Globally allow an instance as admin.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminAllowInstanceParams"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -3081,9 +3168,6 @@
           },
           "version": {
             "type": "string"
-          },
-          "my_user": {
-            "$ref": "#/components/schemas/MyUserInfo"
           },
           "all_languages": {
             "type": "array",
@@ -3743,6 +3827,672 @@
         ],
         "description": "Aggregate data for a person."
       },
+      "Language": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "code",
+          "name"
+        ],
+        "description": "A language."
+      },
+      "Tagline": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "content": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "content",
+          "published"
+        ],
+        "description": "A tagline, shown at the top of your site."
+      },
+      "OAuthProvider": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The OAuth 2.0 provider name displayed to the user on the Login page"
+          },
+          "issuer": {
+            "type": "string",
+            "title": "The issuer url of the OAUTH provider",
+            "description": "The issuer url of the OAUTH provider."
+          },
+          "authorization_endpoint": {
+            "type": "string",
+            "description": "The authorization endpoint is used to interact with the resource owner and obtain an\nauthorization grant. This is usually provided by the OAUTH provider."
+          },
+          "token_endpoint": {
+            "type": "string",
+            "description": "The token endpoint is used by the client to obtain an access token by presenting its\nauthorization grant or refresh token. This is usually provided by the OAUTH provider."
+          },
+          "userinfo_endpoint": {
+            "type": "string",
+            "description": "The UserInfo Endpoint is an OAuth 2.0 Protected Resource that returns Claims about the\nauthenticated End-User. This is defined in the OIDC specification."
+          },
+          "id_claim": {
+            "type": "string",
+            "description": "The OAuth 2.0 claim containing the unique user ID returned by the provider. Usually this\nshould be set to \"sub\"."
+          },
+          "client_id": {
+            "type": "string",
+            "description": "The client_id is provided by the OAuth 2.0 provider and is a unique identifier to this\nservice"
+          },
+          "scopes": {
+            "type": "string",
+            "description": "Lists the scopes requested from users. Users will have to grant access to the requested scope\nat sign up."
+          },
+          "auto_verify_email": {
+            "type": "boolean",
+            "description": "Automatically sets email as verified on registration"
+          },
+          "account_linking_enabled": {
+            "type": "boolean",
+            "description": "Allows linking an OAUTH account to an existing user account by matching emails"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "switch to enable or disable an oauth provider"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "display_name",
+          "issuer",
+          "authorization_endpoint",
+          "token_endpoint",
+          "userinfo_endpoint",
+          "id_claim",
+          "client_id",
+          "scopes",
+          "auto_verify_email",
+          "account_linking_enabled",
+          "enabled",
+          "published"
+        ],
+        "description": "oauth provider with client_secret - should never be sent to the client"
+      },
+      "LocalSiteUrlBlocklist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "url",
+          "published"
+        ]
+      },
+      "CreateSite": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sidebar": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "banner": {
+            "type": "string"
+          },
+          "enable_nsfw": {
+            "type": "boolean"
+          },
+          "community_creation_admin_only": {
+            "type": "boolean"
+          },
+          "require_email_verification": {
+            "type": "boolean"
+          },
+          "application_question": {
+            "type": "string"
+          },
+          "private_instance": {
+            "type": "boolean"
+          },
+          "default_theme": {
+            "type": "string"
+          },
+          "default_post_listing_type": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Subscribed",
+              "ModeratorView"
+            ]
+          },
+          "default_post_listing_mode": {
+            "type": "string",
+            "enum": [
+              "List",
+              "Card",
+              "SmallCard"
+            ]
+          },
+          "default_post_sort_type": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
+            ]
+          },
+          "default_comment_sort_type": {
+            "type": "string",
+            "enum": [
+              "Hot",
+              "New",
+              "Old",
+              "Controversial",
+              "Top"
+            ]
+          },
+          "legal_information": {
+            "type": "string"
+          },
+          "application_email_admins": {
+            "type": "boolean"
+          },
+          "hide_modlog_mod_names": {
+            "type": "boolean"
+          },
+          "discussion_languages": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "slur_filter_regex": {
+            "type": "string"
+          },
+          "actor_name_max_length": {
+            "type": "number"
+          },
+          "rate_limit_message": {
+            "type": "number"
+          },
+          "rate_limit_message_per_second": {
+            "type": "number"
+          },
+          "rate_limit_post": {
+            "type": "number"
+          },
+          "rate_limit_post_per_second": {
+            "type": "number"
+          },
+          "rate_limit_register": {
+            "type": "number"
+          },
+          "rate_limit_register_per_second": {
+            "type": "number"
+          },
+          "rate_limit_image": {
+            "type": "number"
+          },
+          "rate_limit_image_per_second": {
+            "type": "number"
+          },
+          "rate_limit_comment": {
+            "type": "number"
+          },
+          "rate_limit_comment_per_second": {
+            "type": "number"
+          },
+          "rate_limit_search": {
+            "type": "number"
+          },
+          "rate_limit_search_per_second": {
+            "type": "number"
+          },
+          "federation_enabled": {
+            "type": "boolean"
+          },
+          "federation_debug": {
+            "type": "boolean"
+          },
+          "captcha_enabled": {
+            "type": "boolean"
+          },
+          "captcha_difficulty": {
+            "type": "string"
+          },
+          "registration_mode": {
+            "type": "string",
+            "enum": [
+              "Closed",
+              "RequireApplication",
+              "Open"
+            ]
+          },
+          "oauth_registration": {
+            "type": "boolean"
+          },
+          "content_warning": {
+            "type": "string"
+          },
+          "post_upvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ]
+          },
+          "post_downvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ]
+          },
+          "comment_upvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ]
+          },
+          "comment_downvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ]
+          }
+        },
+        "nullable": false,
+        "required": [
+          "name"
+        ],
+        "description": "Creates a site. Should be done after first running lemmy."
+      },
+      "SiteResponse": {
+        "type": "object",
+        "properties": {
+          "site_view": {
+            "$ref": "#/components/schemas/SiteView"
+          },
+          "taglines": {
+            "type": "array",
+            "items": {},
+            "description": "deprecated, use field `tagline` or /api/v3/tagline/list"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "site_view",
+          "taglines"
+        ],
+        "description": "The response for a site."
+      },
+      "EditSite": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sidebar": {
+            "type": "string",
+            "title": "A sidebar for the site, in markdown",
+            "description": "A sidebar for the site, in markdown."
+          },
+          "description": {
+            "type": "string",
+            "title": "A shorter, one line description of your site",
+            "description": "A shorter, one line description of your site."
+          },
+          "icon": {
+            "type": "string",
+            "title": "A url for your site's icon",
+            "description": "A url for your site's icon."
+          },
+          "banner": {
+            "type": "string",
+            "title": "A url for your site's banner",
+            "description": "A url for your site's banner."
+          },
+          "enable_nsfw": {
+            "type": "boolean",
+            "title": "Whether to enable NSFW",
+            "description": "Whether to enable NSFW."
+          },
+          "community_creation_admin_only": {
+            "type": "boolean",
+            "title": "Limits community creation to admins only",
+            "description": "Limits community creation to admins only."
+          },
+          "require_email_verification": {
+            "type": "boolean",
+            "title": "Whether to require email verification",
+            "description": "Whether to require email verification."
+          },
+          "application_question": {
+            "type": "string",
+            "title": "Your application question form. This is in markdown, and can be many questions",
+            "description": "Your application question form. This is in markdown, and can be many questions."
+          },
+          "private_instance": {
+            "type": "boolean",
+            "title": "Whether your instance is public, or private",
+            "description": "Whether your instance is public, or private."
+          },
+          "default_theme": {
+            "type": "string",
+            "description": "The default theme. Usually \"browser\""
+          },
+          "default_post_listing_type": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Subscribed",
+              "ModeratorView"
+            ],
+            "description": "The default post listing type, usually \"local\""
+          },
+          "default_post_listing_mode": {
+            "type": "string",
+            "enum": [
+              "List",
+              "Card",
+              "SmallCard"
+            ],
+            "description": "Default value for listing mode, usually \"list\""
+          },
+          "default_post_sort_type": {
+            "type": "string",
+            "enum": [
+              "MostComments",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "NewComments",
+              "Active",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
+            ],
+            "description": "The default post sort, usually \"active\""
+          },
+          "default_comment_sort_type": {
+            "type": "string",
+            "enum": [
+              "Hot",
+              "New",
+              "Old",
+              "Controversial",
+              "Top"
+            ],
+            "description": "The default comment sort, usually \"hot\""
+          },
+          "legal_information": {
+            "type": "string",
+            "description": "An optional page of legal information"
+          },
+          "application_email_admins": {
+            "type": "boolean",
+            "title": "Whether to email admins when receiving a new application",
+            "description": "Whether to email admins when receiving a new application."
+          },
+          "hide_modlog_mod_names": {
+            "type": "boolean",
+            "title": "Whether to hide moderator names from the modlog",
+            "description": "Whether to hide moderator names from the modlog."
+          },
+          "discussion_languages": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "title": "A list of allowed discussion languages",
+            "description": "A list of allowed discussion languages."
+          },
+          "slur_filter_regex": {
+            "type": "string",
+            "title": "A regex string of items to filter",
+            "description": "A regex string of items to filter."
+          },
+          "actor_name_max_length": {
+            "type": "number",
+            "title": "The max length of actor names",
+            "description": "The max length of actor names."
+          },
+          "rate_limit_message": {
+            "type": "number",
+            "title": "The number of messages allowed in a given time frame",
+            "description": "The number of messages allowed in a given time frame."
+          },
+          "rate_limit_message_per_second": {
+            "type": "number"
+          },
+          "rate_limit_post": {
+            "type": "number",
+            "title": "The number of posts allowed in a given time frame",
+            "description": "The number of posts allowed in a given time frame."
+          },
+          "rate_limit_post_per_second": {
+            "type": "number"
+          },
+          "rate_limit_register": {
+            "type": "number",
+            "title": "The number of registrations allowed in a given time frame",
+            "description": "The number of registrations allowed in a given time frame."
+          },
+          "rate_limit_register_per_second": {
+            "type": "number"
+          },
+          "rate_limit_image": {
+            "type": "number",
+            "title": "The number of image uploads allowed in a given time frame",
+            "description": "The number of image uploads allowed in a given time frame."
+          },
+          "rate_limit_image_per_second": {
+            "type": "number"
+          },
+          "rate_limit_comment": {
+            "type": "number",
+            "title": "The number of comments allowed in a given time frame",
+            "description": "The number of comments allowed in a given time frame."
+          },
+          "rate_limit_comment_per_second": {
+            "type": "number"
+          },
+          "rate_limit_search": {
+            "type": "number",
+            "title": "The number of searches allowed in a given time frame",
+            "description": "The number of searches allowed in a given time frame."
+          },
+          "rate_limit_search_per_second": {
+            "type": "number"
+          },
+          "federation_enabled": {
+            "type": "boolean",
+            "title": "Whether to enable federation",
+            "description": "Whether to enable federation."
+          },
+          "federation_debug": {
+            "type": "boolean",
+            "title": "Enables federation debugging",
+            "description": "Enables federation debugging."
+          },
+          "captcha_enabled": {
+            "type": "boolean",
+            "title": "Whether to enable captchas for signups",
+            "description": "Whether to enable captchas for signups."
+          },
+          "captcha_difficulty": {
+            "type": "string",
+            "description": "The captcha difficulty. Can be easy, medium, or hard"
+          },
+          "blocked_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of blocked URLs"
+          },
+          "registration_mode": {
+            "type": "string",
+            "enum": [
+              "Closed",
+              "RequireApplication",
+              "Open"
+            ]
+          },
+          "reports_email_admins": {
+            "type": "boolean",
+            "title": "Whether to email admins for new reports",
+            "description": "Whether to email admins for new reports."
+          },
+          "content_warning": {
+            "type": "string",
+            "description": "If present, nsfw content is visible by default. Should be displayed by frontends/clients\nwhen the site is first opened by a user."
+          },
+          "oauth_registration": {
+            "type": "boolean",
+            "title": "Whether or not external auth methods can auto-register users",
+            "description": "Whether or not external auth methods can auto-register users."
+          },
+          "post_upvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ],
+            "title": "What kind of post upvotes your site allows",
+            "description": "What kind of post upvotes your site allows."
+          },
+          "post_downvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ],
+            "title": "What kind of post downvotes your site allows",
+            "description": "What kind of post downvotes your site allows."
+          },
+          "comment_upvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ],
+            "title": "What kind of comment upvotes your site allows",
+            "description": "What kind of comment upvotes your site allows."
+          },
+          "comment_downvotes": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Local",
+              "Disable"
+            ],
+            "title": "What kind of comment downvotes your site allows",
+            "description": "What kind of comment downvotes your site allows."
+          }
+        },
+        "nullable": false,
+        "description": "Edits a site."
+      },
+      "GenerateTotpSecretResponse": {
+        "type": "object",
+        "properties": {
+          "totp_secret_url": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "totp_secret_url"
+        ]
+      },
       "MyUserInfo": {
         "type": "object",
         "properties": {
@@ -3917,6 +4667,10 @@
             "type": "boolean",
             "description": "Whether user avatars and inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
+          "enable_private_messages": {
+            "type": "boolean",
+            "description": "Whether a user can send / receive private messages"
+          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -3924,6 +4678,11 @@
           },
           "default_comment_sort_type": {
             "$ref": "#/components/schemas/CommentSortType"
+          },
+          "auto_mark_fetched_posts_as_read": {
+            "type": "boolean",
+            "title": "Whether to automatically mark fetched posts as read",
+            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -3949,8 +4708,10 @@
           "totp_2fa_enabled",
           "enable_keyboard_navigation",
           "enable_animated_images",
+          "enable_private_messages",
           "collapse_bot_comments",
-          "default_comment_sort_type"
+          "default_comment_sort_type",
+          "auto_mark_fetched_posts_as_read"
         ],
         "description": "A local user."
       },
@@ -4152,700 +4913,6 @@
         ],
         "description": "A federated instance / site."
       },
-      "Language": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "code": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "code",
-          "name"
-        ],
-        "description": "A language."
-      },
-      "Tagline": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "content": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "content",
-          "published"
-        ],
-        "description": "A tagline, shown at the top of your site."
-      },
-      "OAuthProvider": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "display_name": {
-            "type": "string",
-            "description": "The OAuth 2.0 provider name displayed to the user on the Login page"
-          },
-          "issuer": {
-            "type": "string",
-            "title": "The issuer url of the OAUTH provider",
-            "description": "The issuer url of the OAUTH provider."
-          },
-          "authorization_endpoint": {
-            "type": "string",
-            "description": "The authorization endpoint is used to interact with the resource owner and obtain an\nauthorization grant. This is usually provided by the OAUTH provider."
-          },
-          "token_endpoint": {
-            "type": "string",
-            "description": "The token endpoint is used by the client to obtain an access token by presenting its\nauthorization grant or refresh token. This is usually provided by the OAUTH provider."
-          },
-          "userinfo_endpoint": {
-            "type": "string",
-            "description": "The UserInfo Endpoint is an OAuth 2.0 Protected Resource that returns Claims about the\nauthenticated End-User. This is defined in the OIDC specification."
-          },
-          "id_claim": {
-            "type": "string",
-            "description": "The OAuth 2.0 claim containing the unique user ID returned by the provider. Usually this\nshould be set to \"sub\"."
-          },
-          "client_id": {
-            "type": "string",
-            "description": "The client_id is provided by the OAuth 2.0 provider and is a unique identifier to this\nservice"
-          },
-          "scopes": {
-            "type": "string",
-            "description": "Lists the scopes requested from users. Users will have to grant access to the requested scope\nat sign up."
-          },
-          "auto_verify_email": {
-            "type": "boolean",
-            "description": "Automatically sets email as verified on registration"
-          },
-          "account_linking_enabled": {
-            "type": "boolean",
-            "description": "Allows linking an OAUTH account to an existing user account by matching emails"
-          },
-          "enabled": {
-            "type": "boolean",
-            "description": "switch to enable or disable an oauth provider"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "display_name",
-          "issuer",
-          "authorization_endpoint",
-          "token_endpoint",
-          "userinfo_endpoint",
-          "id_claim",
-          "client_id",
-          "scopes",
-          "auto_verify_email",
-          "account_linking_enabled",
-          "enabled",
-          "published"
-        ],
-        "description": "oauth provider with client_secret - should never be sent to the client"
-      },
-      "LocalSiteUrlBlocklist": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "url": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "url",
-          "published"
-        ]
-      },
-      "CreateSite": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "sidebar": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          },
-          "banner": {
-            "type": "string"
-          },
-          "enable_nsfw": {
-            "type": "boolean"
-          },
-          "community_creation_admin_only": {
-            "type": "boolean"
-          },
-          "require_email_verification": {
-            "type": "boolean"
-          },
-          "application_question": {
-            "type": "string"
-          },
-          "private_instance": {
-            "type": "boolean"
-          },
-          "default_theme": {
-            "type": "string"
-          },
-          "default_post_listing_type": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Subscribed",
-              "ModeratorView"
-            ]
-          },
-          "default_post_listing_mode": {
-            "type": "string",
-            "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
-          },
-          "default_post_sort_type": {
-            "type": "string",
-            "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
-          "default_comment_sort_type": {
-            "type": "string",
-            "enum": [
-              "Hot",
-              "New",
-              "Old",
-              "Controversial",
-              "Top"
-            ]
-          },
-          "legal_information": {
-            "type": "string"
-          },
-          "application_email_admins": {
-            "type": "boolean"
-          },
-          "hide_modlog_mod_names": {
-            "type": "boolean"
-          },
-          "discussion_languages": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "slur_filter_regex": {
-            "type": "string"
-          },
-          "actor_name_max_length": {
-            "type": "number"
-          },
-          "rate_limit_message": {
-            "type": "number"
-          },
-          "rate_limit_message_per_second": {
-            "type": "number"
-          },
-          "rate_limit_post": {
-            "type": "number"
-          },
-          "rate_limit_post_per_second": {
-            "type": "number"
-          },
-          "rate_limit_register": {
-            "type": "number"
-          },
-          "rate_limit_register_per_second": {
-            "type": "number"
-          },
-          "rate_limit_image": {
-            "type": "number"
-          },
-          "rate_limit_image_per_second": {
-            "type": "number"
-          },
-          "rate_limit_comment": {
-            "type": "number"
-          },
-          "rate_limit_comment_per_second": {
-            "type": "number"
-          },
-          "rate_limit_search": {
-            "type": "number"
-          },
-          "rate_limit_search_per_second": {
-            "type": "number"
-          },
-          "federation_enabled": {
-            "type": "boolean"
-          },
-          "federation_debug": {
-            "type": "boolean"
-          },
-          "captcha_enabled": {
-            "type": "boolean"
-          },
-          "captcha_difficulty": {
-            "type": "string"
-          },
-          "allowed_instances": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "blocked_instances": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "registration_mode": {
-            "type": "string",
-            "enum": [
-              "Closed",
-              "RequireApplication",
-              "Open"
-            ]
-          },
-          "oauth_registration": {
-            "type": "boolean"
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "post_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "post_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          }
-        },
-        "nullable": false,
-        "required": [
-          "name"
-        ],
-        "description": "Creates a site. Should be done after first running lemmy."
-      },
-      "SiteResponse": {
-        "type": "object",
-        "properties": {
-          "site_view": {
-            "$ref": "#/components/schemas/SiteView"
-          },
-          "taglines": {
-            "type": "array",
-            "items": {},
-            "description": "deprecated, use field `tagline` or /api/v3/tagline/list"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "site_view",
-          "taglines"
-        ],
-        "description": "The response for a site."
-      },
-      "EditSite": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "sidebar": {
-            "type": "string",
-            "title": "A sidebar for the site, in markdown",
-            "description": "A sidebar for the site, in markdown."
-          },
-          "description": {
-            "type": "string",
-            "title": "A shorter, one line description of your site",
-            "description": "A shorter, one line description of your site."
-          },
-          "icon": {
-            "type": "string",
-            "title": "A url for your site's icon",
-            "description": "A url for your site's icon."
-          },
-          "banner": {
-            "type": "string",
-            "title": "A url for your site's banner",
-            "description": "A url for your site's banner."
-          },
-          "enable_nsfw": {
-            "type": "boolean",
-            "title": "Whether to enable NSFW",
-            "description": "Whether to enable NSFW."
-          },
-          "community_creation_admin_only": {
-            "type": "boolean",
-            "title": "Limits community creation to admins only",
-            "description": "Limits community creation to admins only."
-          },
-          "require_email_verification": {
-            "type": "boolean",
-            "title": "Whether to require email verification",
-            "description": "Whether to require email verification."
-          },
-          "application_question": {
-            "type": "string",
-            "title": "Your application question form. This is in markdown, and can be many questions",
-            "description": "Your application question form. This is in markdown, and can be many questions."
-          },
-          "private_instance": {
-            "type": "boolean",
-            "title": "Whether your instance is public, or private",
-            "description": "Whether your instance is public, or private."
-          },
-          "default_theme": {
-            "type": "string",
-            "description": "The default theme. Usually \"browser\""
-          },
-          "default_post_listing_type": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Subscribed",
-              "ModeratorView"
-            ],
-            "description": "The default post listing type, usually \"local\""
-          },
-          "default_post_listing_mode": {
-            "type": "string",
-            "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ],
-            "description": "Default value for listing mode, usually \"list\""
-          },
-          "default_post_sort_type": {
-            "type": "string",
-            "enum": [
-              "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ],
-            "description": "The default post sort, usually \"active\""
-          },
-          "default_comment_sort_type": {
-            "type": "string",
-            "enum": [
-              "Hot",
-              "New",
-              "Old",
-              "Controversial",
-              "Top"
-            ],
-            "description": "The default comment sort, usually \"hot\""
-          },
-          "legal_information": {
-            "type": "string",
-            "description": "An optional page of legal information"
-          },
-          "application_email_admins": {
-            "type": "boolean",
-            "title": "Whether to email admins when receiving a new application",
-            "description": "Whether to email admins when receiving a new application."
-          },
-          "hide_modlog_mod_names": {
-            "type": "boolean",
-            "title": "Whether to hide moderator names from the modlog",
-            "description": "Whether to hide moderator names from the modlog."
-          },
-          "discussion_languages": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "title": "A list of allowed discussion languages",
-            "description": "A list of allowed discussion languages."
-          },
-          "slur_filter_regex": {
-            "type": "string",
-            "title": "A regex string of items to filter",
-            "description": "A regex string of items to filter."
-          },
-          "actor_name_max_length": {
-            "type": "number",
-            "title": "The max length of actor names",
-            "description": "The max length of actor names."
-          },
-          "rate_limit_message": {
-            "type": "number",
-            "title": "The number of messages allowed in a given time frame",
-            "description": "The number of messages allowed in a given time frame."
-          },
-          "rate_limit_message_per_second": {
-            "type": "number"
-          },
-          "rate_limit_post": {
-            "type": "number",
-            "title": "The number of posts allowed in a given time frame",
-            "description": "The number of posts allowed in a given time frame."
-          },
-          "rate_limit_post_per_second": {
-            "type": "number"
-          },
-          "rate_limit_register": {
-            "type": "number",
-            "title": "The number of registrations allowed in a given time frame",
-            "description": "The number of registrations allowed in a given time frame."
-          },
-          "rate_limit_register_per_second": {
-            "type": "number"
-          },
-          "rate_limit_image": {
-            "type": "number",
-            "title": "The number of image uploads allowed in a given time frame",
-            "description": "The number of image uploads allowed in a given time frame."
-          },
-          "rate_limit_image_per_second": {
-            "type": "number"
-          },
-          "rate_limit_comment": {
-            "type": "number",
-            "title": "The number of comments allowed in a given time frame",
-            "description": "The number of comments allowed in a given time frame."
-          },
-          "rate_limit_comment_per_second": {
-            "type": "number"
-          },
-          "rate_limit_search": {
-            "type": "number",
-            "title": "The number of searches allowed in a given time frame",
-            "description": "The number of searches allowed in a given time frame."
-          },
-          "rate_limit_search_per_second": {
-            "type": "number"
-          },
-          "federation_enabled": {
-            "type": "boolean",
-            "title": "Whether to enable federation",
-            "description": "Whether to enable federation."
-          },
-          "federation_debug": {
-            "type": "boolean",
-            "title": "Enables federation debugging",
-            "description": "Enables federation debugging."
-          },
-          "captcha_enabled": {
-            "type": "boolean",
-            "title": "Whether to enable captchas for signups",
-            "description": "Whether to enable captchas for signups."
-          },
-          "captcha_difficulty": {
-            "type": "string",
-            "description": "The captcha difficulty. Can be easy, medium, or hard"
-          },
-          "allowed_instances": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "title": "A list of allowed instances. If none are set, federation is open",
-            "description": "A list of allowed instances. If none are set, federation is open."
-          },
-          "blocked_instances": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "title": "A list of blocked instances",
-            "description": "A list of blocked instances."
-          },
-          "blocked_urls": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "A list of blocked URLs"
-          },
-          "registration_mode": {
-            "type": "string",
-            "enum": [
-              "Closed",
-              "RequireApplication",
-              "Open"
-            ]
-          },
-          "reports_email_admins": {
-            "type": "boolean",
-            "title": "Whether to email admins for new reports",
-            "description": "Whether to email admins for new reports."
-          },
-          "content_warning": {
-            "type": "string",
-            "description": "If present, nsfw content is visible by default. Should be displayed by frontends/clients\nwhen the site is first opened by a user."
-          },
-          "oauth_registration": {
-            "type": "boolean",
-            "title": "Whether or not external auth methods can auto-register users",
-            "description": "Whether or not external auth methods can auto-register users."
-          },
-          "post_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ],
-            "title": "What kind of post upvotes your site allows",
-            "description": "What kind of post upvotes your site allows."
-          },
-          "post_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ],
-            "title": "What kind of post downvotes your site allows",
-            "description": "What kind of post downvotes your site allows."
-          },
-          "comment_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ],
-            "title": "What kind of comment upvotes your site allows",
-            "description": "What kind of comment upvotes your site allows."
-          },
-          "comment_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ],
-            "title": "What kind of comment downvotes your site allows",
-            "description": "What kind of comment downvotes your site allows."
-          }
-        },
-        "nullable": false,
-        "description": "Edits a site."
-      },
-      "GenerateTotpSecretResponse": {
-        "type": "object",
-        "properties": {
-          "totp_secret_url": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "totp_secret_url"
-        ]
-      },
       "SuccessResponse": {
         "type": "object",
         "properties": {
@@ -4973,22 +5040,24 @@
           "type_": {
             "type": "string",
             "enum": [
-              "All",
-              "ModRemovePost",
-              "ModLockPost",
-              "ModFeaturePost",
-              "ModRemoveComment",
-              "ModRemoveCommunity",
-              "ModBanFromCommunity",
-              "ModAddCommunity",
-              "ModTransferCommunity",
               "ModAdd",
-              "ModBan",
-              "ModHideCommunity",
-              "AdminPurgePerson",
-              "AdminPurgeCommunity",
+              "AdminAllowInstance",
+              "AdminBlockInstance",
+              "AdminPurgeComment",
               "AdminPurgePost",
-              "AdminPurgeComment"
+              "AdminPurgeCommunity",
+              "AdminPurgePerson",
+              "ModHideCommunity",
+              "ModBan",
+              "All",
+              "ModTransferCommunity",
+              "ModAddCommunity",
+              "ModBanFromCommunity",
+              "ModRemoveCommunity",
+              "ModRemoveComment",
+              "ModFeaturePost",
+              "ModLockPost",
+              "ModRemovePost"
             ]
           },
           "other_person_id": {
@@ -5096,6 +5165,18 @@
             "items": {
               "$ref": "#/components/schemas/ModHideCommunityView"
             }
+          },
+          "admin_block_instance": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminBlockInstanceView"
+            }
+          },
+          "admin_allow_instance": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminAllowInstanceView"
+            }
           }
         },
         "nullable": false,
@@ -5114,7 +5195,9 @@
           "admin_purged_communities",
           "admin_purged_posts",
           "admin_purged_comments",
-          "hidden_communities"
+          "hidden_communities",
+          "admin_block_instance",
+          "admin_allow_instance"
         ],
         "description": "The modlog fetch response."
       },
@@ -6103,6 +6186,111 @@
         ],
         "description": "When a community is hidden from public view."
       },
+      "AdminBlockInstanceView": {
+        "type": "object",
+        "properties": {
+          "admin_block_instance": {
+            "$ref": "#/components/schemas/AdminBlockInstance"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/Instance"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "admin_block_instance",
+          "instance"
+        ],
+        "description": "When an admin purges a post."
+      },
+      "AdminBlockInstance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "instance_id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "expires": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "instance_id",
+          "admin_person_id",
+          "blocked",
+          "published"
+        ]
+      },
+      "AdminAllowInstanceView": {
+        "type": "object",
+        "properties": {
+          "admin_block_instance": {
+            "$ref": "#/components/schemas/AdminAllowInstance"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/Instance"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "admin_block_instance",
+          "instance"
+        ],
+        "description": "When an admin purges a post."
+      },
+      "AdminAllowInstance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "instance_id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "instance_id",
+          "admin_person_id",
+          "allowed",
+          "published"
+        ]
+      },
       "Search": {
         "type": "object",
         "properties": {
@@ -6131,25 +6319,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "Active",
-              "MostComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "listing_type": {
@@ -6805,27 +6993,27 @@
           "sort": {
             "type": "string",
             "enum": [
-              "TopHour",
-              "NameDesc",
-              "NameAsc",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
               "Active",
-              "NewComments",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled",
+              "NameAsc",
+              "NameDesc"
             ]
           },
           "show_nsfw": {
@@ -7358,11 +7546,8 @@
       "MarkPostAsRead": {
         "type": "object",
         "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "post_id": {
+            "type": "number"
           },
           "read": {
             "type": "boolean"
@@ -7370,7 +7555,7 @@
         },
         "nullable": false,
         "required": [
-          "post_ids",
+          "post_id",
           "read"
         ],
         "description": "Mark a post as read."
@@ -7378,11 +7563,8 @@
       "HidePost": {
         "type": "object",
         "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "post_id": {
+            "type": "number"
           },
           "hide": {
             "type": "boolean"
@@ -7390,7 +7572,7 @@
         },
         "nullable": false,
         "required": [
-          "post_ids",
+          "post_id",
           "hide"
         ],
         "description": "Hide a post from list views"
@@ -7456,25 +7638,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "Active",
+              "MostComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "page": {
@@ -7509,6 +7691,11 @@
           "show_nsfw": {
             "type": "boolean",
             "description": "If true, then show the nsfw posts (even if your user setting is to hide them)"
+          },
+          "mark_as_read": {
+            "type": "boolean",
+            "title": "Whether to automatically mark fetched posts as read",
+            "description": "Whether to automatically mark fetched posts as read."
           },
           "no_comments_only": {
             "type": "boolean",
@@ -8939,25 +9126,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "Active",
+              "MostComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "page": {
@@ -9450,25 +9637,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "Active",
-              "MostComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ],
             "description": "The default post sort, usually \"active\""
           },
@@ -9566,6 +9753,10 @@
             "type": "boolean",
             "description": "Whether user avatars or inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
+          "enable_private_messages": {
+            "type": "boolean",
+            "description": "Whether a user can send / receive private messages"
+          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -9583,6 +9774,11 @@
           },
           "show_upvote_percentage": {
             "type": "boolean"
+          },
+          "auto_mark_fetched_posts_as_read": {
+            "type": "boolean",
+            "title": "Whether to automatically mark fetched posts as read",
+            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -10451,7 +10647,7 @@
           "fail_count"
         ]
       },
-      "BlockInstance": {
+      "UserBlockInstanceParams": {
         "type": "object",
         "properties": {
           "instance_id": {
@@ -10468,16 +10664,45 @@
         ],
         "description": "Block an instance as user"
       },
-      "BlockInstanceResponse": {
+      "AdminBlockInstanceParams": {
         "type": "object",
         "properties": {
-          "blocked": {
+          "instance": {
+            "type": "string"
+          },
+          "block": {
             "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "expires": {
+            "type": "string"
           }
         },
         "nullable": false,
         "required": [
-          "blocked"
+          "instance",
+          "block"
+        ]
+      },
+      "AdminAllowInstanceParams": {
+        "type": "object",
+        "properties": {
+          "instance": {
+            "type": "string"
+          },
+          "allow": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "instance",
+          "allow"
         ]
       }
     },
