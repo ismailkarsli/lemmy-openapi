@@ -29,7 +29,7 @@ jobs:
           bun install
           LEMMY_VERSION=$LATEST bun run generate
           git add .
-          git commit -m "Sync OpenAPI spec"
+          git commit -m "Sync OpenAPI spec" || true
           git push
           TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=1)
           for tag in $TAGS; do
