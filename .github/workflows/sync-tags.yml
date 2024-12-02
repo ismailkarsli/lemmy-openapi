@@ -1,0 +1,48 @@
+# watch https://github.com/LemmyNet/lemmy-js-client tags and create a new release when a new tag is pushed
+name: Sync tags
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 */6 * * *' # At minute 45 past every 6th hour.
+
+jobs:
+  sync:
+    runs-on: debian-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+          path: 'repo'
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: 'LemmyNet/lemmy-js-client'
+          fetch-tags: true
+          fetch-depth: 0
+          path: 'lemmy-js-client'
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+      - name: Create release
+        run: |
+          cd repo
+          TAGS=$(git -C ../lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname)' --count=1)
+          for tag in $TAGS; do
+            if [ $(git tag -l $tag) ]; then
+              echo "Tag $tag already exists"
+              continue
+            fi
+            git checkout -b $tag
+            git -C ../lemmy-js-client checkout $tag
+            cp -r ../lemmy-js-client .
+            bun install
+            bun run generate
+            git add .
+            git commit -m "Release $tag"
+            git tag $tag
+            git push origin $tag
+            git push origin tag $tag
+            git checkout main
+          done

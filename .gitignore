@@ -1,5 +1,7 @@
 lemmy-js-client
-/output
+/output/*
+!/output/openapi.yaml
+!/output/openapi.json
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
