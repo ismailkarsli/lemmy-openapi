@@ -1,16 +1,15 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.7
+  version: 0.0.1
 servers:
-  - url: https://lemy.lol/api/v3
+  - url: http://localhost:8536/api/v3
 security:
   - bearerAuth: []
 externalDocs:
-  description: Lemmy documentation
+  description: Official Lemmy documentation
   url: https://join-lemmy.org/api/index.html
 tags:
-  - name: Post
   - name: Site
   - name: User
   - name: User/Totp
@@ -21,6 +20,7 @@ tags:
   - name: ResolveObject
   - name: Community
   - name: Community/PendingFollows
+  - name: Post
   - name: Post/Like
   - name: Post/Report
   - name: Comment
@@ -37,24 +37,6 @@ tags:
   - name: Oauth
   - name: FederatedInstances
 paths:
-  /post/save:
-    put:
-      operationId: savePost
-      description: Save a post.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SavePost"
-      tags:
-        - Post
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PostResponse"
   /site:
     get:
       operationId: getSite
@@ -726,6 +708,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPostLikesResponse"
+  /post/save:
+    put:
+      operationId: savePost
+      description: Save a post.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SavePost"
+      tags:
+        - Post
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
   /post/report:
     post:
       operationId: createPostReport
@@ -1866,389 +1866,6 @@ paths:
                 $ref: "#/components/schemas/BlockInstanceResponse"
 components:
   schemas:
-    SavePost:
-      type: object
-      properties:
-        post_id:
-          type: number
-        save:
-          type: boolean
-      nullable: false
-      required:
-        - post_id
-        - save
-      description: Save / bookmark a post.
-    PostResponse:
-      type: object
-      properties:
-        post_view:
-          $ref: "#/components/schemas/PostView"
-      nullable: false
-      required:
-        - post_view
-    PostView:
-      type: object
-      properties:
-        post:
-          $ref: "#/components/schemas/Post"
-        creator:
-          $ref: "#/components/schemas/Person"
-        community:
-          $ref: "#/components/schemas/Community"
-        image_details:
-          $ref: "#/components/schemas/ImageDetails"
-        creator_banned_from_community:
-          type: boolean
-        banned_from_community:
-          type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        counts:
-          $ref: "#/components/schemas/PostAggregates"
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        read:
-          type: boolean
-        hidden:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        my_vote:
-          type: number
-        unread_comments:
-          type: number
-      nullable: false
-      required:
-        - post
-        - creator
-        - community
-        - creator_banned_from_community
-        - banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - counts
-        - subscribed
-        - saved
-        - read
-        - hidden
-        - creator_blocked
-        - unread_comments
-      description: A post view.
-    Post:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        url:
-          type: string
-          title: An optional link / url for the post
-          description: An optional link / url for the post.
-        body:
-          type: string
-          title: An optional post body, in markdown
-          description: An optional post body, in markdown.
-        creator_id:
-          type: number
-        community_id:
-          type: number
-        removed:
-          type: boolean
-          title: Whether the post is removed
-          description: Whether the post is removed.
-        locked:
-          type: boolean
-          title: Whether the post is locked
-          description: Whether the post is locked.
-        published:
-          type: string
-        updated:
-          type: string
-        deleted:
-          type: boolean
-          title: Whether the post is deleted
-          description: Whether the post is deleted.
-        nsfw:
-          type: boolean
-          title: Whether the post is NSFW
-          description: Whether the post is NSFW.
-        embed_title:
-          type: string
-          title: A title for the link
-          description: A title for the link.
-        embed_description:
-          type: string
-          title: A description for the link
-          description: A description for the link.
-        thumbnail_url:
-          type: string
-          title: A thumbnail picture url
-          description: A thumbnail picture url.
-        ap_id:
-          type: string
-          title: The federated activity id / ap_id
-          description: The federated activity id / ap_id.
-        local:
-          type: boolean
-          title: Whether the post is local
-          description: Whether the post is local.
-        embed_video_url:
-          type: string
-          title: A video url for the link
-          description: A video url for the link.
-        language_id:
-          type: number
-        featured_community:
-          type: boolean
-          title: Whether the post is featured to its community
-          description: Whether the post is featured to its community.
-        featured_local:
-          type: boolean
-          title: Whether the post is featured to its site
-          description: Whether the post is featured to its site.
-        url_content_type:
-          type: string
-        alt_text:
-          type: string
-          title: An optional alt_text, usable for image posts
-          description: An optional alt_text, usable for image posts.
-        scheduled_publish_time:
-          type: string
-          title: Time at which the post will be published. None means publish immediately
-          description: Time at which the post will be published. None means publish
-            immediately.
-      nullable: false
-      required:
-        - id
-        - name
-        - creator_id
-        - community_id
-        - removed
-        - locked
-        - published
-        - deleted
-        - nsfw
-        - ap_id
-        - local
-        - language_id
-        - featured_community
-        - featured_local
-      description: A post.
-    Person:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        display_name:
-          type: string
-          title: A shorter display name
-          description: A shorter display name.
-        avatar:
-          type: string
-          title: A URL for an avatar
-          description: A URL for an avatar.
-        banned:
-          type: boolean
-          title: Whether the person is banned
-          description: Whether the person is banned.
-        published:
-          type: string
-        updated:
-          type: string
-        actor_id:
-          type: string
-          title: The federated actor_id
-          description: The federated actor_id.
-        bio:
-          type: string
-          title: An optional bio, in markdown
-          description: An optional bio, in markdown.
-        local:
-          type: boolean
-          title: Whether the person is local to our site
-          description: Whether the person is local to our site.
-        banner:
-          type: string
-          title: A URL for a banner
-          description: A URL for a banner.
-        deleted:
-          type: boolean
-          title: Whether the person is deleted
-          description: Whether the person is deleted.
-        matrix_user_id:
-          type: string
-          description: A matrix id, usually given an
-        bot_account:
-          type: boolean
-          title: Whether the person is a bot account
-          description: Whether the person is a bot account.
-        ban_expires:
-          type: string
-          title: When their ban, if it exists, expires, if at all
-          description: When their ban, if it exists, expires, if at all.
-        instance_id:
-          type: number
-      nullable: false
-      required:
-        - id
-        - name
-        - banned
-        - published
-        - actor_id
-        - local
-        - deleted
-        - bot_account
-        - instance_id
-      description: A person.
-    Community:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        title:
-          type: string
-          title: A longer title, that can contain other characters, and doesn't have to be
-            unique
-          description: A longer title, that can contain other characters, and doesn't have
-            to be unique.
-        sidebar:
-          type: string
-          title: A sidebar for the community in markdown
-          description: A sidebar for the community in markdown.
-        removed:
-          type: boolean
-          title: Whether the community is removed by a mod
-          description: Whether the community is removed by a mod.
-        published:
-          type: string
-        updated:
-          type: string
-        deleted:
-          type: boolean
-          title: Whether the community has been deleted by its creator
-          description: Whether the community has been deleted by its creator.
-        nsfw:
-          type: boolean
-          title: Whether its an NSFW community
-          description: Whether its an NSFW community.
-        actor_id:
-          type: string
-          title: The federated actor_id
-          description: The federated actor_id.
-        local:
-          type: boolean
-          title: Whether the community is local
-          description: Whether the community is local.
-        icon:
-          type: string
-          title: A URL for an icon
-          description: A URL for an icon.
-        banner:
-          type: string
-          title: A URL for a banner
-          description: A URL for a banner.
-        hidden:
-          type: boolean
-          title: Whether the community is hidden
-          description: Whether the community is hidden.
-        posting_restricted_to_mods:
-          type: boolean
-          title: Whether posting is restricted to mods only
-          description: Whether posting is restricted to mods only.
-        instance_id:
-          type: number
-        visibility:
-          $ref: "#/components/schemas/CommunityVisibility"
-        description:
-          type: string
-          title: A shorter, one-line description of the site
-          description: A shorter, one-line description of the site.
-      nullable: false
-      required:
-        - id
-        - name
-        - title
-        - removed
-        - published
-        - deleted
-        - nsfw
-        - actor_id
-        - local
-        - hidden
-        - posting_restricted_to_mods
-        - instance_id
-        - visibility
-      description: A community.
-    CommunityVisibility:
-      type: string
-      enum:
-        - Public
-        - LocalOnly
-        - Private
-      description: Defines who can browse and interact with content in a community.
-    ImageDetails:
-      type: object
-      properties:
-        link:
-          type: string
-        width:
-          type: number
-        height:
-          type: number
-        content_type:
-          type: string
-      nullable: false
-      required:
-        - link
-        - width
-        - height
-        - content_type
-    PostAggregates:
-      type: object
-      properties:
-        post_id:
-          type: number
-        comments:
-          type: number
-        score:
-          type: number
-        upvotes:
-          type: number
-        downvotes:
-          type: number
-        published:
-          type: string
-        newest_comment_time:
-          type: string
-          title: The time of the newest comment in the post
-          description: The time of the newest comment in the post.
-      nullable: false
-      required:
-        - post_id
-        - comments
-        - score
-        - upvotes
-        - downvotes
-        - published
-        - newest_comment_time
-      description: Aggregate data for a post.
-    SubscribedType:
-      type: string
-      enum:
-        - Subscribed
-        - NotSubscribed
-        - Pending
-        - ApprovalRequired
-      description: A type / status for a community subscribe.
     GetSiteResponse:
       type: object
       properties:
@@ -2528,9 +2145,9 @@ components:
     ListingType:
       type: string
       enum:
-        - Subscribed
         - All
         - Local
+        - Subscribed
         - ModeratorView
       description: A listing type for post and comment list fetches.
     RegistrationMode:
@@ -2701,6 +2318,74 @@ components:
         - counts
         - is_admin
       description: A person view.
+    Person:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        display_name:
+          type: string
+          title: A shorter display name
+          description: A shorter display name.
+        avatar:
+          type: string
+          title: A URL for an avatar
+          description: A URL for an avatar.
+        banned:
+          type: boolean
+          title: Whether the person is banned
+          description: Whether the person is banned.
+        published:
+          type: string
+        updated:
+          type: string
+        actor_id:
+          type: string
+          title: The federated actor_id
+          description: The federated actor_id.
+        bio:
+          type: string
+          title: An optional bio, in markdown
+          description: An optional bio, in markdown.
+        local:
+          type: boolean
+          title: Whether the person is local to our site
+          description: Whether the person is local to our site.
+        banner:
+          type: string
+          title: A URL for a banner
+          description: A URL for a banner.
+        deleted:
+          type: boolean
+          title: Whether the person is deleted
+          description: Whether the person is deleted.
+        matrix_user_id:
+          type: string
+          description: A matrix id, usually given an
+        bot_account:
+          type: boolean
+          title: Whether the person is a bot account
+          description: Whether the person is a bot account.
+        ban_expires:
+          type: string
+          title: When their ban, if it exists, expires, if at all
+          description: When their ban, if it exists, expires, if at all.
+        instance_id:
+          type: number
+      nullable: false
+      required:
+        - id
+        - name
+        - banned
+        - published
+        - actor_id
+        - local
+        - deleted
+        - bot_account
+        - instance_id
+      description: A person.
     PersonAggregates:
       type: object
       properties:
@@ -2913,6 +2598,94 @@ components:
         - community
         - follower
       description: A community follower.
+    Community:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        title:
+          type: string
+          title: A longer title, that can contain other characters, and doesn't have to be
+            unique
+          description: A longer title, that can contain other characters, and doesn't have
+            to be unique.
+        sidebar:
+          type: string
+          title: A sidebar for the community in markdown
+          description: A sidebar for the community in markdown.
+        removed:
+          type: boolean
+          title: Whether the community is removed by a mod
+          description: Whether the community is removed by a mod.
+        published:
+          type: string
+        updated:
+          type: string
+        deleted:
+          type: boolean
+          title: Whether the community has been deleted by its creator
+          description: Whether the community has been deleted by its creator.
+        nsfw:
+          type: boolean
+          title: Whether its an NSFW community
+          description: Whether its an NSFW community.
+        actor_id:
+          type: string
+          title: The federated actor_id
+          description: The federated actor_id.
+        local:
+          type: boolean
+          title: Whether the community is local
+          description: Whether the community is local.
+        icon:
+          type: string
+          title: A URL for an icon
+          description: A URL for an icon.
+        banner:
+          type: string
+          title: A URL for a banner
+          description: A URL for a banner.
+        hidden:
+          type: boolean
+          title: Whether the community is hidden
+          description: Whether the community is hidden.
+        posting_restricted_to_mods:
+          type: boolean
+          title: Whether posting is restricted to mods only
+          description: Whether posting is restricted to mods only.
+        instance_id:
+          type: number
+        visibility:
+          $ref: "#/components/schemas/CommunityVisibility"
+        description:
+          type: string
+          title: A shorter, one-line description of the site
+          description: A shorter, one-line description of the site.
+      nullable: false
+      required:
+        - id
+        - name
+        - title
+        - removed
+        - published
+        - deleted
+        - nsfw
+        - actor_id
+        - local
+        - hidden
+        - posting_restricted_to_mods
+        - instance_id
+        - visibility
+      description: A community.
+    CommunityVisibility:
+      type: string
+      enum:
+        - Public
+        - LocalOnly
+        - Private
+      description: Defines who can browse and interact with content in a community.
     CommunityModeratorView:
       type: object
       properties:
@@ -3107,9 +2880,9 @@ components:
         default_post_listing_type:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
         default_post_listing_mode:
           type: string
@@ -3120,7 +2893,7 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
+            - MostComments
             - Scaled
             - Controversial
             - TopNineMonths
@@ -3129,8 +2902,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
+            - NewComments
             - Active
-            - MostComments
             - TopAll
             - TopYear
             - TopMonth
@@ -3302,9 +3075,9 @@ components:
         default_post_listing_type:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
           description: The default post listing type, usually "local"
         default_post_listing_mode:
@@ -3317,7 +3090,7 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - Active
+            - NewComments
             - Scaled
             - Controversial
             - TopNineMonths
@@ -3326,8 +3099,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
+            - Active
             - MostComments
-            - NewComments
             - TopAll
             - TopYear
             - TopMonth
@@ -3736,6 +3509,107 @@ components:
         - removed
         - when_
       description: When a moderator removes a post.
+    Post:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        url:
+          type: string
+          title: An optional link / url for the post
+          description: An optional link / url for the post.
+        body:
+          type: string
+          title: An optional post body, in markdown
+          description: An optional post body, in markdown.
+        creator_id:
+          type: number
+        community_id:
+          type: number
+        removed:
+          type: boolean
+          title: Whether the post is removed
+          description: Whether the post is removed.
+        locked:
+          type: boolean
+          title: Whether the post is locked
+          description: Whether the post is locked.
+        published:
+          type: string
+        updated:
+          type: string
+        deleted:
+          type: boolean
+          title: Whether the post is deleted
+          description: Whether the post is deleted.
+        nsfw:
+          type: boolean
+          title: Whether the post is NSFW
+          description: Whether the post is NSFW.
+        embed_title:
+          type: string
+          title: A title for the link
+          description: A title for the link.
+        embed_description:
+          type: string
+          title: A description for the link
+          description: A description for the link.
+        thumbnail_url:
+          type: string
+          title: A thumbnail picture url
+          description: A thumbnail picture url.
+        ap_id:
+          type: string
+          title: The federated activity id / ap_id
+          description: The federated activity id / ap_id.
+        local:
+          type: boolean
+          title: Whether the post is local
+          description: Whether the post is local.
+        embed_video_url:
+          type: string
+          title: A video url for the link
+          description: A video url for the link.
+        language_id:
+          type: number
+        featured_community:
+          type: boolean
+          title: Whether the post is featured to its community
+          description: Whether the post is featured to its community.
+        featured_local:
+          type: boolean
+          title: Whether the post is featured to its site
+          description: Whether the post is featured to its site.
+        url_content_type:
+          type: string
+        alt_text:
+          type: string
+          title: An optional alt_text, usable for image posts
+          description: An optional alt_text, usable for image posts.
+        scheduled_publish_time:
+          type: string
+          title: Time at which the post will be published. None means publish immediately
+          description: Time at which the post will be published. None means publish
+            immediately.
+      nullable: false
+      required:
+        - id
+        - name
+        - creator_id
+        - community_id
+        - removed
+        - locked
+        - published
+        - deleted
+        - nsfw
+        - ap_id
+        - local
+        - language_id
+        - featured_community
+        - featured_local
+      description: A post.
     ModLockPostView:
       type: object
       properties:
@@ -4339,7 +4213,7 @@ components:
         sort:
           type: string
           enum:
-            - Active
+            - NewComments
             - Hot
             - New
             - Old
@@ -4348,8 +4222,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
+            - Active
             - MostComments
-            - NewComments
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -4361,9 +4235,9 @@ components:
         listing_type:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
         page:
           type: number
@@ -4491,6 +4365,112 @@ components:
         - published
         - child_count
       description: Aggregate data for a comment.
+    SubscribedType:
+      type: string
+      enum:
+        - Subscribed
+        - NotSubscribed
+        - Pending
+        - ApprovalRequired
+      description: A type / status for a community subscribe.
+    PostView:
+      type: object
+      properties:
+        post:
+          $ref: "#/components/schemas/Post"
+        creator:
+          $ref: "#/components/schemas/Person"
+        community:
+          $ref: "#/components/schemas/Community"
+        image_details:
+          $ref: "#/components/schemas/ImageDetails"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        counts:
+          $ref: "#/components/schemas/PostAggregates"
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        read:
+          type: boolean
+        hidden:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+        unread_comments:
+          type: number
+      nullable: false
+      required:
+        - post
+        - creator
+        - community
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - counts
+        - subscribed
+        - saved
+        - read
+        - hidden
+        - creator_blocked
+        - unread_comments
+      description: A post view.
+    ImageDetails:
+      type: object
+      properties:
+        link:
+          type: string
+        width:
+          type: number
+        height:
+          type: number
+        content_type:
+          type: string
+      nullable: false
+      required:
+        - link
+        - width
+        - height
+        - content_type
+    PostAggregates:
+      type: object
+      properties:
+        post_id:
+          type: number
+        comments:
+          type: number
+        score:
+          type: number
+        upvotes:
+          type: number
+        downvotes:
+          type: number
+        published:
+          type: string
+        newest_comment_time:
+          type: string
+          title: The time of the newest comment in the post
+          description: The time of the newest comment in the post.
+      nullable: false
+      required:
+        - post_id
+        - comments
+        - score
+        - upvotes
+        - downvotes
+        - published
+        - newest_comment_time
+      description: Aggregate data for a post.
     CommunityView:
       type: object
       properties:
@@ -4728,14 +4708,14 @@ components:
         type_:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
         sort:
           type: string
           enum:
-            - Active
+            - TopHour
             - NameDesc
             - NameAsc
             - Scaled
@@ -4745,8 +4725,8 @@ components:
             - TopThreeMonths
             - TopTwelveHour
             - TopSixHour
+            - Active
             - NewComments
-            - TopHour
             - MostComments
             - TopAll
             - TopYear
@@ -4997,9 +4977,9 @@ components:
         type_:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
       nullable: false
       description: Fetches a random community
@@ -5042,6 +5022,14 @@ components:
         - name
         - community_id
       description: Create a post.
+    PostResponse:
+      type: object
+      properties:
+        post_view:
+          $ref: "#/components/schemas/PostView"
+      nullable: false
+      required:
+        - post_view
     GetPost:
       type: object
       properties:
@@ -5204,32 +5192,32 @@ components:
         type_:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
             - MostComments
-            - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
           description: DEPRECATED, use page_cursor
@@ -5329,6 +5317,18 @@ components:
         - creator_banned_from_community
         - score
       description: A vote view for checking a post or comments votes.
+    SavePost:
+      type: object
+      properties:
+        post_id:
+          type: number
+        save:
+          type: boolean
+      nullable: false
+      required:
+        - post_id
+        - save
+      description: Save / bookmark a post.
     CreatePostReport:
       type: object
       properties:
@@ -5749,9 +5749,9 @@ components:
         type_:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
         sort:
           type: string
@@ -6647,9 +6647,9 @@ components:
         default_listing_type:
           type: string
           enum:
-            - Subscribed
             - All
             - Local
+            - Subscribed
             - ModeratorView
           description: The default post listing type, usually "local"
         post_listing_mode:
