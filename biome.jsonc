@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": ["output/*"]
+		"ignore": ["dist/*"]
 	},
 	"formatter": {
 		"enabled": true,

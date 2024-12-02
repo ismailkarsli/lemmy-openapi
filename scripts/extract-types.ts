@@ -7,7 +7,7 @@ import { recursiveFind, toPascalCase } from "../utils.ts";
 
 const sourceText = await Bun.file("lemmy-js-client/src/http.ts").text();
 const parsed = await oxc.parseAsync(sourceText, { sourceFilename: "http.ts", sourceType: "module" });
-await Bun.write("output/program.json", JSON.stringify(parsed, null, 2));
+await Bun.write("tmp/program.json", JSON.stringify(parsed, null, 2));
 
 interface LemmyMethod {
 	type: "MethodDefinition";
@@ -93,9 +93,9 @@ import type { ${imports.join(", ")} } from "../lemmy-js-client/src/index";
 import { application } from "typia/lib/json";
 export const components = application<[${imports.join(", ")}], "3.0">().components;
 `;
-await Bun.write("output/components.ts", typesFile);
+await Bun.write("tmp/components.ts", typesFile);
 // @ts-ignore it does not exists initially
-const components = await import("../output/components.ts");
+const components = await import("../tmp/components.ts");
 const paths: OpenAPIV3.PathsObject = {};
 const tags = new Set<string>();
 
@@ -194,5 +194,5 @@ function removeNullTypes(obj: any) {
 }
 removeNullTypes(schema.components.schemas);
 
-await Bun.write("output/openapi.json", JSON.stringify(schema, null, 2));
-await Bun.write("output/openapi.yaml", YAMLStringify(schema));
+await Bun.write("dist/openapi.json", JSON.stringify(schema, null, 2));
+await Bun.write("dist/openapi.yaml", YAMLStringify(schema));
