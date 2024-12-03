@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-reports-combined.2"
+    "version": "0.20.0-reports-combined.0"
   },
   "servers": [
     {
@@ -96,6 +96,9 @@
     },
     {
       "name": "FederatedInstances"
+    },
+    {
+      "name": "Report"
     }
   ],
   "paths": {
@@ -1262,28 +1265,6 @@
         }
       }
     },
-    "/post/report/list": {
-      "get": {
-        "operationId": "listPostReports",
-        "description": "List post reports.",
-        "parameters": [],
-        "tags": [
-          "Post/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListPostReportsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/post/site_metadata": {
       "get": {
         "operationId": "getSiteMetadata",
@@ -1668,28 +1649,6 @@
         }
       }
     },
-    "/comment/report/list": {
-      "get": {
-        "operationId": "listCommentReports",
-        "description": "List comment reports.",
-        "parameters": [],
-        "tags": [
-          "Comment/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListCommentReportsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/private_message/list": {
       "get": {
         "operationId": "getPrivateMessages",
@@ -1883,28 +1842,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PrivateMessageReportResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/private_message/report/list": {
-      "get": {
-        "operationId": "listPrivateMessageReports",
-        "description": "List private message reports.",
-        "parameters": [],
-        "tags": [
-          "PrivateMessage/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListPrivateMessageReportsResponse"
                 }
               }
             }
@@ -3032,6 +2969,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetFederatedInstancesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/report/list": {
+      "get": {
+        "operationId": "listReports",
+        "description": "List post reports.",
+        "parameters": [],
+        "tags": [
+          "Report"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListReportsResponse"
                 }
               }
             }
@@ -4433,7 +4392,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -4442,8 +4401,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -4682,7 +4641,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
+              "NewComments",
               "Hot",
               "New",
               "Old",
@@ -4691,8 +4650,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "Active",
               "MostComments",
-              "NewComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -6213,7 +6172,7 @@
           "expires": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6223,7 +6182,7 @@
           "instance_id",
           "admin_person_id",
           "blocked",
-          "published"
+          "when_"
         ]
       },
       "AdminAllowInstanceView": {
@@ -6264,7 +6223,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6274,7 +6233,7 @@
           "instance_id",
           "admin_person_id",
           "allowed",
-          "published"
+          "when_"
         ]
       },
       "Search": {
@@ -6305,7 +6264,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -6314,8 +6273,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "Active",
               "MostComments",
-              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -6995,7 +6954,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
+              "TopHour",
               "Hot",
               "New",
               "Old",
@@ -7005,8 +6964,8 @@
               "TopYear",
               "TopAll",
               "MostComments",
+              "Active",
               "NewComments",
-              "TopHour",
               "TopSixHour",
               "TopTwelveHour",
               "TopThreeMonths",
@@ -7640,7 +7599,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -7649,8 +7608,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -7705,6 +7664,9 @@
           },
           "page_cursor": {
             "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -7998,46 +7960,6 @@
           "resolved"
         ],
         "description": "Resolve a post report (mods only)."
-      },
-      "ListPostReports": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          },
-          "community_id": {
-            "type": "number",
-            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
-          },
-          "post_id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "description": "List post reports."
-      },
-      "ListPostReportsResponse": {
-        "type": "object",
-        "properties": {
-          "post_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_reports"
-        ],
-        "description": "The post reports response."
       },
       "GetSiteMetadata": {
         "type": "object",
@@ -8643,46 +8565,6 @@
         ],
         "description": "Resolve a comment report (only doable by mods)."
       },
-      "ListCommentReports": {
-        "type": "object",
-        "properties": {
-          "comment_id": {
-            "type": "number"
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          },
-          "community_id": {
-            "type": "number",
-            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
-          }
-        },
-        "nullable": false,
-        "description": "List comment reports."
-      },
-      "ListCommentReportsResponse": {
-        "type": "object",
-        "properties": {
-          "comment_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CommentReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "comment_reports"
-        ],
-        "description": "The comment report list response."
-      },
       "GetPrivateMessages": {
         "type": "object",
         "properties": {
@@ -8988,39 +8870,6 @@
         ],
         "description": "Resolve a private message report."
       },
-      "ListPrivateMessageReports": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          }
-        },
-        "nullable": false,
-        "description": "List private message reports."
-      },
-      "ListPrivateMessageReportsResponse": {
-        "type": "object",
-        "properties": {
-          "private_message_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PrivateMessageReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "private_message_reports"
-        ],
-        "description": "The response for list private message reports."
-      },
       "Register": {
         "type": "object",
         "properties": {
@@ -9128,7 +8977,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -9137,8 +8986,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -9639,7 +9488,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -9648,8 +9497,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "Active",
               "MostComments",
-              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -9820,23 +9669,13 @@
       "GetReportCountResponse": {
         "type": "object",
         "properties": {
-          "community_id": {
-            "type": "number"
-          },
-          "comment_reports": {
-            "type": "number"
-          },
-          "post_reports": {
-            "type": "number"
-          },
-          "private_message_reports": {
+          "count": {
             "type": "number"
           }
         },
         "nullable": false,
         "required": [
-          "comment_reports",
-          "post_reports"
+          "count"
         ],
         "description": "A response for the number of reports."
       },
@@ -10522,9 +10361,6 @@
           "code": {
             "type": "string"
           },
-          "pkce_code_verifier": {
-            "type": "string"
-          },
           "oauth_provider_id": {
             "type": "number"
           },
@@ -10541,6 +10377,9 @@
           "answer": {
             "type": "string",
             "description": "An answer is mandatory if require application is enabled on the server"
+          },
+          "pkce_code_verifier": {
+            "type": "string"
           }
         },
         "nullable": false,
@@ -10656,6 +10495,83 @@
         "required": [
           "instance_id",
           "fail_count"
+        ]
+      },
+      "ListReports": {
+        "type": "object",
+        "properties": {
+          "unresolved_only": {
+            "type": "boolean",
+            "description": "Only shows the unresolved reports"
+          },
+          "community_id": {
+            "type": "number",
+            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "description": "List reports."
+      },
+      "ListReportsResponse": {
+        "type": "object",
+        "properties": {
+          "reports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportCombinedView"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "reports"
+        ],
+        "description": "The post reports response."
+      },
+      "ReportCombinedView": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "Post": {
+                "$ref": "#/components/schemas/PostReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
+              "Post"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "Comment": {
+                "$ref": "#/components/schemas/CommentReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
+              "Comment"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "PrivateMessage": {
+                "$ref": "#/components/schemas/PrivateMessageReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
+              "PrivateMessage"
+            ]
+          }
         ]
       },
       "UserBlockInstanceParams": {
