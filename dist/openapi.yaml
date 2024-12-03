@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.16
+  version: 0.20.0-reports-combined.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -1848,13 +1848,13 @@ paths:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
   /site/block:
     post:
-      operationId: blockInstance
-      description: Block an instance.
+      operationId: userBlockInstance
+      description: Block an instance as user.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BlockInstance"
+              $ref: "#/components/schemas/UserBlockInstanceParams"
       tags:
         - Site
       responses:
@@ -1863,7 +1863,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BlockInstanceResponse"
+                $ref: "#/components/schemas/SuccessResponse"
+  /admin/block_instance:
+    post:
+      operationId: adminBlockInstance
+      description: Globally block an instance as admin.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminBlockInstanceParams"
+      tags:
+        - Admin
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /admin/allow_instance:
+    post:
+      operationId: adminAllowInstance
+      description: Globally allow an instance as admin.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminAllowInstanceParams"
+      tags:
+        - Admin
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
 components:
   schemas:
     GetSiteResponse:
@@ -2536,12 +2572,19 @@ components:
             should be allowed to play or
 
             should be paused
+        enable_private_messages:
+          type: boolean
+          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
           description: Whether to auto-collapse bot comments.
         default_comment_sort_type:
           $ref: "#/components/schemas/CommentSortType"
+        auto_mark_fetched_posts_as_read:
+          type: boolean
+          title: Whether to automatically mark fetched posts as read
+          description: Whether to automatically mark fetched posts as read.
       nullable: false
       required:
         - id
@@ -2565,8 +2608,10 @@ components:
         - totp_2fa_enabled
         - enable_keyboard_navigation
         - enable_animated_images
+        - enable_private_messages
         - collapse_bot_comments
         - default_comment_sort_type
+        - auto_mark_fetched_posts_as_read
       description: A local user.
     LocalUserVoteDisplayMode:
       type: object
@@ -2820,6 +2865,9 @@ components:
           type: string
         updated:
           type: string
+        use_pkce:
+          type: boolean
+          description: switch to enable or disable PKCE
       nullable: false
       required:
         - id
@@ -2835,6 +2883,7 @@ components:
         - account_linking_enabled
         - enabled
         - published
+        - use_pkce
       description: oauth provider with client_secret - should never be sent to the client
     LocalSiteUrlBlocklist:
       type: object
@@ -2893,25 +2942,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - NewComments
-            - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         default_comment_sort_type:
           type: string
           enum:
@@ -2966,14 +3015,6 @@ components:
           type: boolean
         captcha_difficulty:
           type: string
-        allowed_instances:
-          type: array
-          items:
-            type: string
-        blocked_instances:
-          type: array
-          items:
-            type: string
         registration_mode:
           type: string
           enum:
@@ -3090,25 +3131,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -3195,18 +3236,6 @@ components:
         captcha_difficulty:
           type: string
           description: The captcha difficulty. Can be easy, medium, or hard
-        allowed_instances:
-          type: array
-          items:
-            type: string
-          title: A list of allowed instances. If none are set, federation is open
-          description: A list of allowed instances. If none are set, federation is open.
-        blocked_instances:
-          type: array
-          items:
-            type: string
-          title: A list of blocked instances
-          description: A list of blocked instances.
         blocked_urls:
           type: array
           items:
@@ -3364,22 +3393,24 @@ components:
         type_:
           type: string
           enum:
-            - All
-            - ModRemovePost
-            - ModLockPost
-            - ModFeaturePost
-            - ModRemoveComment
-            - ModRemoveCommunity
-            - ModBanFromCommunity
-            - ModAddCommunity
-            - ModTransferCommunity
             - ModAdd
-            - ModBan
-            - ModHideCommunity
-            - AdminPurgePerson
-            - AdminPurgeCommunity
-            - AdminPurgePost
+            - AdminAllowInstance
+            - AdminBlockInstance
             - AdminPurgeComment
+            - AdminPurgePost
+            - AdminPurgeCommunity
+            - AdminPurgePerson
+            - ModHideCommunity
+            - ModBan
+            - All
+            - ModTransferCommunity
+            - ModAddCommunity
+            - ModBanFromCommunity
+            - ModRemoveCommunity
+            - ModRemoveComment
+            - ModFeaturePost
+            - ModLockPost
+            - ModRemovePost
         other_person_id:
           type: number
         post_id:
@@ -3451,6 +3482,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ModHideCommunityView"
+        admin_block_instance:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminBlockInstanceView"
+        admin_allow_instance:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminAllowInstanceView"
       nullable: false
       required:
         - removed_posts
@@ -3468,6 +3507,8 @@ components:
         - admin_purged_posts
         - admin_purged_comments
         - hidden_communities
+        - admin_block_instance
+        - admin_allow_instance
       description: The modlog fetch response.
     ModRemovePostView:
       type: object
@@ -4191,6 +4232,80 @@ components:
         - when_
         - hidden
       description: When a community is hidden from public view.
+    AdminBlockInstanceView:
+      type: object
+      properties:
+        admin_block_instance:
+          $ref: "#/components/schemas/AdminBlockInstance"
+        instance:
+          $ref: "#/components/schemas/Instance"
+        admin:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - admin_block_instance
+        - instance
+      description: When an admin purges a post.
+    AdminBlockInstance:
+      type: object
+      properties:
+        id:
+          type: number
+        instance_id:
+          type: number
+        admin_person_id:
+          type: number
+        blocked:
+          type: boolean
+        reason:
+          type: string
+        expires:
+          type: string
+        published:
+          type: string
+      nullable: false
+      required:
+        - id
+        - instance_id
+        - admin_person_id
+        - blocked
+        - published
+    AdminAllowInstanceView:
+      type: object
+      properties:
+        admin_block_instance:
+          $ref: "#/components/schemas/AdminAllowInstance"
+        instance:
+          $ref: "#/components/schemas/Instance"
+        admin:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - admin_block_instance
+        - instance
+      description: When an admin purges a post.
+    AdminAllowInstance:
+      type: object
+      properties:
+        id:
+          type: number
+        instance_id:
+          type: number
+        admin_person_id:
+          type: number
+        allowed:
+          type: boolean
+        reason:
+          type: string
+        published:
+          type: string
+      nullable: false
+      required:
+        - id
+        - instance_id
+        - admin_person_id
+        - allowed
+        - published
     Search:
       type: object
       properties:
@@ -4213,25 +4328,25 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
             - Active
-            - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -4356,6 +4471,10 @@ components:
           type: number
           title: The total number of children in this comment branch
           description: The total number of children in this comment branch.
+        report_count:
+          type: number
+        unresolved_report_count:
+          type: number
       nullable: false
       required:
         - comment_id
@@ -4364,6 +4483,8 @@ components:
         - downvotes
         - published
         - child_count
+        - report_count
+        - unresolved_report_count
       description: Aggregate data for a comment.
     SubscribedType:
       type: string
@@ -4461,6 +4582,10 @@ components:
           type: string
           title: The time of the newest comment in the post
           description: The time of the newest comment in the post.
+        report_count:
+          type: number
+        unresolved_report_count:
+          type: number
       nullable: false
       required:
         - post_id
@@ -4470,6 +4595,8 @@ components:
         - downvotes
         - published
         - newest_comment_time
+        - report_count
+        - unresolved_report_count
       description: Aggregate data for a post.
     CommunityView:
       type: object
@@ -4715,27 +4842,27 @@ components:
         sort:
           type: string
           enum:
-            - TopHour
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
             - Active
-            - NewComments
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
+            - NameAsc
+            - NameDesc
         show_nsfw:
           type: boolean
         page:
@@ -5128,29 +5255,25 @@ components:
     MarkPostAsRead:
       type: object
       properties:
-        post_ids:
-          type: array
-          items:
-            type: number
+        post_id:
+          type: number
         read:
           type: boolean
       nullable: false
       required:
-        - post_ids
+        - post_id
         - read
       description: Mark a post as read.
     HidePost:
       type: object
       properties:
-        post_ids:
-          type: array
-          items:
-            type: number
+        post_id:
+          type: number
         hide:
           type: boolean
       nullable: false
       required:
-        - post_ids
+        - post_id
         - hide
       description: Hide a post from list views
     LockPost:
@@ -5199,25 +5322,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - NewComments
-            - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         page:
           type: number
           description: DEPRECATED, use page_cursor
@@ -5243,6 +5366,10 @@ components:
           type: boolean
           description: If true, then show the nsfw posts (even if your user setting is to
             hide them)
+        mark_as_read:
+          type: boolean
+          title: Whether to automatically mark fetched posts as read
+          description: Whether to automatically mark fetched posts as read.
         no_comments_only:
           type: boolean
           description: If true, then only show posts with no comments
@@ -6275,25 +6402,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - NewComments
-            - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         page:
           type: number
         limit:
@@ -6663,25 +6790,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
             - Active
-            - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -6767,6 +6894,9 @@ components:
             be allowed to play or
 
             should be paused
+        enable_private_messages:
+          type: boolean
+          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
@@ -6780,6 +6910,10 @@ components:
           type: boolean
         show_upvote_percentage:
           type: boolean
+        auto_mark_fetched_posts_as_read:
+          type: boolean
+          title: Whether to automatically mark fetched posts as read
+          description: Whether to automatically mark fetched posts as read.
       nullable: false
       description: Saves settings for your user.
     ChangePassword:
@@ -7241,6 +7375,8 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
+        use_pkce:
+          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7278,6 +7414,8 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
+        use_pkce:
+          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7297,6 +7435,8 @@ components:
       type: object
       properties:
         code:
+          type: string
+        pkce_code_verifier:
           type: string
         oauth_provider_id:
           type: number
@@ -7398,7 +7538,7 @@ components:
       required:
         - instance_id
         - fail_count
-    BlockInstance:
+    UserBlockInstanceParams:
       type: object
       properties:
         instance_id:
@@ -7410,14 +7550,34 @@ components:
         - instance_id
         - block
       description: Block an instance as user
-    BlockInstanceResponse:
+    AdminBlockInstanceParams:
       type: object
       properties:
-        blocked:
+        instance:
+          type: string
+        block:
           type: boolean
+        reason:
+          type: string
+        expires:
+          type: string
       nullable: false
       required:
-        - blocked
+        - instance
+        - block
+    AdminAllowInstanceParams:
+      type: object
+      properties:
+        instance:
+          type: string
+        allow:
+          type: boolean
+        reason:
+          type: string
+      nullable: false
+      required:
+        - instance
+        - allow
   securitySchemes:
     bearerAuth:
       type: http
