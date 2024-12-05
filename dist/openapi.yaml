@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.12
+  version: 0.20.0-api-v4.11
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -40,7 +40,6 @@ tags:
   - name: OauthProvider
   - name: Oauth
   - name: FederatedInstances
-  - name: Admin/Instance
   - name: Pictrs/Image
 paths:
   /site:
@@ -2374,7 +2373,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/block:
+  /admin/block_instance:
     post:
       operationId: adminBlockInstance
       description: Globally block an instance as admin.
@@ -2384,7 +2383,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminBlockInstanceParams"
       tags:
-        - Admin/Instance
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -2392,7 +2391,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/allow:
+  /admin/allow_instance:
     post:
       operationId: adminAllowInstance
       description: Globally allow an instance as admin.
@@ -2402,7 +2401,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminAllowInstanceParams"
       tags:
-        - Admin/Instance
+        - Admin
       responses:
         "200":
           description: Successful response

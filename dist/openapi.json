@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.12"
+    "version": "0.20.0-api-v4.11"
   },
   "servers": [
     {
@@ -108,9 +108,6 @@
     },
     {
       "name": "FederatedInstances"
-    },
-    {
-      "name": "Admin/Instance"
     },
     {
       "name": "Pictrs/Image"
@@ -3989,7 +3986,7 @@
         }
       }
     },
-    "/admin/instance/block": {
+    "/admin/block_instance": {
       "post": {
         "operationId": "adminBlockInstance",
         "description": "Globally block an instance as admin.",
@@ -4003,7 +4000,7 @@
           }
         },
         "tags": [
-          "Admin/Instance"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -4019,7 +4016,7 @@
         }
       }
     },
-    "/admin/instance/allow": {
+    "/admin/allow_instance": {
       "post": {
         "operationId": "adminAllowInstance",
         "description": "Globally allow an instance as admin.",
@@ -4033,7 +4030,7 @@
           }
         },
         "tags": [
-          "Admin/Instance"
+          "Admin"
         ],
         "responses": {
           "200": {
