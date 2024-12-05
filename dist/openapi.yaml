@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.15
+  version: 0.20.0-api-v4.14
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -22,7 +22,6 @@ tags:
   - name: Community/PendingFollows
   - name: Account/Block
   - name: Post
-  - name: Post/MarkAsRead
   - name: Post/Like
   - name: Post/Report
   - name: Comment
@@ -120,7 +119,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /account:
+  /account/my_user:
     get:
       operationId: getMyUser
       description: Get data of current user.
@@ -801,25 +800,7 @@ paths:
             schema:
               $ref: "#/components/schemas/MarkPostAsRead"
       tags:
-        - Post/MarkAsRead
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /post/mark_as_read/many:
-    post:
-      operationId: markManyPostAsRead
-      description: Mark multiple posts as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkManyPostsAsRead"
-      tags:
-        - Post/MarkAsRead
+        - Post
       responses:
         "200":
           description: Successful response
@@ -3191,25 +3172,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         default_comment_sort_type:
           type: string
           enum:
@@ -3380,25 +3361,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
             - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -3969,24 +3950,24 @@ components:
         type_:
           type: string
           enum:
-            - All
-            - ModRemovePost
-            - ModLockPost
-            - ModFeaturePost
-            - ModRemoveComment
-            - ModRemoveCommunity
-            - ModBanFromCommunity
-            - ModAddCommunity
-            - ModTransferCommunity
             - ModAdd
-            - ModBan
-            - ModHideCommunity
-            - AdminPurgePerson
-            - AdminPurgeCommunity
-            - AdminPurgePost
-            - AdminPurgeComment
-            - AdminBlockInstance
             - AdminAllowInstance
+            - AdminBlockInstance
+            - AdminPurgeComment
+            - AdminPurgePost
+            - AdminPurgeCommunity
+            - AdminPurgePerson
+            - ModHideCommunity
+            - ModBan
+            - All
+            - ModTransferCommunity
+            - ModAddCommunity
+            - ModBanFromCommunity
+            - ModRemoveCommunity
+            - ModRemoveComment
+            - ModFeaturePost
+            - ModLockPost
+            - ModRemovePost
         other_person_id:
           type: number
         post_id:
@@ -4904,25 +4885,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -5406,27 +5387,27 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
+            - NameAsc
+            - NameDesc
         show_nsfw:
           type: boolean
         page:
@@ -5844,17 +5825,6 @@ components:
         - post_id
         - read
       description: Mark a post as read.
-    MarkManyPostsAsRead:
-      type: object
-      properties:
-        post_ids:
-          type: array
-          items:
-            type: number
-      nullable: false
-      required:
-        - post_ids
-      description: Mark several posts as read.
     HidePost:
       type: object
       properties:
