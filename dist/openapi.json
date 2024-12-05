@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-reports-combined.2"
+    "version": "0.20.0-reports-combined.1"
   },
   "servers": [
     {
@@ -11489,210 +11489,41 @@
       "ReportCombinedView": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/type_PostPostReportView"
-          },
-          {
-            "$ref": "#/components/schemas/type_CommentCommentReportView"
-          },
-          {
-            "$ref": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
-          }
-        ],
-        "discriminator": {
-          "propertyName": "type_",
-          "mapping": {
-            "Post": "#/components/schemas/type_PostPostReportView",
-            "Comment": "#/components/schemas/type_CommentCommentReportView",
-            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
-          }
-        }
-      },
-      "type_PostPostReportView": {
-        "type": "object",
-        "properties": {
-          "type_": {
-            "type": "string",
-            "enum": [
+            "type": "object",
+            "properties": {
+              "Post": {
+                "$ref": "#/components/schemas/PostReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
               "Post"
             ]
           },
-          "post_report": {
-            "$ref": "#/components/schemas/PostReport"
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          },
-          "creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "post_creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "creator_banned_from_community": {
-            "type": "boolean"
-          },
-          "creator_is_moderator": {
-            "type": "boolean"
-          },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
-          },
-          "saved": {
-            "type": "boolean"
-          },
-          "read": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "creator_blocked": {
-            "type": "boolean"
-          },
-          "my_vote": {
-            "type": "number"
-          },
-          "unread_comments": {
-            "type": "number"
-          },
-          "counts": {
-            "$ref": "#/components/schemas/PostAggregates"
-          },
-          "resolver": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "type_",
-          "post_report",
-          "post",
-          "community",
-          "creator",
-          "post_creator",
-          "creator_banned_from_community",
-          "creator_is_moderator",
-          "creator_is_admin",
-          "subscribed",
-          "saved",
-          "read",
-          "hidden",
-          "creator_blocked",
-          "unread_comments",
-          "counts"
-        ]
-      },
-      "type_CommentCommentReportView": {
-        "type": "object",
-        "properties": {
-          "type_": {
-            "type": "string",
-            "enum": [
+          {
+            "type": "object",
+            "properties": {
+              "Comment": {
+                "$ref": "#/components/schemas/CommentReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
               "Comment"
             ]
           },
-          "comment_report": {
-            "$ref": "#/components/schemas/CommentReport"
-          },
-          "comment": {
-            "$ref": "#/components/schemas/Comment"
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          },
-          "creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "comment_creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "counts": {
-            "$ref": "#/components/schemas/CommentAggregates"
-          },
-          "creator_banned_from_community": {
-            "type": "boolean"
-          },
-          "creator_is_moderator": {
-            "type": "boolean"
-          },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
-          "creator_blocked": {
-            "type": "boolean"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
-          },
-          "saved": {
-            "type": "boolean"
-          },
-          "my_vote": {
-            "type": "number"
-          },
-          "resolver": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "type_",
-          "comment_report",
-          "comment",
-          "post",
-          "community",
-          "creator",
-          "comment_creator",
-          "counts",
-          "creator_banned_from_community",
-          "creator_is_moderator",
-          "creator_is_admin",
-          "creator_blocked",
-          "subscribed",
-          "saved"
-        ]
-      },
-      "type_PrivateMessagePrivateMessageReportView": {
-        "type": "object",
-        "properties": {
-          "type_": {
-            "type": "string",
-            "enum": [
+          {
+            "type": "object",
+            "properties": {
+              "PrivateMessage": {
+                "$ref": "#/components/schemas/PrivateMessageReportView"
+              }
+            },
+            "nullable": false,
+            "required": [
               "PrivateMessage"
             ]
-          },
-          "private_message_report": {
-            "$ref": "#/components/schemas/PrivateMessageReport"
-          },
-          "private_message": {
-            "$ref": "#/components/schemas/PrivateMessage"
-          },
-          "private_message_creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "resolver": {
-            "$ref": "#/components/schemas/Person"
           }
-        },
-        "nullable": false,
-        "required": [
-          "type_",
-          "private_message_report",
-          "private_message",
-          "private_message_creator",
-          "creator"
         ]
       },
       "UserBlockInstanceParams": {
