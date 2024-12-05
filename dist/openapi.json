@@ -295,6 +295,22 @@
       "get": {
         "operationId": "listMedia",
         "description": "List all the media for your user",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Account"
         ],
@@ -316,6 +332,22 @@
       "get": {
         "operationId": "listAllMedia",
         "description": "List all the media known to your instance.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Admin"
         ],
@@ -367,6 +399,64 @@
       "get": {
         "operationId": "getModlog",
         "description": "Get the modlog.",
+        "parameters": [
+          {
+            "name": "mod_person_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/mod_person_id"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/community_id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/limit"
+            }
+          },
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/type_"
+            }
+          },
+          {
+            "name": "other_person_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/other_person_id"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/post_id"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/comment_id"
+            }
+          }
+        ],
         "tags": [
           "Modlog"
         ],
@@ -388,6 +478,106 @@
       "get": {
         "operationId": "search",
         "description": "Search lemmy.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/q"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/community_id"
+            }
+          },
+          {
+            "name": "community_name",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/community_name"
+            }
+          },
+          {
+            "name": "creator_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/creator_id"
+            }
+          },
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/type_"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/sort"
+            }
+          },
+          {
+            "name": "listing_type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/listing_type"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/limit"
+            }
+          },
+          {
+            "name": "title_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/title_only"
+            }
+          },
+          {
+            "name": "post_url_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/post_url_only"
+            }
+          },
+          {
+            "name": "saved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/saved_only"
+            }
+          },
+          {
+            "name": "liked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/liked_only"
+            }
+          },
+          {
+            "name": "disliked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/disliked_only"
+            }
+          }
+        ],
         "tags": [
           "Search"
         ],
@@ -409,6 +599,15 @@
       "get": {
         "operationId": "resolveObject",
         "description": "Fetch a non-local / federated object.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ResolveObject/properties/q"
+            }
+          }
+        ],
         "tags": [
           "ResolveObject"
         ],
@@ -458,6 +657,22 @@
       "get": {
         "operationId": "getCommunity",
         "description": "Get / fetch a community.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetCommunity/properties/id"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetCommunity/properties/name"
+            }
+          }
+        ],
         "tags": [
           "Community"
         ],
@@ -507,6 +722,43 @@
       "get": {
         "operationId": "listCommunities",
         "description": "List communities, with various filters.",
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunities/properties/type_"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunities/properties/sort"
+            }
+          },
+          {
+            "name": "show_nsfw",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunities/properties/show_nsfw"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunities/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunities/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Community"
         ],
@@ -557,6 +809,15 @@
     "/community/pending_follows/count": {
       "get": {
         "operationId": "getCommunityPendingFollowsCount",
+        "parameters": [
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetCommunityPendingFollowsCount/properties/community_id"
+            }
+          }
+        ],
         "tags": [
           "Community/PendingFollows"
         ],
@@ -577,6 +838,36 @@
     "/community/pending_follows/list": {
       "get": {
         "operationId": "listCommunityPendingFollows",
+        "parameters": [
+          {
+            "name": "pending_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/pending_only"
+            }
+          },
+          {
+            "name": "all_communities",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/all_communities"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Community/PendingFollows"
         ],
@@ -837,6 +1128,15 @@
       "get": {
         "operationId": "getRandomCommunity",
         "description": "Get a random community.",
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetRandomCommunity/properties/type_"
+            }
+          }
+        ],
         "tags": [
           "Community"
         ],
@@ -886,6 +1186,22 @@
       "get": {
         "operationId": "getPost",
         "description": "Get / fetch a post.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPost/properties/id"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPost/properties/comment_id"
+            }
+          }
+        ],
         "tags": [
           "Post"
         ],
@@ -1115,6 +1431,113 @@
       "get": {
         "operationId": "getPosts",
         "description": "Get / fetch posts, with various filters.",
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/type_"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/sort"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/limit"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/community_id"
+            }
+          },
+          {
+            "name": "community_name",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/community_name"
+            }
+          },
+          {
+            "name": "saved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/saved_only"
+            }
+          },
+          {
+            "name": "liked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/liked_only"
+            }
+          },
+          {
+            "name": "disliked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/disliked_only"
+            }
+          },
+          {
+            "name": "show_hidden",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/show_hidden"
+            }
+          },
+          {
+            "name": "show_read",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/show_read"
+            }
+          },
+          {
+            "name": "show_nsfw",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/show_nsfw"
+            }
+          },
+          {
+            "name": "mark_as_read",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/mark_as_read"
+            }
+          },
+          {
+            "name": "no_comments_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/no_comments_only"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/page_cursor"
+            }
+          }
+        ],
         "tags": [
           "Post"
         ],
@@ -1166,6 +1589,29 @@
       "get": {
         "operationId": "listPostLikes",
         "description": "List a post's likes. Admin-only.",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostLikes/properties/post_id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostLikes/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostLikes/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Post/Like"
         ],
@@ -1277,6 +1723,43 @@
       "get": {
         "operationId": "listPostReports",
         "description": "List post reports.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostReports/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostReports/properties/limit"
+            }
+          },
+          {
+            "name": "unresolved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostReports/properties/unresolved_only"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostReports/properties/community_id"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPostReports/properties/post_id"
+            }
+          }
+        ],
         "tags": [
           "Post/Report"
         ],
@@ -1298,6 +1781,15 @@
       "get": {
         "operationId": "getSiteMetadata",
         "description": "Fetch metadata for any given site.",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetSiteMetadata/properties/url"
+            }
+          }
+        ],
         "tags": [
           "Post"
         ],
@@ -1375,6 +1867,15 @@
       "get": {
         "operationId": "getComment",
         "description": "Get / fetch comment.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComment/properties/id"
+            }
+          }
+        ],
         "tags": [
           "Comment"
         ],
@@ -1516,6 +2017,29 @@
       "get": {
         "operationId": "listCommentLikes",
         "description": "List a comment's likes. Admin-only.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentLikes/properties/comment_id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentLikes/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentLikes/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Comment/Like"
         ],
@@ -1597,6 +2121,92 @@
       "get": {
         "operationId": "getComments",
         "description": "Get / fetch comments.",
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/type_"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/sort"
+            }
+          },
+          {
+            "name": "max_depth",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/max_depth"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/limit"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/community_id"
+            }
+          },
+          {
+            "name": "community_name",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/community_name"
+            }
+          },
+          {
+            "name": "post_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/post_id"
+            }
+          },
+          {
+            "name": "parent_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/parent_id"
+            }
+          },
+          {
+            "name": "saved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/saved_only"
+            }
+          },
+          {
+            "name": "liked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/liked_only"
+            }
+          },
+          {
+            "name": "disliked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetComments/properties/disliked_only"
+            }
+          }
+        ],
         "tags": [
           "Comment"
         ],
@@ -1678,6 +2288,43 @@
       "get": {
         "operationId": "listCommentReports",
         "description": "List comment reports.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentReports/properties/comment_id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentReports/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentReports/properties/limit"
+            }
+          },
+          {
+            "name": "unresolved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentReports/properties/unresolved_only"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommentReports/properties/community_id"
+            }
+          }
+        ],
         "tags": [
           "Comment/Report"
         ],
@@ -1699,6 +2346,36 @@
       "get": {
         "operationId": "getPrivateMessages",
         "description": "Get / fetch private messages.",
+        "parameters": [
+          {
+            "name": "unread_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPrivateMessages/properties/unread_only"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPrivateMessages/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPrivateMessages/properties/limit"
+            }
+          },
+          {
+            "name": "creator_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPrivateMessages/properties/creator_id"
+            }
+          }
+        ],
         "tags": [
           "PrivateMessage"
         ],
@@ -1898,6 +2575,29 @@
       "get": {
         "operationId": "listPrivateMessageReports",
         "description": "List private message reports.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/limit"
+            }
+          },
+          {
+            "name": "unresolved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/unresolved_only"
+            }
+          }
+        ],
         "tags": [
           "PrivateMessage/Report"
         ],
@@ -2000,6 +2700,57 @@
       "get": {
         "operationId": "getPersonDetails",
         "description": "Get the details for a person.",
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/person_id"
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/username"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/sort"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/limit"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/community_id"
+            }
+          },
+          {
+            "name": "saved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonDetails/properties/saved_only"
+            }
+          }
+        ],
         "tags": [
           "User"
         ],
@@ -2021,6 +2772,36 @@
       "get": {
         "operationId": "getPersonMentions",
         "description": "Get mentions for your user.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonMentions/properties/sort"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonMentions/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonMentions/properties/limit"
+            }
+          },
+          {
+            "name": "unread_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPersonMentions/properties/unread_only"
+            }
+          }
+        ],
         "tags": [
           "User/Mention"
         ],
@@ -2072,6 +2853,36 @@
       "get": {
         "operationId": "getReplies",
         "description": "Get comment replies.",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetReplies/properties/sort"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetReplies/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetReplies/properties/limit"
+            }
+          },
+          {
+            "name": "unread_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetReplies/properties/unread_only"
+            }
+          }
+        ],
         "tags": [
           "User"
         ],
@@ -2366,6 +3177,15 @@
       "get": {
         "operationId": "getReportCount",
         "description": "Get counts for your reports",
+        "parameters": [
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetReportCount/properties/community_id"
+            }
+          }
+        ],
         "tags": [
           "User"
         ],
@@ -2489,6 +3309,29 @@
       "get": {
         "operationId": "listRegistrationApplications",
         "description": "List the registration applications.",
+        "parameters": [
+          {
+            "name": "unread_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListRegistrationApplications/properties/unread_only"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListRegistrationApplications/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListRegistrationApplications/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Admin/RegistrationApplication"
         ],
@@ -2540,6 +3383,15 @@
       "get": {
         "operationId": "getRegistrationApplication",
         "description": "Get the application a user submitted when they first registered their account",
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetRegistrationApplication/properties/person_id"
+            }
+          }
+        ],
         "tags": [
           "Admin/RegistrationApplication"
         ],
@@ -2769,6 +3621,36 @@
       "get": {
         "operationId": "listCustomEmojis",
         "description": "List custom emojis",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCustomEmojis/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCustomEmojis/properties/limit"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCustomEmojis/properties/category"
+            }
+          },
+          {
+            "name": "ignore_page_limits",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCustomEmojis/properties/ignore_page_limits"
+            }
+          }
+        ],
         "tags": [
           "CustomEmoji"
         ],
@@ -2878,6 +3760,22 @@
       "get": {
         "operationId": "listTaglines",
         "description": "List taglines",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListTaglines/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListTaglines/properties/limit"
+            }
+          }
+        ],
         "tags": [
           "Admin/Tagline"
         ],
@@ -3183,6 +4081,20 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DeleteImage/properties/token"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DeleteImage/properties/filename"
             }
           }
         ],
