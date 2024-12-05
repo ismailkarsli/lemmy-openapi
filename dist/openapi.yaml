@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-reports_combined.0
+  version: 0.20.0-api-v4.16
 servers:
-  - url: https://lemy.lol/api/v3
+  - url: https://lemy.lol/api/v4
 security:
   - bearerAuth: []
 externalDocs:
@@ -11,16 +11,18 @@ externalDocs:
   url: https://join-lemmy.org/api/index.html
 tags:
   - name: Site
-  - name: User
-  - name: User/Totp
-  - name: Account
   - name: Admin
+  - name: Account/Auth/Totp
+  - name: Account
+  - name: Account/Settings
   - name: Modlog
   - name: Search
   - name: ResolveObject
   - name: Community
   - name: Community/PendingFollows
+  - name: Account/Block
   - name: Post
+  - name: Post/MarkAsRead
   - name: Post/Like
   - name: Post/Report
   - name: Comment
@@ -28,7 +30,10 @@ tags:
   - name: Comment/Report
   - name: PrivateMessage
   - name: PrivateMessage/Report
-  - name: User/Mention
+  - name: Account/Auth
+  - name: Person
+  - name: Account/Mention
+  - name: Account/Mention/MarkAsRead
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -36,7 +41,7 @@ tags:
   - name: OauthProvider
   - name: Oauth
   - name: FederatedInstances
-  - name: Report
+  - name: Admin/Instance
   - name: Pictrs/Image
 paths:
   /site:
@@ -86,12 +91,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SiteResponse"
-  /user/leave_admin:
+  /admin/leave:
     post:
       operationId: leaveAdmin
       description: Leave the Site admins.
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -99,16 +104,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSiteResponse"
-  /user/totp/generate:
+  /account/auth/totp/generate:
     post:
       operationId: generateTotpSecret
       description: >-
         Generate a TOTP / two-factor secret.
 
-        Afterwards you need to call `/user/totp/update` with a valid token to
-        enable it.
+        Afterwards you need to call `/account/auth/totp/update` with a valid
+        token to enable it.
       tags:
-        - User/Totp
+        - Account/Auth/Totp
       responses:
         "200":
           description: Successful response
@@ -116,23 +121,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /user/export_settings:
+  /account:
+    get:
+      operationId: getMyUser
+      description: Get data of current user.
+      tags:
+        - Account
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyUserInfo"
+  /account/settings/export:
     get:
       operationId: exportSettings
       description: |-
         Export a backup of your user settings, including your saved content,
         followed communities, and blocks.
       tags:
-        - User
+        - Account/Settings
       responses:
         "200":
           description: No content
-  /user/import_settings:
+  /account/settings/import:
     post:
       operationId: importSettings
       description: Import a backup of your user settings.
       tags:
-        - User
+        - Account/Settings
       responses:
         "200":
           description: Successful response
@@ -140,21 +158,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/list_logins:
+  /account/list_logins:
     get:
       operationId: listLogins
       description: List login tokens for your user
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: No content
-  /user/validate_auth:
+  /account/validate_auth:
     get:
       operationId: validateAuth
       description: Returns an error message if your auth token is invalid
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -206,14 +224,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListMediaResponse"
-  /user/totp/update:
+  /account/auth/totp/update:
     post:
       operationId: updateTotp
       description: >-
         Enable / Disable TOTP / two-factor authentication.
 
-        To enable, you need to first call `/user/totp/generate` and then pass a
-        valid token to this.
+        To enable, you need to first call `/account/auth/totp/generate` and then
+        pass a valid token to this.
 
         Disabling is only possible if 2FA was previously enabled. Again it is
         necessary to pass a valid token.
@@ -223,7 +241,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateTotp"
       tags:
-        - User/Totp
+        - Account/Auth/Totp
       responses:
         "200":
           description: Successful response
@@ -538,7 +556,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /community/block:
+  /account/block/community:
     post:
       operationId: blockCommunity
       description: Block a community.
@@ -548,7 +566,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockCommunity"
       tags:
-        - Community
+        - Account/Block
       responses:
         "200":
           description: Successful response
@@ -784,7 +802,25 @@ paths:
             schema:
               $ref: "#/components/schemas/MarkPostAsRead"
       tags:
-        - Post
+        - Post/MarkAsRead
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /post/mark_as_read/many:
+    post:
+      operationId: markManyPostAsRead
+      description: Mark multiple posts as read.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarkManyPostsAsRead"
+      tags:
+        - Post/MarkAsRead
       responses:
         "200":
           description: Successful response
@@ -912,10 +948,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/page_cursor"
-        - name: page_back
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/page_back"
       tags:
         - Post
       responses:
@@ -1023,6 +1055,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostReportResponse"
+  /post/report/list:
+    get:
+      operationId: listPostReports
+      description: List post reports.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPostReports/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPostReports/properties/limit"
+        - name: unresolved_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPostReports/properties/unresolved_only"
+        - name: community_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPostReports/properties/community_id"
+        - name: post_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPostReports/properties/post_id"
+      tags:
+        - Post/Report
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPostReportsResponse"
   /post/site_metadata:
     get:
       operationId: getSiteMetadata
@@ -1325,6 +1391,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommentReportResponse"
+  /comment/report/list:
+    get:
+      operationId: listCommentReports
+      description: List comment reports.
+      parameters:
+        - name: comment_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListCommentReports/properties/comment_id"
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListCommentReports/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListCommentReports/properties/limit"
+        - name: unresolved_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListCommentReports/properties/unresolved_only"
+        - name: community_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListCommentReports/properties/community_id"
+      tags:
+        - Comment/Report
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListCommentReportsResponse"
   /private_message/list:
     get:
       operationId: getPrivateMessages
@@ -1462,7 +1562,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PrivateMessageReportResponse"
-  /user/register:
+  /private_message/report/list:
+    get:
+      operationId: listPrivateMessageReports
+      description: List private message reports.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPrivateMessageReports/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPrivateMessageReports/properties/limit"
+        - name: unresolved_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/ListPrivateMessageReports/properties/unresolved_onl\
+              y"
+      tags:
+        - PrivateMessage/Report
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListPrivateMessageReportsResponse"
+  /account/auth/register:
     post:
       operationId: register
       description: Register a new user.
@@ -1472,7 +1599,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Register"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1480,7 +1607,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /user/login:
+  /account/auth/login:
     post:
       operationId: login
       description: Log into lemmy.
@@ -1490,7 +1617,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Login"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1498,12 +1625,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /user/logout:
+  /account/auth/logout:
     post:
       operationId: logout
       description: Invalidate the currently used auth token.
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1511,7 +1638,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user:
+  /person:
     get:
       operationId: getPersonDetails
       description: Get the details for a person.
@@ -1545,7 +1672,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonDetails/properties/saved_only"
       tags:
-        - User
+        - Person
       responses:
         "200":
           description: Successful response
@@ -1553,7 +1680,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonDetailsResponse"
-  /user/mention:
+  /account/mention:
     get:
       operationId: getPersonMentions
       description: Get mentions for your user.
@@ -1575,7 +1702,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonMentions/properties/unread_only"
       tags:
-        - User/Mention
+        - Account/Mention
       responses:
         "200":
           description: Successful response
@@ -1583,17 +1710,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonMentionsResponse"
-  /user/mention/mark_as_read:
+  /account/mention/mark_as_read:
     post:
-      operationId: markPersonMentionAsRead
+      operationId: markPersonAllMentionAsRead
       description: Mark a person mention as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkPersonMentionAsRead"
       tags:
-        - User/Mention
+        - Account/Mention/MarkAsRead
       responses:
         "200":
           description: Successful response
@@ -1601,7 +1723,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonMentionResponse"
-  /user/replies:
+  /account/replies:
     get:
       operationId: getReplies
       description: Get comment replies.
@@ -1623,7 +1745,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReplies/properties/unread_only"
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -1631,7 +1753,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /user/ban:
+  /admin/ban:
     post:
       operationId: banPerson
       description: Ban a person from your site.
@@ -1641,7 +1763,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BanPerson"
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -1649,12 +1771,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BanPersonResponse"
-  /user/banned:
+  /admin/banned:
     get:
       operationId: getBannedPersons
       description: Get a list of banned users
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -1662,7 +1784,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BannedPersonsResponse"
-  /user/block:
+  /account/block/person:
     post:
       operationId: blockPerson
       description: Block a person.
@@ -1672,7 +1794,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockPerson"
       tags:
-        - User
+        - Account/Block
       responses:
         "200":
           description: Successful response
@@ -1680,12 +1802,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BlockPersonResponse"
-  /user/get_captcha:
+  /account/auth/get_captcha:
     get:
       operationId: getCaptcha
       description: Fetch a Captcha.
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1693,7 +1815,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetCaptchaResponse"
-  /user/delete_account:
+  /account/delete:
     post:
       operationId: deleteAccount
       description: Delete your account.
@@ -1703,7 +1825,7 @@ paths:
             schema:
               $ref: "#/components/schemas/DeleteAccount"
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -1711,7 +1833,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/password_reset:
+  /account/auth/password_reset:
     post:
       operationId: passwordReset
       description: Reset your password.
@@ -1721,7 +1843,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordReset"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1729,7 +1851,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/password_change:
+  /account/auth/password_change:
     post:
       operationId: passwordChangeAfterReset
       description: Change your password from an email / token based reset.
@@ -1739,7 +1861,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordChangeAfterReset"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1747,12 +1869,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/mark_all_as_read:
+  /account/mention/mark_as_read/all:
     post:
       operationId: markAllAsRead
       description: Mark all replies as read.
       tags:
-        - User
+        - Account/Mention/MarkAsRead
       responses:
         "200":
           description: Successful response
@@ -1760,7 +1882,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /user/save_user_settings:
+  /account/settings/save:
     put:
       operationId: saveUserSettings
       description: Save your user settings.
@@ -1770,7 +1892,7 @@ paths:
             schema:
               $ref: "#/components/schemas/SaveUserSettings"
       tags:
-        - User
+        - Account/Settings
       responses:
         "200":
           description: Successful response
@@ -1778,7 +1900,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/change_password:
+  /account/auth/change_password:
     put:
       operationId: changePassword
       description: Change your user password.
@@ -1788,7 +1910,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ChangePassword"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1796,7 +1918,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /user/report_count:
+  /account/report_count:
     get:
       operationId: getReportCount
       description: Get counts for your reports
@@ -1806,7 +1928,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReportCount/properties/community_id"
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -1814,12 +1936,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetReportCountResponse"
-  /user/unread_count:
+  /account/unread_count:
     get:
       operationId: getUnreadCount
       description: Get your unread counts
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -1827,7 +1949,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetUnreadCountResponse"
-  /user/verify_email:
+  /account/auth/verify_email:
     post:
       operationId: verifyEmail
       description: Verify your email
@@ -1837,7 +1959,7 @@ paths:
             schema:
               $ref: "#/components/schemas/VerifyEmail"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -2253,37 +2375,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
-  /report/list:
-    get:
-      operationId: listReports
-      description: List post reports.
-      parameters:
-        - name: unresolved_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListReports/properties/unresolved_only"
-        - name: community_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListReports/properties/community_id"
-        - name: page_cursor
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListReports/properties/page_cursor"
-        - name: page_back
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListReports/properties/page_back"
-      tags:
-        - Report
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListReportsResponse"
-  /site/block:
+  /account/block/instance:
     post:
       operationId: userBlockInstance
       description: Block an instance as user.
@@ -2293,7 +2385,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UserBlockInstanceParams"
       tags:
-        - Site
+        - Account/Block
       responses:
         "200":
           description: Successful response
@@ -2301,7 +2393,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/block_instance:
+  /admin/instance/block:
     post:
       operationId: adminBlockInstance
       description: Globally block an instance as admin.
@@ -2311,7 +2403,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminBlockInstanceParams"
       tags:
-        - Admin
+        - Admin/Instance
       responses:
         "200":
           description: Successful response
@@ -2319,7 +2411,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/allow_instance:
+  /admin/instance/allow:
     post:
       operationId: adminAllowInstance
       description: Globally allow an instance as admin.
@@ -2329,7 +2421,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminAllowInstanceParams"
       tags:
-        - Admin
+        - Admin/Instance
       responses:
         "200":
           description: Successful response
@@ -2404,8 +2496,6 @@ components:
             $ref: "#/components/schemas/PersonView"
         version:
           type: string
-        my_user:
-          $ref: "#/components/schemas/MyUserInfo"
         all_languages:
           type: array
           items:
@@ -2928,333 +3018,6 @@ components:
         - post_count
         - comment_count
       description: Aggregate data for a person.
-    MyUserInfo:
-      type: object
-      properties:
-        local_user_view:
-          $ref: "#/components/schemas/LocalUserView"
-        follows:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityFollowerView"
-        moderates:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityModeratorView"
-        community_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Community"
-        instance_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Instance"
-        person_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Person"
-        discussion_languages:
-          type: array
-          items:
-            type: number
-      nullable: false
-      required:
-        - local_user_view
-        - follows
-        - moderates
-        - community_blocks
-        - instance_blocks
-        - person_blocks
-        - discussion_languages
-      description: Your user info.
-    LocalUserView:
-      type: object
-      properties:
-        local_user:
-          $ref: "#/components/schemas/LocalUser"
-        local_user_vote_display_mode:
-          $ref: "#/components/schemas/LocalUserVoteDisplayMode"
-        person:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/PersonAggregates"
-      nullable: false
-      required:
-        - local_user
-        - local_user_vote_display_mode
-        - person
-        - counts
-      description: A local user view.
-    LocalUser:
-      type: object
-      properties:
-        id:
-          type: number
-        person_id:
-          type: number
-          title: The person_id for the local user
-          description: The person_id for the local user.
-        email:
-          type: string
-        show_nsfw:
-          type: boolean
-          title: Whether to show NSFW content
-          description: Whether to show NSFW content.
-        theme:
-          type: string
-        default_post_sort_type:
-          $ref: "#/components/schemas/PostSortType"
-        default_listing_type:
-          $ref: "#/components/schemas/ListingType"
-        interface_language:
-          type: string
-        show_avatars:
-          type: boolean
-          title: Whether to show avatars
-          description: Whether to show avatars.
-        send_notifications_to_email:
-          type: boolean
-        show_bot_accounts:
-          type: boolean
-          title: Whether to show bot accounts
-          description: Whether to show bot accounts.
-        show_read_posts:
-          type: boolean
-          title: Whether to show read posts
-          description: Whether to show read posts.
-        email_verified:
-          type: boolean
-          title: Whether their email has been verified
-          description: Whether their email has been verified.
-        accepted_application:
-          type: boolean
-          title: Whether their registration application has been accepted
-          description: Whether their registration application has been accepted.
-        open_links_in_new_tab:
-          type: boolean
-          title: Open links in a new tab
-          description: Open links in a new tab.
-        blur_nsfw:
-          type: boolean
-        infinite_scroll_enabled:
-          type: boolean
-          title: Whether infinite scroll is enabled
-          description: Whether infinite scroll is enabled.
-        admin:
-          type: boolean
-          title: Whether the person is an admin
-          description: Whether the person is an admin.
-        post_listing_mode:
-          $ref: "#/components/schemas/PostListingMode"
-          title: A post-view mode that changes how multiple post listings look
-          description: A post-view mode that changes how multiple post listings look.
-        totp_2fa_enabled:
-          type: boolean
-        enable_keyboard_navigation:
-          type: boolean
-          title: Whether to allow keyboard navigation (for browsing and interacting with
-            posts and comments)
-          description: Whether to allow keyboard navigation (for browsing and interacting
-            with posts and comments).
-        enable_animated_images:
-          type: boolean
-          description: >-
-            Whether user avatars and inline images in the UI that are gifs
-            should be allowed to play or
-
-            should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
-        collapse_bot_comments:
-          type: boolean
-          title: Whether to auto-collapse bot comments
-          description: Whether to auto-collapse bot comments.
-        default_comment_sort_type:
-          $ref: "#/components/schemas/CommentSortType"
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
-      nullable: false
-      required:
-        - id
-        - person_id
-        - show_nsfw
-        - theme
-        - default_post_sort_type
-        - default_listing_type
-        - interface_language
-        - show_avatars
-        - send_notifications_to_email
-        - show_bot_accounts
-        - show_read_posts
-        - email_verified
-        - accepted_application
-        - open_links_in_new_tab
-        - blur_nsfw
-        - infinite_scroll_enabled
-        - admin
-        - post_listing_mode
-        - totp_2fa_enabled
-        - enable_keyboard_navigation
-        - enable_animated_images
-        - enable_private_messages
-        - collapse_bot_comments
-        - default_comment_sort_type
-        - auto_mark_fetched_posts_as_read
-      description: A local user.
-    LocalUserVoteDisplayMode:
-      type: object
-      properties:
-        score:
-          type: boolean
-        upvotes:
-          type: boolean
-        downvotes:
-          type: boolean
-        upvote_percentage:
-          type: boolean
-      nullable: false
-      required:
-        - score
-        - upvotes
-        - downvotes
-        - upvote_percentage
-      description: The vote display settings for your user.
-    CommunityFollowerView:
-      type: object
-      properties:
-        community:
-          $ref: "#/components/schemas/Community"
-        follower:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - community
-        - follower
-      description: A community follower.
-    Community:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        title:
-          type: string
-          title: A longer title, that can contain other characters, and doesn't have to be
-            unique
-          description: A longer title, that can contain other characters, and doesn't have
-            to be unique.
-        sidebar:
-          type: string
-          title: A sidebar for the community in markdown
-          description: A sidebar for the community in markdown.
-        removed:
-          type: boolean
-          title: Whether the community is removed by a mod
-          description: Whether the community is removed by a mod.
-        published:
-          type: string
-        updated:
-          type: string
-        deleted:
-          type: boolean
-          title: Whether the community has been deleted by its creator
-          description: Whether the community has been deleted by its creator.
-        nsfw:
-          type: boolean
-          title: Whether its an NSFW community
-          description: Whether its an NSFW community.
-        actor_id:
-          type: string
-          title: The federated actor_id
-          description: The federated actor_id.
-        local:
-          type: boolean
-          title: Whether the community is local
-          description: Whether the community is local.
-        icon:
-          type: string
-          title: A URL for an icon
-          description: A URL for an icon.
-        banner:
-          type: string
-          title: A URL for a banner
-          description: A URL for a banner.
-        hidden:
-          type: boolean
-          title: Whether the community is hidden
-          description: Whether the community is hidden.
-        posting_restricted_to_mods:
-          type: boolean
-          title: Whether posting is restricted to mods only
-          description: Whether posting is restricted to mods only.
-        instance_id:
-          type: number
-        visibility:
-          $ref: "#/components/schemas/CommunityVisibility"
-        description:
-          type: string
-          title: A shorter, one-line description of the site
-          description: A shorter, one-line description of the site.
-      nullable: false
-      required:
-        - id
-        - name
-        - title
-        - removed
-        - published
-        - deleted
-        - nsfw
-        - actor_id
-        - local
-        - hidden
-        - posting_restricted_to_mods
-        - instance_id
-        - visibility
-      description: A community.
-    CommunityVisibility:
-      type: string
-      enum:
-        - Public
-        - LocalOnly
-        - Private
-      description: Defines who can browse and interact with content in a community.
-    CommunityModeratorView:
-      type: object
-      properties:
-        community:
-          $ref: "#/components/schemas/Community"
-        moderator:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - community
-        - moderator
-      description: A community moderator.
-    Instance:
-      type: object
-      properties:
-        id:
-          type: number
-        domain:
-          type: string
-        published:
-          type: string
-        updated:
-          type: string
-        software:
-          type: string
-        version:
-          type: string
-      nullable: false
-      required:
-        - id
-        - domain
-        - published
-      description: A federated instance / site.
     Language:
       type: object
       properties:
@@ -3356,9 +3119,6 @@ components:
           type: string
         updated:
           type: string
-        use_pkce:
-          type: boolean
-          description: switch to enable or disable PKCE
       nullable: false
       required:
         - id
@@ -3374,7 +3134,6 @@ components:
         - account_linking_enabled
         - enabled
         - published
-        - use_pkce
       description: oauth provider with client_secret - should never be sent to the client
     LocalSiteUrlBlocklist:
       type: object
@@ -3795,6 +3554,333 @@ components:
       nullable: false
       required:
         - totp_secret_url
+    MyUserInfo:
+      type: object
+      properties:
+        local_user_view:
+          $ref: "#/components/schemas/LocalUserView"
+        follows:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityFollowerView"
+        moderates:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityModeratorView"
+        community_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Community"
+        instance_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Instance"
+        person_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        discussion_languages:
+          type: array
+          items:
+            type: number
+      nullable: false
+      required:
+        - local_user_view
+        - follows
+        - moderates
+        - community_blocks
+        - instance_blocks
+        - person_blocks
+        - discussion_languages
+      description: Your user info.
+    LocalUserView:
+      type: object
+      properties:
+        local_user:
+          $ref: "#/components/schemas/LocalUser"
+        local_user_vote_display_mode:
+          $ref: "#/components/schemas/LocalUserVoteDisplayMode"
+        person:
+          $ref: "#/components/schemas/Person"
+        counts:
+          $ref: "#/components/schemas/PersonAggregates"
+      nullable: false
+      required:
+        - local_user
+        - local_user_vote_display_mode
+        - person
+        - counts
+      description: A local user view.
+    LocalUser:
+      type: object
+      properties:
+        id:
+          type: number
+        person_id:
+          type: number
+          title: The person_id for the local user
+          description: The person_id for the local user.
+        email:
+          type: string
+        show_nsfw:
+          type: boolean
+          title: Whether to show NSFW content
+          description: Whether to show NSFW content.
+        theme:
+          type: string
+        default_post_sort_type:
+          $ref: "#/components/schemas/PostSortType"
+        default_listing_type:
+          $ref: "#/components/schemas/ListingType"
+        interface_language:
+          type: string
+        show_avatars:
+          type: boolean
+          title: Whether to show avatars
+          description: Whether to show avatars.
+        send_notifications_to_email:
+          type: boolean
+        show_bot_accounts:
+          type: boolean
+          title: Whether to show bot accounts
+          description: Whether to show bot accounts.
+        show_read_posts:
+          type: boolean
+          title: Whether to show read posts
+          description: Whether to show read posts.
+        email_verified:
+          type: boolean
+          title: Whether their email has been verified
+          description: Whether their email has been verified.
+        accepted_application:
+          type: boolean
+          title: Whether their registration application has been accepted
+          description: Whether their registration application has been accepted.
+        open_links_in_new_tab:
+          type: boolean
+          title: Open links in a new tab
+          description: Open links in a new tab.
+        blur_nsfw:
+          type: boolean
+        infinite_scroll_enabled:
+          type: boolean
+          title: Whether infinite scroll is enabled
+          description: Whether infinite scroll is enabled.
+        admin:
+          type: boolean
+          title: Whether the person is an admin
+          description: Whether the person is an admin.
+        post_listing_mode:
+          $ref: "#/components/schemas/PostListingMode"
+          title: A post-view mode that changes how multiple post listings look
+          description: A post-view mode that changes how multiple post listings look.
+        totp_2fa_enabled:
+          type: boolean
+        enable_keyboard_navigation:
+          type: boolean
+          title: Whether to allow keyboard navigation (for browsing and interacting with
+            posts and comments)
+          description: Whether to allow keyboard navigation (for browsing and interacting
+            with posts and comments).
+        enable_animated_images:
+          type: boolean
+          description: >-
+            Whether user avatars and inline images in the UI that are gifs
+            should be allowed to play or
+
+            should be paused
+        enable_private_messages:
+          type: boolean
+          description: Whether a user can send / receive private messages
+        collapse_bot_comments:
+          type: boolean
+          title: Whether to auto-collapse bot comments
+          description: Whether to auto-collapse bot comments.
+        default_comment_sort_type:
+          $ref: "#/components/schemas/CommentSortType"
+        auto_mark_fetched_posts_as_read:
+          type: boolean
+          title: Whether to automatically mark fetched posts as read
+          description: Whether to automatically mark fetched posts as read.
+      nullable: false
+      required:
+        - id
+        - person_id
+        - show_nsfw
+        - theme
+        - default_post_sort_type
+        - default_listing_type
+        - interface_language
+        - show_avatars
+        - send_notifications_to_email
+        - show_bot_accounts
+        - show_read_posts
+        - email_verified
+        - accepted_application
+        - open_links_in_new_tab
+        - blur_nsfw
+        - infinite_scroll_enabled
+        - admin
+        - post_listing_mode
+        - totp_2fa_enabled
+        - enable_keyboard_navigation
+        - enable_animated_images
+        - enable_private_messages
+        - collapse_bot_comments
+        - default_comment_sort_type
+        - auto_mark_fetched_posts_as_read
+      description: A local user.
+    LocalUserVoteDisplayMode:
+      type: object
+      properties:
+        score:
+          type: boolean
+        upvotes:
+          type: boolean
+        downvotes:
+          type: boolean
+        upvote_percentage:
+          type: boolean
+      nullable: false
+      required:
+        - score
+        - upvotes
+        - downvotes
+        - upvote_percentage
+      description: The vote display settings for your user.
+    CommunityFollowerView:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/Community"
+        follower:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - community
+        - follower
+      description: A community follower.
+    Community:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        title:
+          type: string
+          title: A longer title, that can contain other characters, and doesn't have to be
+            unique
+          description: A longer title, that can contain other characters, and doesn't have
+            to be unique.
+        sidebar:
+          type: string
+          title: A sidebar for the community in markdown
+          description: A sidebar for the community in markdown.
+        removed:
+          type: boolean
+          title: Whether the community is removed by a mod
+          description: Whether the community is removed by a mod.
+        published:
+          type: string
+        updated:
+          type: string
+        deleted:
+          type: boolean
+          title: Whether the community has been deleted by its creator
+          description: Whether the community has been deleted by its creator.
+        nsfw:
+          type: boolean
+          title: Whether its an NSFW community
+          description: Whether its an NSFW community.
+        actor_id:
+          type: string
+          title: The federated actor_id
+          description: The federated actor_id.
+        local:
+          type: boolean
+          title: Whether the community is local
+          description: Whether the community is local.
+        icon:
+          type: string
+          title: A URL for an icon
+          description: A URL for an icon.
+        banner:
+          type: string
+          title: A URL for a banner
+          description: A URL for a banner.
+        hidden:
+          type: boolean
+          title: Whether the community is hidden
+          description: Whether the community is hidden.
+        posting_restricted_to_mods:
+          type: boolean
+          title: Whether posting is restricted to mods only
+          description: Whether posting is restricted to mods only.
+        instance_id:
+          type: number
+        visibility:
+          $ref: "#/components/schemas/CommunityVisibility"
+        description:
+          type: string
+          title: A shorter, one-line description of the site
+          description: A shorter, one-line description of the site.
+      nullable: false
+      required:
+        - id
+        - name
+        - title
+        - removed
+        - published
+        - deleted
+        - nsfw
+        - actor_id
+        - local
+        - hidden
+        - posting_restricted_to_mods
+        - instance_id
+        - visibility
+      description: A community.
+    CommunityVisibility:
+      type: string
+      enum:
+        - Public
+        - LocalOnly
+        - Private
+      description: Defines who can browse and interact with content in a community.
+    CommunityModeratorView:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/Community"
+        moderator:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - community
+        - moderator
+      description: A community moderator.
+    Instance:
+      type: object
+      properties:
+        id:
+          type: number
+        domain:
+          type: string
+        published:
+          type: string
+        updated:
+          type: string
+        software:
+          type: string
+        version:
+          type: string
+      nullable: false
+      required:
+        - id
+        - domain
+        - published
+      description: A federated instance / site.
     SuccessResponse:
       type: object
       properties:
@@ -3884,24 +3970,24 @@ components:
         type_:
           type: string
           enum:
-            - ModAdd
-            - AdminAllowInstance
-            - AdminBlockInstance
-            - AdminPurgeComment
-            - AdminPurgePost
-            - AdminPurgeCommunity
-            - AdminPurgePerson
-            - ModHideCommunity
-            - ModBan
             - All
-            - ModTransferCommunity
-            - ModAddCommunity
-            - ModBanFromCommunity
-            - ModRemoveCommunity
-            - ModRemoveComment
-            - ModFeaturePost
-            - ModLockPost
             - ModRemovePost
+            - ModLockPost
+            - ModFeaturePost
+            - ModRemoveComment
+            - ModRemoveCommunity
+            - ModBanFromCommunity
+            - ModAddCommunity
+            - ModTransferCommunity
+            - ModAdd
+            - ModBan
+            - ModHideCommunity
+            - AdminPurgePerson
+            - AdminPurgeCommunity
+            - AdminPurgePost
+            - AdminPurgeComment
+            - AdminBlockInstance
+            - AdminAllowInstance
         other_person_id:
           type: number
         post_id:
@@ -4752,7 +4838,7 @@ components:
           type: string
         expires:
           type: string
-        when_:
+        published:
           type: string
       nullable: false
       required:
@@ -4760,7 +4846,7 @@ components:
         - instance_id
         - admin_person_id
         - blocked
-        - when_
+        - published
     AdminAllowInstanceView:
       type: object
       properties:
@@ -4788,7 +4874,7 @@ components:
           type: boolean
         reason:
           type: string
-        when_:
+        published:
           type: string
       nullable: false
       required:
@@ -4796,7 +4882,7 @@ components:
         - instance_id
         - admin_person_id
         - allowed
-        - when_
+        - published
     Search:
       type: object
       properties:
@@ -4819,25 +4905,25 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - Active
             - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - NewComments
+            - Active
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         listing_type:
           type: string
           enum:
@@ -4962,10 +5048,6 @@ components:
           type: number
           title: The total number of children in this comment branch
           description: The total number of children in this comment branch.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - comment_id
@@ -4974,8 +5056,6 @@ components:
         - downvotes
         - published
         - child_count
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a comment.
     SubscribedType:
       type: string
@@ -5073,10 +5153,6 @@ components:
           type: string
           title: The time of the newest comment in the post
           description: The time of the newest comment in the post.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - post_id
@@ -5086,8 +5162,6 @@ components:
         - downvotes
         - published
         - newest_comment_time
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a post.
     CommunityView:
       type: object
@@ -5333,27 +5407,27 @@ components:
         sort:
           type: string
           enum:
-            - TopHour
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
-            - Active
             - NewComments
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
-            - NameAsc
             - NameDesc
+            - NameAsc
+            - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         show_nsfw:
           type: boolean
         page:
@@ -5771,6 +5845,17 @@ components:
         - post_id
         - read
       description: Mark a post as read.
+    MarkManyPostsAsRead:
+      type: object
+      properties:
+        post_ids:
+          type: array
+          items:
+            type: number
+      nullable: false
+      required:
+        - post_ids
+      description: Mark several posts as read.
     HidePost:
       type: object
       properties:
@@ -5829,7 +5914,7 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
+            - Active
             - Hot
             - New
             - Old
@@ -5838,8 +5923,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
-            - Active
             - MostComments
+            - NewComments
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -5882,8 +5967,6 @@ components:
           description: If true, then only show posts with no comments
         page_cursor:
           type: string
-        page_back:
-          type: boolean
       nullable: false
       description: Get a list of posts.
     GetPostsResponse:
@@ -6094,6 +6177,35 @@ components:
         - report_id
         - resolved
       description: Resolve a post report (mods only).
+    ListPostReports:
+      type: object
+      properties:
+        page:
+          type: number
+        limit:
+          type: number
+        unresolved_only:
+          type: boolean
+          description: Only shows the unresolved reports
+        community_id:
+          type: number
+          description: if no community is given, it returns reports for all communities
+            moderated by the auth user
+        post_id:
+          type: number
+      nullable: false
+      description: List post reports.
+    ListPostReportsResponse:
+      type: object
+      properties:
+        post_reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostReportView"
+      nullable: false
+      required:
+        - post_reports
+      description: The post reports response.
     GetSiteMetadata:
       type: object
       properties:
@@ -6523,6 +6635,35 @@ components:
         - report_id
         - resolved
       description: Resolve a comment report (only doable by mods).
+    ListCommentReports:
+      type: object
+      properties:
+        comment_id:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+        unresolved_only:
+          type: boolean
+          description: Only shows the unresolved reports
+        community_id:
+          type: number
+          description: if no community is given, it returns reports for all communities
+            moderated by the auth user
+      nullable: false
+      description: List comment reports.
+    ListCommentReportsResponse:
+      type: object
+      properties:
+        comment_reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentReportView"
+      nullable: false
+      required:
+        - comment_reports
+      description: The comment report list response.
     GetPrivateMessages:
       type: object
       properties:
@@ -6740,6 +6881,29 @@ components:
         - report_id
         - resolved
       description: Resolve a private message report.
+    ListPrivateMessageReports:
+      type: object
+      properties:
+        page:
+          type: number
+        limit:
+          type: number
+        unresolved_only:
+          type: boolean
+          description: Only shows the unresolved reports
+      nullable: false
+      description: List private message reports.
+    ListPrivateMessageReportsResponse:
+      type: object
+      properties:
+        private_message_reports:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrivateMessageReportView"
+      nullable: false
+      required:
+        - private_message_reports
+      description: The response for list private message reports.
     Register:
       type: object
       properties:
@@ -6830,7 +6994,7 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
+            - Active
             - Hot
             - New
             - Old
@@ -6839,8 +7003,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
-            - Active
             - MostComments
+            - NewComments
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -7218,7 +7382,7 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - Active
+            - MostComments
             - Scaled
             - Controversial
             - TopNineMonths
@@ -7227,8 +7391,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
-            - MostComments
             - NewComments
+            - Active
             - TopAll
             - TopYear
             - TopMonth
@@ -7369,11 +7533,18 @@ components:
     GetReportCountResponse:
       type: object
       properties:
-        count:
+        community_id:
+          type: number
+        comment_reports:
+          type: number
+        post_reports:
+          type: number
+        private_message_reports:
           type: number
       nullable: false
       required:
-        - count
+        - comment_reports
+        - post_reports
       description: A response for the number of reports.
     GetUnreadCountResponse:
       type: object
@@ -7796,8 +7967,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7835,8 +8004,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7870,8 +8037,6 @@ components:
           type: string
           description: An answer is mandatory if require application is enabled on the
             server
-        pkce_code_verifier:
-          type: string
       nullable: false
       required:
         - code
@@ -7959,56 +8124,6 @@ components:
       required:
         - instance_id
         - fail_count
-    ListReports:
-      type: object
-      properties:
-        unresolved_only:
-          type: boolean
-          description: Only shows the unresolved reports
-        community_id:
-          type: number
-          description: if no community is given, it returns reports for all communities
-            moderated by the auth user
-        page_cursor:
-          type: string
-        page_back:
-          type: boolean
-      nullable: false
-      description: List reports.
-    ListReportsResponse:
-      type: object
-      properties:
-        reports:
-          type: array
-          items:
-            $ref: "#/components/schemas/ReportCombinedView"
-      nullable: false
-      required:
-        - reports
-      description: The post reports response.
-    ReportCombinedView:
-      oneOf:
-        - type: object
-          properties:
-            Post:
-              $ref: "#/components/schemas/PostReportView"
-          nullable: false
-          required:
-            - Post
-        - type: object
-          properties:
-            Comment:
-              $ref: "#/components/schemas/CommentReportView"
-          nullable: false
-          required:
-            - Comment
-        - type: object
-          properties:
-            PrivateMessage:
-              $ref: "#/components/schemas/PrivateMessageReportView"
-          nullable: false
-          required:
-            - PrivateMessage
     UserBlockInstanceParams:
       type: object
       properties:
