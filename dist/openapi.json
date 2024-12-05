@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.14"
+    "version": "0.20.0-api-v4.13"
   },
   "servers": [
     {
@@ -33,6 +33,9 @@
     },
     {
       "name": "Account/Settings"
+    },
+    {
+      "name": "User"
     },
     {
       "name": "Modlog"
@@ -215,7 +218,7 @@
     "/account/auth/totp/generate": {
       "post": {
         "operationId": "generateTotpSecret",
-        "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/account/auth/totp/update` with a valid token to enable it.",
+        "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/user/totp/update` with a valid token to enable it.",
         "tags": [
           "Account/Auth/Totp"
         ],
@@ -289,12 +292,12 @@
         }
       }
     },
-    "/account/list_logins": {
+    "/user/list_logins": {
       "get": {
         "operationId": "listLogins",
         "description": "List login tokens for your user",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -303,12 +306,12 @@
         }
       }
     },
-    "/account/validate_auth": {
+    "/user/validate_auth": {
       "get": {
         "operationId": "validateAuth",
         "description": "Returns an error message if your auth token is invalid",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -401,7 +404,7 @@
     "/account/auth/totp/update": {
       "post": {
         "operationId": "updateTotp",
-        "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/account/auth/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
+        "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/user/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2801,7 +2804,7 @@
         }
       }
     },
-    "/account/mention": {
+    "/user/mention": {
       "get": {
         "operationId": "getPersonMentions",
         "description": "Get mentions for your user.",
@@ -2836,7 +2839,7 @@
           }
         ],
         "tags": [
-          "Account/Mention"
+          "User"
         ],
         "responses": {
           "200": {
@@ -2873,7 +2876,7 @@
         }
       }
     },
-    "/account/replies": {
+    "/user/replies": {
       "get": {
         "operationId": "getReplies",
         "description": "Get comment replies.",
@@ -2908,7 +2911,7 @@
           }
         ],
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3167,7 +3170,7 @@
         }
       }
     },
-    "/account/auth/change_password": {
+    "/user/change_password": {
       "put": {
         "operationId": "changePassword",
         "description": "Change your user password.",
@@ -3181,7 +3184,7 @@
           }
         },
         "tags": [
-          "Account/Auth"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3197,7 +3200,7 @@
         }
       }
     },
-    "/account/report_count": {
+    "/user/report_count": {
       "get": {
         "operationId": "getReportCount",
         "description": "Get counts for your reports",
@@ -3211,7 +3214,7 @@
           }
         ],
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3227,12 +3230,12 @@
         }
       }
     },
-    "/account/unread_count": {
+    "/user/unread_count": {
       "get": {
         "operationId": "getUnreadCount",
         "description": "Get your unread counts",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
