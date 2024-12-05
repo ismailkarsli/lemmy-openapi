@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.16
+  version: 0.20.0-api-v4.15
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -33,7 +33,6 @@ tags:
   - name: Account/Auth
   - name: Person
   - name: Account/Mention
-  - name: Account/Mention/MarkAsRead
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -1715,7 +1714,7 @@ paths:
       operationId: markPersonAllMentionAsRead
       description: Mark a person mention as read.
       tags:
-        - Account/Mention/MarkAsRead
+        - Account/Mention
       responses:
         "200":
           description: Successful response
@@ -1869,12 +1868,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/mention/mark_as_read/all:
+  /account/mention/mark_all_as_read:
     post:
       operationId: markAllAsRead
       description: Mark all replies as read.
       tags:
-        - Account/Mention/MarkAsRead
+        - Account/Mention
       responses:
         "200":
           description: Successful response
