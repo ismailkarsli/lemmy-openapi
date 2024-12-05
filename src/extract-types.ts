@@ -251,8 +251,8 @@ for (const method of pathStatements) {
 	}));
 	if (method.inputType && method.method === "GET") {
 		parameters.push(
-			// @ts-expect-error: we know that components.schemas is defined
-			...Object.keys(components.schemas?.[method.inputType]?.properties || {}).map((name) => ({
+			// @ts-ignore: we know that components.components.schemas is defined
+			...Object.keys(components.components.schemas?.[method.inputType]?.properties || {}).map((name) => ({
 				name,
 				in: "query",
 				schema: {
