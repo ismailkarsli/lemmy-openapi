@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.13"
+    "version": "0.20.0-api-v4.12"
   },
   "servers": [
     {
@@ -3119,12 +3119,12 @@
         }
       }
     },
-    "/account/mention/mark_all_as_read": {
+    "/user/mark_all_as_read": {
       "post": {
         "operationId": "markAllAsRead",
         "description": "Mark all replies as read.",
         "tags": [
-          "Account/Mention"
+          "User"
         ],
         "responses": {
           "200": {
