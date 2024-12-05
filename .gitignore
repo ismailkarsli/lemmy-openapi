@@ -1,0 +1,4 @@
+lemmy-js-client
+/src/tmp
+node_modules
+.env

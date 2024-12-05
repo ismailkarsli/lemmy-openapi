@@ -1,0 +1,21 @@
+{
+	"name": "lemmy-openapi",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"generate": "bun run src/extract-types.ts"
+	},
+	"dependencies": {
+		"@ryoppippi/unplugin-typia": "^1.0.7",
+		"openapi-types": "^12.1.3",
+		"oxc-parser": "^0.39.0",
+		"typia": "~7.0.0",
+		"yaml": "^2.6.1",
+		"typescript": "~5.7.2",
+		"@types/bun": "latest"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4"
+	},
+	"trustedDependencies": ["@biomejs/biome"]
+}

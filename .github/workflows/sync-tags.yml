@@ -1,0 +1,47 @@
+name: Sync repo and generate tags
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 18 * * *' # Every day at 18:45 UTC
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+      - name: Create release
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          bun install
+          ./src/clone-repo.sh
+
+          # sync main branch first
+          LATEST=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=1)
+          LEMMY_VERSION=$LATEST bun run generate
+          git add .
+          git commit -m "Sync OpenAPI spec" || true
+          git push
+
+          # generate tags
+          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=10)
+          for tag in $TAGS; do
+            if [ $(git tag -l $tag) ]; then
+              echo "Tag $tag already exists"
+              continue
+            fi
+            git -C ./lemmy-js-client checkout -b $tag tags/$tag
+            LEMMY_VERSION=$tag ./src/generate-spec.sh
+            git add .
+            git commit -m "Release $tag"
+            git tag $tag
+            git push origin tag $tag
+            git -C ./lemmy-js-client checkout main
+          done
