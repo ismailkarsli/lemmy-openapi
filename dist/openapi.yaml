@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-reports-combined.1
+  version: 0.20.0-reports-combined.0
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2256,7 +2256,7 @@ paths:
   /report/list:
     get:
       operationId: listReports
-      description: List user reports.
+      description: List post reports.
       parameters:
         - name: unresolved_only
           in: query
