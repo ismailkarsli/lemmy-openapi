@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-image-api-rework.2"
+    "version": "0.20.0-image-api-rework.0"
   },
   "servers": [
     {
@@ -11827,7 +11827,7 @@
       "DeleteImageParams": {
         "type": "object",
         "properties": {
-          "filename": {
+          "file": {
             "type": "string"
           },
           "token": {
@@ -11836,7 +11836,7 @@
         },
         "nullable": false,
         "required": [
-          "filename",
+          "file",
           "token"
         ]
       }

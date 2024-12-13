@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-image-api-rework.2
+  version: 0.20.0-image-api-rework.0
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -8207,13 +8207,13 @@ components:
     DeleteImageParams:
       type: object
       properties:
-        filename:
+        file:
           type: string
         token:
           type: string
       nullable: false
       required:
-        - filename
+        - file
         - token
   securitySchemes:
     bearerAuth:
