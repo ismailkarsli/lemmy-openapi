@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.6"
+    "version": "0.20.0-alpha.5"
   },
   "servers": [
     {
@@ -5436,7 +5436,7 @@
             "type": "string"
           },
           "scheduled_publish_time": {
-            "type": "number"
+            "type": "string"
           }
         },
         "nullable": false,
@@ -7115,7 +7115,7 @@
             "type": "string"
           },
           "scheduled_publish_time": {
-            "type": "number"
+            "type": "string"
           }
         },
         "nullable": false,
