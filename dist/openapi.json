@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.15"
+    "version": "0.20.0-alpha.14"
   },
   "servers": [
     {
@@ -81,9 +81,6 @@
     },
     {
       "name": "CustomEmoji"
-    },
-    {
-      "name": "Tagline"
     },
     {
       "name": "OauthProvider"
@@ -3455,131 +3452,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tagline": {
-      "post": {
-        "operationId": "createTagline",
-        "description": "Create a new tagline",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTagline"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tagline"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaglineResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "editTagline",
-        "description": "Edit an existing tagline",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTagline"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tagline"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaglineResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tagline/delete": {
-      "post": {
-        "operationId": "deleteTagline",
-        "description": "Delete a tagline",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteTagline"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Tagline"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/tagline/list": {
-      "get": {
-        "operationId": "listTaglines",
-        "description": "List taglines",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListTaglines/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListTaglines/properties/limit"
-            }
-          }
-        ],
-        "tags": [
-          "Tagline"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListTaglinesResponse"
                 }
               }
             }
@@ -10016,85 +9888,6 @@
         "nullable": false,
         "required": [
           "id"
-        ]
-      },
-      "CreateTagline": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "content"
-        ]
-      },
-      "TaglineResponse": {
-        "type": "object",
-        "properties": {
-          "tagline": {
-            "$ref": "#/components/schemas/Tagline"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "tagline"
-        ]
-      },
-      "UpdateTagline": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "content": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "content"
-        ]
-      },
-      "DeleteTagline": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id"
-        ]
-      },
-      "ListTaglines": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          }
-        },
-        "nullable": false
-      },
-      "ListTaglinesResponse": {
-        "type": "object",
-        "properties": {
-          "taglines": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Tagline"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "taglines"
         ]
       },
       "CreateOAuthProvider": {
