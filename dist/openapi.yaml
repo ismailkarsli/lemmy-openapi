@@ -42,7 +42,7 @@ tags:
   - name: Oauth
   - name: FederatedInstances
   - name: Admin/Instance
-  - name: Pictrs/Image
+  - name: Image
 paths:
   /site:
     get:
@@ -2429,9 +2429,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /pictrs/image:
-    servers:
-      - url: https://lemy.lol
+  /image:
     post:
       operationId: uploadImage
       description: Upload an image to the server.
@@ -2441,7 +2439,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UploadImage"
       tags:
-        - Pictrs/Image
+        - Image
       responses:
         "200":
           description: Successful response
@@ -2449,40 +2447,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UploadImageResponse"
-  /pictrs/image/delete/{token}/{filename}:
-    servers:
-      - url: https://lemy.lol
-    get:
+    delete:
       operationId: deleteImage
       description: Delete a pictrs image
-      parameters:
-        - name: token
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: filename
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: token
-          in: query
-          schema:
-            $ref: "#/components/schemas/DeleteImage/properties/token"
-        - name: filename
-          in: query
-          schema:
-            $ref: "#/components/schemas/DeleteImage/properties/filename"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteImageParams"
       tags:
-        - Pictrs/Image
+        - Image
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                type: boolean
+                $ref: "#/components/schemas/SuccessResponse"
+  /account/avatar:
+    post:
+      operationId: userUploadAvatar
+      description: Upload new user avatar.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadImage"
+      tags:
+        - Account
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /image/health:
+    get:
+      operationId: imageHealth
+      description: Health check for image functionality
+      tags:
+        - Image
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
 components:
   schemas:
     GetSiteResponse:
@@ -2530,6 +2542,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/LocalSiteUrlBlocklist"
+        image_upload_disabled:
+          type: boolean
       nullable: false
       required:
         - site_view
@@ -2540,6 +2554,7 @@ components:
         - taglines
         - custom_emojis
         - blocked_urls
+        - image_upload_disabled
       description: An expanded response for a site.
     SiteView:
       type: object
@@ -3164,10 +3179,6 @@ components:
           type: string
         description:
           type: string
-        icon:
-          type: string
-        banner:
-          type: string
         enable_nsfw:
           type: boolean
         community_creation_admin_only:
@@ -3196,25 +3207,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         default_comment_sort_type:
           type: string
           enum:
@@ -3315,7 +3326,7 @@ components:
         taglines:
           type: array
           items: {}
-          description: deprecated, use field `tagline` or /api/v3/tagline/list
+          description: deprecated, use field `tagline` or /api/v4/tagline/list
       nullable: false
       required:
         - site_view
@@ -3334,14 +3345,6 @@ components:
           type: string
           title: A shorter, one line description of your site
           description: A shorter, one line description of your site.
-        icon:
-          type: string
-          title: A url for your site's icon
-          description: A url for your site's icon.
-        banner:
-          type: string
-          title: A url for your site's banner
-          description: A url for your site's banner.
         enable_nsfw:
           type: boolean
           title: Whether to enable NSFW
@@ -3385,25 +3388,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
             - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -3974,24 +3977,24 @@ components:
         type_:
           type: string
           enum:
-            - All
-            - ModRemovePost
-            - ModLockPost
-            - ModFeaturePost
-            - ModRemoveComment
-            - ModRemoveCommunity
-            - ModBanFromCommunity
-            - ModAddCommunity
-            - ModTransferCommunity
             - ModAdd
-            - ModBan
-            - ModHideCommunity
-            - AdminPurgePerson
-            - AdminPurgeCommunity
-            - AdminPurgePost
-            - AdminPurgeComment
-            - AdminBlockInstance
             - AdminAllowInstance
+            - AdminBlockInstance
+            - AdminPurgeComment
+            - AdminPurgePost
+            - AdminPurgeCommunity
+            - AdminPurgePerson
+            - ModHideCommunity
+            - ModBan
+            - All
+            - ModTransferCommunity
+            - ModAddCommunity
+            - ModBanFromCommunity
+            - ModRemoveCommunity
+            - ModRemoveComment
+            - ModFeaturePost
+            - ModLockPost
+            - ModRemovePost
         other_person_id:
           type: number
         post_id:
@@ -4909,25 +4912,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -5380,14 +5383,6 @@ components:
           type: string
           title: A shorter, one line description of your community
           description: A shorter, one line description of your community.
-        icon:
-          type: string
-          title: An icon URL
-          description: An icon URL.
-        banner:
-          type: string
-          title: A banner URL
-          description: A banner URL.
         nsfw:
           type: boolean
           title: Whether its an NSFW community
@@ -5423,27 +5418,27 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
+            - NameAsc
+            - NameDesc
         show_nsfw:
           type: boolean
         page:
@@ -5930,25 +5925,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
           description: DEPRECATED, use page_cursor
@@ -7010,25 +7005,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
         limit:
@@ -7398,25 +7393,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - NewComments
             - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -7430,14 +7425,6 @@ components:
         interface_language:
           type: string
           description: The language of the lemmy interface
-        avatar:
-          type: string
-          title: A URL for your avatar
-          description: A URL for your avatar.
-        banner:
-          type: string
-          title: A URL for your banner
-          description: A URL for your banner.
         display_name:
           type: string
           title: Your display name, which can contain strange characters, and does not
@@ -8199,43 +8186,28 @@ components:
     UploadImageResponse:
       type: object
       properties:
-        msg:
+        image_url:
           type: string
-          title: Is "ok" if the upload was successful; is something else otherwise
-          description: Is "ok" if the upload was successful; is something else otherwise.
-        files:
-          type: array
-          items:
-            $ref: "#/components/schemas/ImageFile"
-        url:
-          type: string
-        delete_url:
-          type: string
-      nullable: false
-      required:
-        - msg
-    ImageFile:
-      type: object
-      properties:
-        file:
+        filename:
           type: string
         delete_token:
           type: string
       nullable: false
       required:
-        - file
+        - image_url
+        - filename
         - delete_token
-    DeleteImage:
+    DeleteImageParams:
       type: object
       properties:
-        token:
-          type: string
         filename:
+          type: string
+        token:
           type: string
       nullable: false
       required:
-        - token
         - filename
+        - token
   securitySchemes:
     bearerAuth:
       type: http
