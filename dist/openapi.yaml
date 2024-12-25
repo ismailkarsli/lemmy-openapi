@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.13
+  version: 0.19.4-alpha.12
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -5126,8 +5126,6 @@ components:
           $ref: "#/components/schemas/CommentAggregates"
         creator_banned_from_community:
           type: boolean
-        banned_from_community:
-          type: boolean
         creator_is_moderator:
           type: boolean
         creator_is_admin:
@@ -5150,7 +5148,6 @@ components:
         - recipient
         - counts
         - creator_banned_from_community
-        - banned_from_community
         - creator_is_moderator
         - creator_is_admin
         - subscribed
@@ -5804,8 +5801,6 @@ components:
           $ref: "#/components/schemas/CommentAggregates"
         creator_banned_from_community:
           type: boolean
-        banned_from_community:
-          type: boolean
         creator_is_moderator:
           type: boolean
         creator_is_admin:
@@ -5828,7 +5823,6 @@ components:
         - recipient
         - counts
         - creator_banned_from_community
-        - banned_from_community
         - creator_is_moderator
         - creator_is_admin
         - subscribed
