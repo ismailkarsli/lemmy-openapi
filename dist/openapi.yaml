@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.5
+  version: 0.19.4-alpha.4
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -3252,8 +3252,6 @@ components:
           type: boolean
         url_content_type:
           type: string
-        alt_text:
-          type: string
       nullable: false
       required:
         - id
@@ -4408,8 +4406,6 @@ components:
           type: string
         body:
           type: string
-        alt_text:
-          type: string
         honeypot:
           type: string
         nsfw:
@@ -4469,8 +4465,6 @@ components:
         url:
           type: string
         body:
-          type: string
-        alt_text:
           type: string
         nsfw:
           type: boolean

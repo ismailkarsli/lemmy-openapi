@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.5"
+    "version": "0.19.4-alpha.4"
   },
   "servers": [
     {
@@ -5107,9 +5107,6 @@
           },
           "url_content_type": {
             "type": "string"
-          },
-          "alt_text": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -6733,9 +6730,6 @@
           "body": {
             "type": "string"
           },
-          "alt_text": {
-            "type": "string"
-          },
           "honeypot": {
             "type": "string"
           },
@@ -6822,9 +6816,6 @@
             "type": "string"
           },
           "body": {
-            "type": "string"
-          },
-          "alt_text": {
             "type": "string"
           },
           "nsfw": {
