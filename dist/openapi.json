@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.5"
+    "version": "0.20.0-private-community.4"
   },
   "servers": [
     {
@@ -7495,7 +7495,9 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": {}
+            "items": {
+              "$ref": "#/components/schemas/Person"
+            }
           }
         },
         "nullable": false,
