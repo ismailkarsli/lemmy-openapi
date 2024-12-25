@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.3-alpha.3"
+    "version": "0.19.3-alpha.2"
   },
   "servers": [
     {
@@ -4134,6 +4134,9 @@
           },
           "instance_id": {
             "type": "number"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/CommunityVisibility"
           }
         },
         "nullable": false,
@@ -4149,7 +4152,15 @@
           "local",
           "hidden",
           "posting_restricted_to_mods",
-          "instance_id"
+          "instance_id",
+          "visibility"
+        ]
+      },
+      "CommunityVisibility": {
+        "type": "string",
+        "enum": [
+          "Public",
+          "LocalOnly"
         ]
       },
       "CommunityModeratorView": {
@@ -6159,6 +6170,9 @@
           },
           "users_active_half_year": {
             "type": "number"
+          },
+          "subscribers_local": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -6171,7 +6185,8 @@
           "users_active_day",
           "users_active_week",
           "users_active_month",
-          "users_active_half_year"
+          "users_active_half_year",
+          "subscribers_local"
         ]
       },
       "ResolveObject": {
@@ -6233,6 +6248,13 @@
             "items": {
               "type": "number"
             }
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "Public",
+              "LocalOnly"
+            ]
           }
         },
         "nullable": false,
@@ -6330,6 +6352,13 @@
             "items": {
               "type": "number"
             }
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "Public",
+              "LocalOnly"
+            ]
           }
         },
         "nullable": false,

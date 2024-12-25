@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.3-alpha.3
+  version: 0.19.3-alpha.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2563,6 +2563,8 @@ components:
           type: boolean
         instance_id:
           type: number
+        visibility:
+          $ref: "#/components/schemas/CommunityVisibility"
       nullable: false
       required:
         - id
@@ -2577,6 +2579,12 @@ components:
         - hidden
         - posting_restricted_to_mods
         - instance_id
+        - visibility
+    CommunityVisibility:
+      type: string
+      enum:
+        - Public
+        - LocalOnly
     CommunityModeratorView:
       type: object
       properties:
@@ -3995,6 +4003,8 @@ components:
           type: number
         users_active_half_year:
           type: number
+        subscribers_local:
+          type: number
       nullable: false
       required:
         - community_id
@@ -4006,6 +4016,7 @@ components:
         - users_active_week
         - users_active_month
         - users_active_half_year
+        - subscribers_local
     ResolveObject:
       type: object
       properties:
@@ -4047,6 +4058,11 @@ components:
           type: array
           items:
             type: number
+        visibility:
+          type: string
+          enum:
+            - Public
+            - LocalOnly
       nullable: false
       required:
         - name
@@ -4113,6 +4129,11 @@ components:
           type: array
           items:
             type: number
+        visibility:
+          type: string
+          enum:
+            - Public
+            - LocalOnly
       nullable: false
       required:
         - community_id
