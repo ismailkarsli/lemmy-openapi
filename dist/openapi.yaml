@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.2-alpha.3
+  version: 0.19.2-alpha.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -4047,8 +4047,6 @@ components:
           type: array
           items:
             type: number
-        local_only:
-          type: boolean
       nullable: false
       required:
         - name
@@ -4115,8 +4113,6 @@ components:
           type: array
           items:
             type: number
-        local_only:
-          type: boolean
       nullable: false
       required:
         - community_id

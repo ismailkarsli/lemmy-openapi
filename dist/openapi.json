@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.2-alpha.3"
+    "version": "0.19.2-alpha.2"
   },
   "servers": [
     {
@@ -6233,9 +6233,6 @@
             "items": {
               "type": "number"
             }
-          },
-          "local_only": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -6333,9 +6330,6 @@
             "items": {
               "type": "number"
             }
-          },
-          "local_only": {
-            "type": "boolean"
           }
         },
         "nullable": false,
