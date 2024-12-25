@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.3-alpha.1
+  version: 0.19.2-alpha.4
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2162,6 +2162,10 @@ components:
           type: boolean
         federation_signed_fetch:
           type: boolean
+        content_warning:
+          type: string
+        auto_expand_images:
+          type: boolean
       nullable: false
       required:
         - id
@@ -2184,6 +2188,7 @@ components:
         - registration_mode
         - reports_email_admins
         - federation_signed_fetch
+        - auto_expand_images
     ListingType:
       type: string
       enum:
@@ -2563,6 +2568,8 @@ components:
           type: boolean
         instance_id:
           type: number
+        only_followers_can_vote:
+          type: boolean
         visibility:
           $ref: "#/components/schemas/CommunityVisibility"
       nullable: false
@@ -2579,6 +2586,7 @@ components:
         - hidden
         - posting_restricted_to_mods
         - instance_id
+        - only_followers_can_vote
         - visibility
     CommunityVisibility:
       type: string
@@ -2834,6 +2842,10 @@ components:
             - Closed
             - RequireApplication
             - Open
+        content_warning:
+          type: string
+        auto_expand_images:
+          type: boolean
       nullable: false
       required:
         - name
@@ -2949,6 +2961,10 @@ components:
             - RequireApplication
             - Open
         reports_email_admins:
+          type: boolean
+        content_warning:
+          type: string
+        auto_expand_images:
           type: boolean
       nullable: false
     GenerateTotpSecretResponse:
@@ -4003,6 +4019,8 @@ components:
           type: number
         users_active_half_year:
           type: number
+        subscribers_local:
+          type: number
       nullable: false
       required:
         - community_id
@@ -4014,6 +4032,7 @@ components:
         - users_active_week
         - users_active_month
         - users_active_half_year
+        - subscribers_local
     ResolveObject:
       type: object
       properties:
@@ -4055,6 +4074,8 @@ components:
           type: array
           items:
             type: number
+        only_followers_can_vote:
+          type: boolean
         visibility:
           type: string
           enum:
@@ -4126,6 +4147,8 @@ components:
           type: array
           items:
             type: number
+        only_followers_can_vote:
+          type: boolean
         visibility:
           type: string
           enum:
@@ -5417,7 +5440,7 @@ components:
         person_view:
           $ref: "#/components/schemas/PersonView"
         site:
-          $ref: "#/components/schemas/Site"
+          $ref: "#/components/schemas/Site.Nullable"
         comments:
           type: array
           items:
@@ -5433,9 +5456,51 @@ components:
       nullable: false
       required:
         - person_view
+        - site
         - comments
         - posts
         - moderates
+    Site.Nullable:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        sidebar:
+          type: string
+        published:
+          type: string
+        updated:
+          type: string
+        icon:
+          type: string
+        banner:
+          type: string
+        description:
+          type: string
+        actor_id:
+          type: string
+        last_refreshed_at:
+          type: string
+        inbox_url:
+          type: string
+        private_key:
+          type: string
+        public_key:
+          type: string
+        instance_id:
+          type: number
+      nullable: true
+      required:
+        - id
+        - name
+        - published
+        - actor_id
+        - last_refreshed_at
+        - inbox_url
+        - public_key
+        - instance_id
     GetPersonMentions:
       type: object
       properties:

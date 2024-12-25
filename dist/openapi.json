@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.3-alpha.1"
+    "version": "0.19.2-alpha.4"
   },
   "servers": [
     {
@@ -3588,6 +3588,12 @@
           },
           "federation_signed_fetch": {
             "type": "boolean"
+          },
+          "content_warning": {
+            "type": "string"
+          },
+          "auto_expand_images": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -3611,7 +3617,8 @@
           "published",
           "registration_mode",
           "reports_email_admins",
-          "federation_signed_fetch"
+          "federation_signed_fetch",
+          "auto_expand_images"
         ]
       },
       "ListingType": {
@@ -4135,6 +4142,9 @@
           "instance_id": {
             "type": "number"
           },
+          "only_followers_can_vote": {
+            "type": "boolean"
+          },
           "visibility": {
             "$ref": "#/components/schemas/CommunityVisibility"
           }
@@ -4153,6 +4163,7 @@
           "hidden",
           "posting_restricted_to_mods",
           "instance_id",
+          "only_followers_can_vote",
           "visibility"
         ]
       },
@@ -4522,6 +4533,12 @@
               "RequireApplication",
               "Open"
             ]
+          },
+          "content_warning": {
+            "type": "string"
+          },
+          "auto_expand_images": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -4692,6 +4709,12 @@
             ]
           },
           "reports_email_admins": {
+            "type": "boolean"
+          },
+          "content_warning": {
+            "type": "string"
+          },
+          "auto_expand_images": {
             "type": "boolean"
           }
         },
@@ -6170,6 +6193,9 @@
           },
           "users_active_half_year": {
             "type": "number"
+          },
+          "subscribers_local": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -6182,7 +6208,8 @@
           "users_active_day",
           "users_active_week",
           "users_active_month",
-          "users_active_half_year"
+          "users_active_half_year",
+          "subscribers_local"
         ]
       },
       "ResolveObject": {
@@ -6244,6 +6271,9 @@
             "items": {
               "type": "number"
             }
+          },
+          "only_followers_can_vote": {
+            "type": "boolean"
           },
           "visibility": {
             "type": "string",
@@ -6348,6 +6378,9 @@
             "items": {
               "type": "number"
             }
+          },
+          "only_followers_can_vote": {
+            "type": "boolean"
           },
           "visibility": {
             "type": "string",
@@ -8197,7 +8230,7 @@
             "$ref": "#/components/schemas/PersonView"
           },
           "site": {
-            "$ref": "#/components/schemas/Site"
+            "$ref": "#/components/schemas/Site.Nullable"
           },
           "comments": {
             "type": "array",
@@ -8221,9 +8254,68 @@
         "nullable": false,
         "required": [
           "person_view",
+          "site",
           "comments",
           "posts",
           "moderates"
+        ]
+      },
+      "Site.Nullable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sidebar": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "banner": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "actor_id": {
+            "type": "string"
+          },
+          "last_refreshed_at": {
+            "type": "string"
+          },
+          "inbox_url": {
+            "type": "string"
+          },
+          "private_key": {
+            "type": "string"
+          },
+          "public_key": {
+            "type": "string"
+          },
+          "instance_id": {
+            "type": "number"
+          }
+        },
+        "nullable": true,
+        "required": [
+          "id",
+          "name",
+          "published",
+          "actor_id",
+          "last_refreshed_at",
+          "inbox_url",
+          "public_key",
+          "instance_id"
         ]
       },
       "GetPersonMentions": {
