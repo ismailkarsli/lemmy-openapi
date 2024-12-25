@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-instance-blocks.0"
+    "version": "0.20.0-alpha.18"
   },
   "servers": [
     {
@@ -1514,13 +1514,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetPosts/properties/show_nsfw"
-            }
-          },
-          {
-            "name": "mark_as_read",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPosts/properties/mark_as_read"
             }
           },
           {
@@ -4908,10 +4901,6 @@
             "type": "boolean",
             "description": "Whether user avatars and inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
-          "enable_private_messages": {
-            "type": "boolean",
-            "description": "Whether a user can send / receive private messages"
-          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -4919,11 +4908,6 @@
           },
           "default_comment_sort_type": {
             "$ref": "#/components/schemas/CommentSortType"
-          },
-          "auto_mark_fetched_posts_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -4949,10 +4933,8 @@
           "totp_2fa_enabled",
           "enable_keyboard_navigation",
           "enable_animated_images",
-          "enable_private_messages",
           "collapse_bot_comments",
-          "default_comment_sort_type",
-          "auto_mark_fetched_posts_as_read"
+          "default_comment_sort_type"
         ],
         "description": "A local user."
       },
@@ -5990,9 +5972,7 @@
               "AdminPurgePerson",
               "AdminPurgeCommunity",
               "AdminPurgePost",
-              "AdminPurgeComment",
-              "AdminBlockInstance",
-              "AdminAllowInstance"
+              "AdminPurgeComment"
             ]
           },
           "other_person_id": {
@@ -6100,18 +6080,6 @@
             "items": {
               "$ref": "#/components/schemas/ModHideCommunityView"
             }
-          },
-          "admin_block_instance": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminBlockInstanceView"
-            }
-          },
-          "admin_allow_instance": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminAllowInstanceView"
-            }
           }
         },
         "nullable": false,
@@ -6130,9 +6098,7 @@
           "admin_purged_communities",
           "admin_purged_posts",
           "admin_purged_comments",
-          "hidden_communities",
-          "admin_block_instance",
-          "admin_allow_instance"
+          "hidden_communities"
         ],
         "description": "The modlog fetch response."
       },
@@ -7120,111 +7086,6 @@
           "hidden"
         ],
         "description": "When a community is hidden from public view."
-      },
-      "AdminBlockInstanceView": {
-        "type": "object",
-        "properties": {
-          "admin_block_instance": {
-            "$ref": "#/components/schemas/AdminBlockInstance"
-          },
-          "instance": {
-            "$ref": "#/components/schemas/Instance"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_block_instance",
-          "instance"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminBlockInstance": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "instance_id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "blocked": {
-            "type": "boolean"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "expires": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "instance_id",
-          "admin_person_id",
-          "blocked",
-          "published"
-        ]
-      },
-      "AdminAllowInstanceView": {
-        "type": "object",
-        "properties": {
-          "admin_block_instance": {
-            "$ref": "#/components/schemas/AdminAllowInstance"
-          },
-          "instance": {
-            "$ref": "#/components/schemas/Instance"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_block_instance",
-          "instance"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminAllowInstance": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "instance_id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "allowed": {
-            "type": "boolean"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "instance_id",
-          "admin_person_id",
-          "allowed",
-          "published"
-        ]
       },
       "Search": {
         "type": "object",
@@ -8505,8 +8366,11 @@
       "MarkPostAsRead": {
         "type": "object",
         "properties": {
-          "post_id": {
-            "type": "number"
+          "post_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "read": {
             "type": "boolean"
@@ -8514,7 +8378,7 @@
         },
         "nullable": false,
         "required": [
-          "post_id",
+          "post_ids",
           "read"
         ],
         "description": "Mark a post as read."
@@ -8522,8 +8386,11 @@
       "HidePost": {
         "type": "object",
         "properties": {
-          "post_id": {
-            "type": "number"
+          "post_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "hide": {
             "type": "boolean"
@@ -8531,7 +8398,7 @@
         },
         "nullable": false,
         "required": [
-          "post_id",
+          "post_ids",
           "hide"
         ],
         "description": "Hide a post from list views"
@@ -8650,11 +8517,6 @@
           "show_nsfw": {
             "type": "boolean",
             "description": "If true, then show the nsfw posts (even if your user setting is to hide them)"
-          },
-          "mark_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           },
           "no_comments_only": {
             "type": "boolean",
@@ -10712,10 +10574,6 @@
             "type": "boolean",
             "description": "Whether user avatars or inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
-          "enable_private_messages": {
-            "type": "boolean",
-            "description": "Whether a user can send / receive private messages"
-          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -10733,11 +10591,6 @@
           },
           "show_upvote_percentage": {
             "type": "boolean"
-          },
-          "auto_mark_fetched_posts_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -11604,6 +11457,35 @@
         "required": [
           "instance_id",
           "fail_count"
+        ]
+      },
+      "BlockInstance": {
+        "type": "object",
+        "properties": {
+          "instance_id": {
+            "type": "number"
+          },
+          "block": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "instance_id",
+          "block"
+        ],
+        "description": "Block an instance as user"
+      },
+      "BlockInstanceResponse": {
+        "type": "object",
+        "properties": {
+          "blocked": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "blocked"
         ]
       },
       "UploadImage": {

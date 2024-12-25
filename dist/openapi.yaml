@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-instance-blocks.0
+  version: 0.20.0-alpha.18
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -899,10 +899,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/show_nsfw"
-        - name: mark_as_read
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/mark_as_read"
         - name: no_comments_only
           in: query
           schema:
@@ -3087,19 +3083,12 @@ components:
             should be allowed to play or
 
             should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
           description: Whether to auto-collapse bot comments.
         default_comment_sort_type:
           $ref: "#/components/schemas/CommentSortType"
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
       nullable: false
       required:
         - id
@@ -3123,10 +3112,8 @@ components:
         - totp_2fa_enabled
         - enable_keyboard_navigation
         - enable_animated_images
-        - enable_private_messages
         - collapse_bot_comments
         - default_comment_sort_type
-        - auto_mark_fetched_posts_as_read
       description: A local user.
     LocalUserVoteDisplayMode:
       type: object
@@ -3940,8 +3927,6 @@ components:
             - AdminPurgeCommunity
             - AdminPurgePost
             - AdminPurgeComment
-            - AdminBlockInstance
-            - AdminAllowInstance
         other_person_id:
           type: number
         post_id:
@@ -4013,14 +3998,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ModHideCommunityView"
-        admin_block_instance:
-          type: array
-          items:
-            $ref: "#/components/schemas/AdminBlockInstanceView"
-        admin_allow_instance:
-          type: array
-          items:
-            $ref: "#/components/schemas/AdminAllowInstanceView"
       nullable: false
       required:
         - removed_posts
@@ -4038,8 +4015,6 @@ components:
         - admin_purged_posts
         - admin_purged_comments
         - hidden_communities
-        - admin_block_instance
-        - admin_allow_instance
       description: The modlog fetch response.
     ModRemovePostView:
       type: object
@@ -4763,80 +4738,6 @@ components:
         - when_
         - hidden
       description: When a community is hidden from public view.
-    AdminBlockInstanceView:
-      type: object
-      properties:
-        admin_block_instance:
-          $ref: "#/components/schemas/AdminBlockInstance"
-        instance:
-          $ref: "#/components/schemas/Instance"
-        admin:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - admin_block_instance
-        - instance
-      description: When an admin purges a post.
-    AdminBlockInstance:
-      type: object
-      properties:
-        id:
-          type: number
-        instance_id:
-          type: number
-        admin_person_id:
-          type: number
-        blocked:
-          type: boolean
-        reason:
-          type: string
-        expires:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - instance_id
-        - admin_person_id
-        - blocked
-        - published
-    AdminAllowInstanceView:
-      type: object
-      properties:
-        admin_block_instance:
-          $ref: "#/components/schemas/AdminAllowInstance"
-        instance:
-          $ref: "#/components/schemas/Instance"
-        admin:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - admin_block_instance
-        - instance
-      description: When an admin purges a post.
-    AdminAllowInstance:
-      type: object
-      properties:
-        id:
-          type: number
-        instance_id:
-          type: number
-        admin_person_id:
-          type: number
-        allowed:
-          type: boolean
-        reason:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - instance_id
-        - admin_person_id
-        - allowed
-        - published
     Search:
       type: object
       properties:
@@ -5790,25 +5691,29 @@ components:
     MarkPostAsRead:
       type: object
       properties:
-        post_id:
-          type: number
+        post_ids:
+          type: array
+          items:
+            type: number
         read:
           type: boolean
       nullable: false
       required:
-        - post_id
+        - post_ids
         - read
       description: Mark a post as read.
     HidePost:
       type: object
       properties:
-        post_id:
-          type: number
+        post_ids:
+          type: array
+          items:
+            type: number
         hide:
           type: boolean
       nullable: false
       required:
-        - post_id
+        - post_ids
         - hide
       description: Hide a post from list views
     LockPost:
@@ -5901,10 +5806,6 @@ components:
           type: boolean
           description: If true, then show the nsfw posts (even if your user setting is to
             hide them)
-        mark_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
         no_comments_only:
           type: boolean
           description: If true, then only show posts with no comments
@@ -7429,9 +7330,6 @@ components:
             be allowed to play or
 
             should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
@@ -7445,10 +7343,6 @@ components:
           type: boolean
         show_upvote_percentage:
           type: boolean
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
       nullable: false
       description: Saves settings for your user.
     ChangePassword:
@@ -8067,6 +7961,26 @@ components:
       required:
         - instance_id
         - fail_count
+    BlockInstance:
+      type: object
+      properties:
+        instance_id:
+          type: number
+        block:
+          type: boolean
+      nullable: false
+      required:
+        - instance_id
+        - block
+      description: Block an instance as user
+    BlockInstanceResponse:
+      type: object
+      properties:
+        blocked:
+          type: boolean
+      nullable: false
+      required:
+        - blocked
     UploadImage:
       type: object
       properties:
