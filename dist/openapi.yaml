@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.3
+  version: 0.19.4-alpha.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -1967,7 +1967,7 @@ paths:
       description: Upload an image to the server.
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: "#/components/schemas/UploadImage"
       tags:
@@ -1996,6 +1996,14 @@ paths:
           required: true
           schema:
             type: string
+        - name: token
+          in: query
+          schema:
+            $ref: "#/components/schemas/DeleteImage/properties/token"
+        - name: filename
+          in: query
+          schema:
+            $ref: "#/components/schemas/DeleteImage/properties/filename"
       tags:
         - Pictrs/Image
       responses:
@@ -4038,15 +4046,12 @@ components:
           type: boolean
         counts:
           $ref: "#/components/schemas/CommunityAggregates"
-        banned_from_community:
-          type: boolean
       nullable: false
       required:
         - community
         - subscribed
         - blocked
         - counts
-        - banned_from_community
     CommunityAggregates:
       type: object
       properties:
@@ -6211,6 +6216,46 @@ components:
             format: binary
           nullable: false
       nullable: false
+    UploadImageResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          title: Is "ok" if the upload was successful; is something else otherwise
+          description: Is "ok" if the upload was successful; is something else otherwise.
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImageFile"
+        url:
+          type: string
+        delete_url:
+          type: string
+      nullable: false
+      required:
+        - msg
+    ImageFile:
+      type: object
+      properties:
+        file:
+          type: string
+        delete_token:
+          type: string
+      nullable: false
+      required:
+        - file
+        - delete_token
+    DeleteImage:
+      type: object
+      properties:
+        token:
+          type: string
+        filename:
+          type: string
+      nullable: false
+      required:
+        - token
+        - filename
   securitySchemes:
     bearerAuth:
       type: http
