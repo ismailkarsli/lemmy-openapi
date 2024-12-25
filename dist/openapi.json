@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.7"
+    "version": "0.20.0-private-community.6"
   },
   "servers": [
     {
@@ -840,17 +840,17 @@
         "operationId": "listCommunityPendingFollows",
         "parameters": [
           {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/community_id"
+            }
+          },
+          {
             "name": "pending_only",
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/pending_only"
-            }
-          },
-          {
-            "name": "all_communities",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/all_communities"
             }
           },
           {
@@ -7466,11 +7466,10 @@
       "ListCommunityPendingFollows": {
         "type": "object",
         "properties": {
-          "pending_only": {
-            "type": "boolean",
-            "nullable": true
+          "community_id": {
+            "type": "number"
           },
-          "all_communities": {
+          "pending_only": {
             "type": "boolean",
             "nullable": true
           },
@@ -7485,8 +7484,8 @@
         },
         "nullable": false,
         "required": [
+          "community_id",
           "pending_only",
-          "all_communities",
           "page",
           "limit"
         ]
@@ -7512,22 +7511,14 @@
           "person": {
             "$ref": "#/components/schemas/Person"
           },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          },
           "is_new_instance": {
             "type": "boolean"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
           }
         },
         "nullable": false,
         "required": [
           "person",
-          "community",
-          "is_new_instance",
-          "subscribed"
+          "is_new_instance"
         ]
       },
       "ApproveCommunityPendingFollower": {
