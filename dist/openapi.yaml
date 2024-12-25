@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.15
+  version: 0.19.4-alpha.14
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -13,8 +13,6 @@ tags:
   - name: Site
   - name: User
   - name: User/Totp
-  - name: Account
-  - name: Admin
   - name: Modlog
   - name: Search
   - name: ResolveObject
@@ -28,6 +26,7 @@ tags:
   - name: PrivateMessage
   - name: PrivateMessage/Report
   - name: User/Mention
+  - name: Admin
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -157,50 +156,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/list_media:
-    get:
-      operationId: listMedia
-      description: List all the media for your user
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/limit"
-      tags:
-        - Account
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListMediaResponse"
-  /admin/list_all_media:
-    get:
-      operationId: listAllMedia
-      description: List all the media known to your instance.
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/limit"
-      tags:
-        - Admin
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListMediaResponse"
   /user/totp/update:
     post:
       operationId: updateTotp
@@ -2903,7 +2858,7 @@ components:
         default_sort_type:
           type: string
           enum:
-            - NewComments
+            - Active
             - Scaled
             - Controversial
             - TopNineMonths
@@ -2912,8 +2867,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
-            - Active
             - MostComments
+            - NewComments
             - TopAll
             - TopYear
             - TopMonth
@@ -3047,7 +3002,7 @@ components:
         default_sort_type:
           type: string
           enum:
-            - Active
+            - MostComments
             - Scaled
             - Controversial
             - TopNineMonths
@@ -3056,8 +3011,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
-            - MostComments
             - NewComments
+            - Active
             - TopAll
             - TopYear
             - TopMonth
@@ -3161,40 +3116,6 @@ components:
       nullable: false
       required:
         - success
-    ListMedia:
-      type: object
-      properties:
-        page:
-          type: number
-        limit:
-          type: number
-      nullable: false
-    ListMediaResponse:
-      type: object
-      properties:
-        images:
-          type: array
-          items:
-            $ref: "#/components/schemas/LocalImage"
-      nullable: false
-      required:
-        - images
-    LocalImage:
-      type: object
-      properties:
-        local_user_id:
-          type: number
-        pictrs_alias:
-          type: string
-        pictrs_delete_token:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - pictrs_alias
-        - pictrs_delete_token
-        - published
     UpdateTotp:
       type: object
       properties:
@@ -4835,14 +4756,11 @@ components:
       properties:
         creator:
           $ref: "#/components/schemas/Person"
-        creator_banned_from_community:
-          type: boolean
         score:
           type: number
       nullable: false
       required:
         - creator
-        - creator_banned_from_community
         - score
     SavePost:
       type: object
@@ -5129,8 +5047,6 @@ components:
           $ref: "#/components/schemas/CommentAggregates"
         creator_banned_from_community:
           type: boolean
-        banned_from_community:
-          type: boolean
         creator_is_moderator:
           type: boolean
         creator_is_admin:
@@ -5153,7 +5069,6 @@ components:
         - recipient
         - counts
         - creator_banned_from_community
-        - banned_from_community
         - creator_is_moderator
         - creator_is_admin
         - subscribed
@@ -5807,8 +5722,6 @@ components:
           $ref: "#/components/schemas/CommentAggregates"
         creator_banned_from_community:
           type: boolean
-        banned_from_community:
-          type: boolean
         creator_is_moderator:
           type: boolean
         creator_is_admin:
@@ -5831,7 +5744,6 @@ components:
         - recipient
         - counts
         - creator_banned_from_community
-        - banned_from_community
         - creator_is_moderator
         - creator_is_admin
         - subscribed
