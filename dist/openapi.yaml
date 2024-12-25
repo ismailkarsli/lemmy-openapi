@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-image-api-rework.6
+  version: 0.19.6-beta.1
 servers:
-  - url: https://lemy.lol/api/v4
+  - url: https://lemy.lol/api/v3
 security:
   - bearerAuth: []
 externalDocs:
@@ -11,18 +11,15 @@ externalDocs:
   url: https://join-lemmy.org/api/index.html
 tags:
   - name: Site
-  - name: Admin
-  - name: Account/Auth/Totp
+  - name: User
+  - name: User/Totp
   - name: Account
-  - name: Account/Settings
+  - name: Admin
   - name: Modlog
   - name: Search
   - name: ResolveObject
   - name: Community
-  - name: Community/PendingFollows
-  - name: Account/Block
   - name: Post
-  - name: Post/MarkAsRead
   - name: Post/Like
   - name: Post/Report
   - name: Comment
@@ -30,18 +27,11 @@ tags:
   - name: Comment/Report
   - name: PrivateMessage
   - name: PrivateMessage/Report
-  - name: Account/Auth
-  - name: Person
-  - name: Account/Mention
-  - name: Account/Mention/MarkAsRead
+  - name: User/Mention
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
-  - name: Admin/Tagline
-  - name: OauthProvider
-  - name: Oauth
   - name: FederatedInstances
-  - name: Admin/Instance
   - name: Pictrs/Image
 paths:
   /site:
@@ -91,12 +81,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SiteResponse"
-  /admin/leave:
+  /user/leave_admin:
     post:
       operationId: leaveAdmin
       description: Leave the Site admins.
       tags:
-        - Admin
+        - User
       responses:
         "200":
           description: Successful response
@@ -104,16 +94,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSiteResponse"
-  /account/auth/totp/generate:
+  /user/totp/generate:
     post:
       operationId: generateTotpSecret
       description: >-
         Generate a TOTP / two-factor secret.
 
-        Afterwards you need to call `/account/auth/totp/update` with a valid
-        token to enable it.
+        Afterwards you need to call `/user/totp/update` with a valid token to
+        enable it.
       tags:
-        - Account/Auth/Totp
+        - User/Totp
       responses:
         "200":
           description: Successful response
@@ -121,36 +111,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /account:
-    get:
-      operationId: getMyUser
-      description: Get data of current user.
-      tags:
-        - Account
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MyUserInfo"
-  /account/settings/export:
+  /user/export_settings:
     get:
       operationId: exportSettings
       description: |-
         Export a backup of your user settings, including your saved content,
         followed communities, and blocks.
       tags:
-        - Account/Settings
+        - User
       responses:
         "200":
           description: No content
-  /account/settings/import:
+  /user/import_settings:
     post:
       operationId: importSettings
       description: Import a backup of your user settings.
       tags:
-        - Account/Settings
+        - User
       responses:
         "200":
           description: Successful response
@@ -158,21 +135,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/list_logins:
+  /user/list_logins:
     get:
       operationId: listLogins
       description: List login tokens for your user
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: No content
-  /account/validate_auth:
+  /user/validate_auth:
     get:
       operationId: validateAuth
       description: Returns an error message if your auth token is invalid
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -224,14 +201,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListMediaResponse"
-  /account/auth/totp/update:
+  /user/totp/update:
     post:
       operationId: updateTotp
       description: >-
         Enable / Disable TOTP / two-factor authentication.
 
-        To enable, you need to first call `/account/auth/totp/generate` and then
-        pass a valid token to this.
+        To enable, you need to first call `/user/totp/generate` and then pass a
+        valid token to this.
 
         Disabling is only possible if 2FA was previously enabled. Again it is
         necessary to pass a valid token.
@@ -241,7 +218,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateTotp"
       tags:
-        - Account/Auth/Totp
+        - User/Totp
       responses:
         "200":
           description: Successful response
@@ -336,26 +313,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/Search/properties/limit"
-        - name: title_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/title_only"
-        - name: post_url_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/post_url_only"
-        - name: saved_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/saved_only"
-        - name: liked_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/liked_only"
-        - name: disliked_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/disliked_only"
       tags:
         - Search
       responses:
@@ -491,72 +448,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommunityResponse"
-  /community/pending_follows/count:
-    get:
-      operationId: getCommunityPendingFollowsCount
-      parameters:
-        - name: community_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetCommunityPendingFollowsCount/properties/communit\
-              y_id"
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetCommunityPendingFollowsCountResponse"
-  /community/pending_follows/list:
-    get:
-      operationId: listCommunityPendingFollows
-      parameters:
-        - name: pending_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCommunityPendingFollows/properties/pending_only"
-        - name: all_communities
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCommunityPendingFollows/properties/all_communit\
-              ies"
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCommunityPendingFollows/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCommunityPendingFollows/properties/limit"
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListCommunityPendingFollowsResponse"
-  /community/pending_follows/approve:
-    post:
-      operationId: approveCommunityPendingFollow
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ApproveCommunityPendingFollower"
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /account/block/community:
+  /community/block:
     post:
       operationId: blockCommunity
       description: Block a community.
@@ -566,7 +458,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockCommunity"
       tags:
-        - Account/Block
+        - Community
       responses:
         "200":
           description: Successful response
@@ -682,24 +574,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AddModToCommunityResponse"
-  /community/random:
-    get:
-      operationId: getRandomCommunity
-      description: Get a random community.
-      parameters:
-        - name: type_
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetRandomCommunity/properties/type_"
-      tags:
-        - Community
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CommunityResponse"
   /post:
     post:
       operationId: createPost
@@ -802,25 +676,7 @@ paths:
             schema:
               $ref: "#/components/schemas/MarkPostAsRead"
       tags:
-        - Post/MarkAsRead
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /post/mark_as_read/many:
-    post:
-      operationId: markManyPostAsRead
-      description: Mark multiple posts as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkManyPostsAsRead"
-      tags:
-        - Post/MarkAsRead
+        - Post
       responses:
         "200":
           description: Successful response
@@ -936,14 +792,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/show_nsfw"
-        - name: mark_as_read
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/mark_as_read"
-        - name: no_comments_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/no_comments_only"
         - name: page_cursor
           in: query
           schema:
@@ -1589,7 +1437,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPrivateMessageReportsResponse"
-  /account/auth/register:
+  /user/register:
     post:
       operationId: register
       description: Register a new user.
@@ -1599,7 +1447,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Register"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1607,7 +1455,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /account/auth/login:
+  /user/login:
     post:
       operationId: login
       description: Log into lemmy.
@@ -1617,7 +1465,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Login"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1625,12 +1473,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /account/auth/logout:
+  /user/logout:
     post:
       operationId: logout
       description: Invalidate the currently used auth token.
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1638,7 +1486,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /person:
+  /user:
     get:
       operationId: getPersonDetails
       description: Get the details for a person.
@@ -1672,7 +1520,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonDetails/properties/saved_only"
       tags:
-        - Person
+        - User
       responses:
         "200":
           description: Successful response
@@ -1680,7 +1528,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonDetailsResponse"
-  /account/mention:
+  /user/mention:
     get:
       operationId: getPersonMentions
       description: Get mentions for your user.
@@ -1702,7 +1550,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonMentions/properties/unread_only"
       tags:
-        - Account/Mention
+        - User/Mention
       responses:
         "200":
           description: Successful response
@@ -1710,12 +1558,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonMentionsResponse"
-  /account/mention/mark_as_read:
+  /user/mention/mark_as_read:
     post:
-      operationId: markPersonAllMentionAsRead
+      operationId: markPersonMentionAsRead
       description: Mark a person mention as read.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarkPersonMentionAsRead"
       tags:
-        - Account/Mention/MarkAsRead
+        - User/Mention
       responses:
         "200":
           description: Successful response
@@ -1723,7 +1576,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonMentionResponse"
-  /account/replies:
+  /user/replies:
     get:
       operationId: getReplies
       description: Get comment replies.
@@ -1745,7 +1598,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReplies/properties/unread_only"
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1753,7 +1606,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /admin/ban:
+  /user/ban:
     post:
       operationId: banPerson
       description: Ban a person from your site.
@@ -1763,7 +1616,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BanPerson"
       tags:
-        - Admin
+        - User
       responses:
         "200":
           description: Successful response
@@ -1771,12 +1624,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BanPersonResponse"
-  /admin/banned:
+  /user/banned:
     get:
       operationId: getBannedPersons
       description: Get a list of banned users
       tags:
-        - Admin
+        - User
       responses:
         "200":
           description: Successful response
@@ -1784,7 +1637,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BannedPersonsResponse"
-  /account/block/person:
+  /user/block:
     post:
       operationId: blockPerson
       description: Block a person.
@@ -1794,7 +1647,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockPerson"
       tags:
-        - Account/Block
+        - User
       responses:
         "200":
           description: Successful response
@@ -1802,12 +1655,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BlockPersonResponse"
-  /account/auth/get_captcha:
+  /user/get_captcha:
     get:
       operationId: getCaptcha
       description: Fetch a Captcha.
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1815,7 +1668,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetCaptchaResponse"
-  /account/delete:
+  /user/delete_account:
     post:
       operationId: deleteAccount
       description: Delete your account.
@@ -1825,7 +1678,7 @@ paths:
             schema:
               $ref: "#/components/schemas/DeleteAccount"
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1833,7 +1686,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/auth/password_reset:
+  /user/password_reset:
     post:
       operationId: passwordReset
       description: Reset your password.
@@ -1843,7 +1696,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordReset"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1851,7 +1704,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/auth/password_change:
+  /user/password_change:
     post:
       operationId: passwordChangeAfterReset
       description: Change your password from an email / token based reset.
@@ -1861,7 +1714,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordChangeAfterReset"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1869,12 +1722,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/mention/mark_as_read/all:
+  /user/mark_all_as_read:
     post:
       operationId: markAllAsRead
       description: Mark all replies as read.
       tags:
-        - Account/Mention/MarkAsRead
+        - User
       responses:
         "200":
           description: Successful response
@@ -1882,7 +1735,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /account/settings/save:
+  /user/save_user_settings:
     put:
       operationId: saveUserSettings
       description: Save your user settings.
@@ -1892,7 +1745,7 @@ paths:
             schema:
               $ref: "#/components/schemas/SaveUserSettings"
       tags:
-        - Account/Settings
+        - User
       responses:
         "200":
           description: Successful response
@@ -1900,7 +1753,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/auth/change_password:
+  /user/change_password:
     put:
       operationId: changePassword
       description: Change your user password.
@@ -1910,7 +1763,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ChangePassword"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1918,7 +1771,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /account/report_count:
+  /user/report_count:
     get:
       operationId: getReportCount
       description: Get counts for your reports
@@ -1928,7 +1781,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReportCount/properties/community_id"
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1936,12 +1789,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetReportCountResponse"
-  /account/unread_count:
+  /user/unread_count:
     get:
       operationId: getUnreadCount
       description: Get your unread counts
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1949,7 +1802,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetUnreadCountResponse"
-  /account/auth/verify_email:
+  /user/verify_email:
     post:
       operationId: verifyEmail
       description: Verify your email
@@ -1959,7 +1812,7 @@ paths:
             schema:
               $ref: "#/components/schemas/VerifyEmail"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -2186,182 +2039,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /custom_emoji/list:
-    get:
-      operationId: listCustomEmojis
-      description: List custom emojis
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCustomEmojis/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCustomEmojis/properties/limit"
-        - name: category
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCustomEmojis/properties/category"
-        - name: ignore_page_limits
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCustomEmojis/properties/ignore_page_limits"
-      tags:
-        - CustomEmoji
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListCustomEmojisResponse"
-  /admin/tagline:
-    post:
-      operationId: createTagline
-      description: Create a new tagline
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateTagline"
-      tags:
-        - Admin/Tagline
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaglineResponse"
-    put:
-      operationId: editTagline
-      description: Edit an existing tagline
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateTagline"
-      tags:
-        - Admin/Tagline
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TaglineResponse"
-  /admin/tagline/delete:
-    post:
-      operationId: deleteTagline
-      description: Delete a tagline
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeleteTagline"
-      tags:
-        - Admin/Tagline
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /admin/tagline/list:
-    get:
-      operationId: listTaglines
-      description: List taglines
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListTaglines/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListTaglines/properties/limit"
-      tags:
-        - Admin/Tagline
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListTaglinesResponse"
-  /oauth_provider:
-    post:
-      operationId: createOAuthProvider
-      description: Create a new oauth provider method
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateOAuthProvider"
-      tags:
-        - OauthProvider
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OAuthProvider"
-    put:
-      operationId: editOAuthProvider
-      description: Edit an existing oauth provider method
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EditOAuthProvider"
-      tags:
-        - OauthProvider
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OAuthProvider"
-  /oauth_provider/delete:
-    post:
-      operationId: deleteOAuthProvider
-      description: Delete an oauth provider method
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeleteOAuthProvider"
-      tags:
-        - OauthProvider
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /oauth/authenticate:
-    post:
-      operationId: authenticateWithOAuth
-      description: Authenticate with OAuth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthenticateWithOauth"
-      tags:
-        - Oauth
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginResponse"
   /federated_instances:
     get:
       operationId: getFederatedInstances
@@ -2375,60 +2052,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
-  /account/block/instance:
+  /site/block:
     post:
-      operationId: userBlockInstance
-      description: Block an instance as user.
+      operationId: blockInstance
+      description: Block an instance.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserBlockInstanceParams"
+              $ref: "#/components/schemas/BlockInstance"
       tags:
-        - Account/Block
+        - Site
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/block:
-    post:
-      operationId: adminBlockInstance
-      description: Globally block an instance as admin.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminBlockInstanceParams"
-      tags:
-        - Admin/Instance
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/allow:
-    post:
-      operationId: adminAllowInstance
-      description: Globally allow an instance as admin.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminAllowInstanceParams"
-      tags:
-        - Admin/Instance
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                $ref: "#/components/schemas/BlockInstanceResponse"
   /pictrs/image:
     servers:
       - url: https://lemy.lol
@@ -2496,6 +2137,8 @@ components:
             $ref: "#/components/schemas/PersonView"
         version:
           type: string
+        my_user:
+          $ref: "#/components/schemas/MyUserInfo"
         all_languages:
           type: array
           items:
@@ -2506,26 +2149,12 @@ components:
             type: number
         taglines:
           type: array
-          items: {}
-          description: deprecated, use field `tagline` or /api/v3/tagline/list
+          items:
+            $ref: "#/components/schemas/Tagline"
         custom_emojis:
           type: array
-          items: {}
-          description: deprecated, use /api/v3/custom_emoji/list
-        tagline:
-          $ref: "#/components/schemas/Tagline"
-          description: If the site has any taglines, a random one is included here for
-            displaying
-        oauth_providers:
-          type: array
           items:
-            $ref: "#/components/schemas/OAuthProvider"
-          title: A list of external auth methods your site supports
-          description: A list of external auth methods your site supports.
-        admin_oauth_providers:
-          type: array
-          items:
-            $ref: "#/components/schemas/OAuthProvider"
+            $ref: "#/components/schemas/CustomEmojiView"
         blocked_urls:
           type: array
           items:
@@ -2540,7 +2169,6 @@ components:
         - taglines
         - custom_emojis
         - blocked_urls
-      description: An expanded response for a site.
     SiteView:
       type: object
       properties:
@@ -2558,7 +2186,6 @@ components:
         - local_site
         - local_site_rate_limit
         - counts
-      description: A site view.
     Site:
       type: object
       properties:
@@ -2568,46 +2195,28 @@ components:
           type: string
         sidebar:
           type: string
-          title: A sidebar for the site in markdown
-          description: A sidebar for the site in markdown.
         published:
           type: string
         updated:
           type: string
         icon:
           type: string
-          title: An icon URL
-          description: An icon URL.
         banner:
           type: string
-          title: A banner url
-          description: A banner url.
         description:
           type: string
-          title: A shorter, one-line description of the site
-          description: A shorter, one-line description of the site.
         actor_id:
           type: string
-          title: The federated actor_id
-          description: The federated actor_id.
         last_refreshed_at:
           type: string
-          title: The time the site was last refreshed
-          description: The time the site was last refreshed.
         inbox_url:
           type: string
-          description: The site inbox
         public_key:
           type: string
         instance_id:
           type: number
         content_warning:
           type: string
-          description: >-
-            If present, nsfw content is visible by default. Should be displayed
-            by frontends/clients
-
-            when the site is first opened by a user.
       nullable: false
       required:
         - id
@@ -2618,7 +2227,6 @@ components:
         - inbox_url
         - public_key
         - instance_id
-      description: The site.
     LocalSite:
       type: object
       properties:
@@ -2628,62 +2236,38 @@ components:
           type: number
         site_setup:
           type: boolean
-          title: True if the site is set up
-          description: True if the site is set up.
+        enable_downvotes:
+          type: boolean
+        enable_nsfw:
+          type: boolean
         community_creation_admin_only:
           type: boolean
-          title: Whether only admins can create communities
-          description: Whether only admins can create communities.
         require_email_verification:
           type: boolean
-          title: Whether emails are required
-          description: Whether emails are required.
         application_question:
           type: string
-          title: An optional registration application questionnaire in markdown
-          description: An optional registration application questionnaire in markdown.
         private_instance:
           type: boolean
-          title: Whether the instance is private or public
-          description: Whether the instance is private or public.
         default_theme:
           type: string
-          title: The default front-end theme
-          description: The default front-end theme.
         default_post_listing_type:
           $ref: "#/components/schemas/ListingType"
         legal_information:
           type: string
-          title: An optional legal disclaimer page
-          description: An optional legal disclaimer page.
         hide_modlog_mod_names:
           type: boolean
-          title: Whether to hide mod names on the modlog
-          description: Whether to hide mod names on the modlog.
         application_email_admins:
           type: boolean
-          title: Whether new applications email admins
-          description: Whether new applications email admins.
         slur_filter_regex:
           type: string
-          title: An optional regex to filter words
-          description: An optional regex to filter words.
         actor_name_max_length:
           type: number
-          title: The max actor name length
-          description: The max actor name length.
         federation_enabled:
           type: boolean
-          title: Whether federation is enabled
-          description: Whether federation is enabled.
         captcha_enabled:
           type: boolean
-          title: Whether captcha is enabled
-          description: Whether captcha is enabled.
         captcha_difficulty:
           type: string
-          title: The captcha difficulty
-          description: The captcha difficulty.
         published:
           type: string
         updated:
@@ -2692,49 +2276,19 @@ components:
           $ref: "#/components/schemas/RegistrationMode"
         reports_email_admins:
           type: boolean
-          title: Whether to email admins on new reports
-          description: Whether to email admins on new reports.
         federation_signed_fetch:
           type: boolean
-          description: >-
-            Whether to sign outgoing Activitypub fetches with private key of
-            local instance. Some
-
-            Fediverse instances and platforms require this.
         default_post_listing_mode:
           $ref: "#/components/schemas/PostListingMode"
-          description: Default value for [LocalSite.post_listing_mode]
-        default_post_sort_type:
-          $ref: "#/components/schemas/PostSortType"
-          description: Default value for [LocalUser.post_sort_type]
-        default_comment_sort_type:
-          $ref: "#/components/schemas/CommentSortType"
-          description: Default value for [LocalUser.comment_sort_type]
-        oauth_registration:
-          type: boolean
-          title: Whether or not external auth methods can auto-register users
-          description: Whether or not external auth methods can auto-register users.
-        post_upvotes:
-          $ref: "#/components/schemas/FederationMode"
-          title: What kind of post upvotes your site allows
-          description: What kind of post upvotes your site allows.
-        post_downvotes:
-          $ref: "#/components/schemas/FederationMode"
-          title: What kind of post downvotes your site allows
-          description: What kind of post downvotes your site allows.
-        comment_upvotes:
-          $ref: "#/components/schemas/FederationMode"
-          title: What kind of comment upvotes your site allows
-          description: What kind of comment upvotes your site allows.
-        comment_downvotes:
-          $ref: "#/components/schemas/FederationMode"
-          title: What kind of comment downvotes your site allows
-          description: What kind of comment downvotes your site allows.
+        default_sort_type:
+          $ref: "#/components/schemas/SortType"
       nullable: false
       required:
         - id
         - site_id
         - site_setup
+        - enable_downvotes
+        - enable_nsfw
         - community_creation_admin_only
         - require_email_verification
         - private_instance
@@ -2751,14 +2305,7 @@ components:
         - reports_email_admins
         - federation_signed_fetch
         - default_post_listing_mode
-        - default_post_sort_type
-        - default_comment_sort_type
-        - oauth_registration
-        - post_upvotes
-        - post_downvotes
-        - comment_upvotes
-        - comment_downvotes
-      description: The local site.
+        - default_sort_type
     ListingType:
       type: string
       enum:
@@ -2766,23 +2313,19 @@ components:
         - Local
         - Subscribed
         - ModeratorView
-      description: A listing type for post and comment list fetches.
     RegistrationMode:
       type: string
       enum:
         - Closed
         - RequireApplication
         - Open
-      description: The registration mode for your site. Determines what happens after
-        a user signs up.
     PostListingMode:
       type: string
       enum:
         - List
         - Card
         - SmallCard
-      description: A post-view mode that changes how multiple post listings look.
-    PostSortType:
+    SortType:
       type: string
       enum:
         - Active
@@ -2804,25 +2347,6 @@ components:
         - TopNineMonths
         - Controversial
         - Scaled
-      description: "The post sort types. See here for descriptions:
-        https://join-lemmy.org/docs/en/users/03-votes-and-ranking.html"
-    CommentSortType:
-      type: string
-      enum:
-        - Hot
-        - New
-        - Old
-        - Controversial
-        - Top
-      description: "The comment sort types. See here for descriptions:
-        https://join-lemmy.org/docs/en/users/03-votes-and-ranking.html"
-    FederationMode:
-      type: string
-      enum:
-        - All
-        - Local
-        - Disable
-      description: The federation mode for an item
     LocalSiteRateLimit:
       type: object
       properties:
@@ -2878,7 +2402,6 @@ components:
         - published
         - import_user_settings
         - import_user_settings_per_second
-      description: Rate limits for your site. Given in count / length of time.
     SiteAggregates:
       type: object
       properties:
@@ -2894,20 +2417,12 @@ components:
           type: number
         users_active_day:
           type: number
-          title: The number of users with any activity in the last day
-          description: The number of users with any activity in the last day.
         users_active_week:
           type: number
-          title: The number of users with any activity in the last week
-          description: The number of users with any activity in the last week.
         users_active_month:
           type: number
-          title: The number of users with any activity in the last month
-          description: The number of users with any activity in the last month.
         users_active_half_year:
           type: number
-          title: The number of users with any activity in the last half year
-          description: The number of users with any activity in the last half year.
       nullable: false
       required:
         - site_id
@@ -2919,7 +2434,6 @@ components:
         - users_active_week
         - users_active_month
         - users_active_half_year
-      description: Aggregate data for a site.
     PersonView:
       type: object
       properties:
@@ -2934,7 +2448,6 @@ components:
         - person
         - counts
         - is_admin
-      description: A person view.
     Person:
       type: object
       properties:
@@ -2944,51 +2457,30 @@ components:
           type: string
         display_name:
           type: string
-          title: A shorter display name
-          description: A shorter display name.
         avatar:
           type: string
-          title: A URL for an avatar
-          description: A URL for an avatar.
         banned:
           type: boolean
-          title: Whether the person is banned
-          description: Whether the person is banned.
         published:
           type: string
         updated:
           type: string
         actor_id:
           type: string
-          title: The federated actor_id
-          description: The federated actor_id.
         bio:
           type: string
-          title: An optional bio, in markdown
-          description: An optional bio, in markdown.
         local:
           type: boolean
-          title: Whether the person is local to our site
-          description: Whether the person is local to our site.
         banner:
           type: string
-          title: A URL for a banner
-          description: A URL for a banner.
         deleted:
           type: boolean
-          title: Whether the person is deleted
-          description: Whether the person is deleted.
         matrix_user_id:
           type: string
-          description: A matrix id, usually given an
         bot_account:
           type: boolean
-          title: Whether the person is a bot account
-          description: Whether the person is a bot account.
         ban_expires:
           type: string
-          title: When their ban, if it exists, expires, if at all
-          description: When their ban, if it exists, expires, if at all.
         instance_id:
           type: number
       nullable: false
@@ -3002,7 +2494,6 @@ components:
         - deleted
         - bot_account
         - instance_id
-      description: A person.
     PersonAggregates:
       type: object
       properties:
@@ -3017,7 +2508,294 @@ components:
         - person_id
         - post_count
         - comment_count
-      description: Aggregate data for a person.
+    MyUserInfo:
+      type: object
+      properties:
+        local_user_view:
+          $ref: "#/components/schemas/LocalUserView"
+        follows:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityFollowerView"
+        moderates:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityModeratorView"
+        community_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommunityBlockView"
+        instance_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstanceBlockView"
+        person_blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PersonBlockView"
+        discussion_languages:
+          type: array
+          items:
+            type: number
+      nullable: false
+      required:
+        - local_user_view
+        - follows
+        - moderates
+        - community_blocks
+        - instance_blocks
+        - person_blocks
+        - discussion_languages
+    LocalUserView:
+      type: object
+      properties:
+        local_user:
+          $ref: "#/components/schemas/LocalUser"
+        local_user_vote_display_mode:
+          $ref: "#/components/schemas/LocalUserVoteDisplayMode"
+        person:
+          $ref: "#/components/schemas/Person"
+        counts:
+          $ref: "#/components/schemas/PersonAggregates"
+      nullable: false
+      required:
+        - local_user
+        - local_user_vote_display_mode
+        - person
+        - counts
+    LocalUser:
+      type: object
+      properties:
+        id:
+          type: number
+        person_id:
+          type: number
+        email:
+          type: string
+        show_nsfw:
+          type: boolean
+        theme:
+          type: string
+        default_sort_type:
+          $ref: "#/components/schemas/SortType"
+        default_listing_type:
+          $ref: "#/components/schemas/ListingType"
+        interface_language:
+          type: string
+        show_avatars:
+          type: boolean
+        send_notifications_to_email:
+          type: boolean
+        show_scores:
+          type: boolean
+        show_bot_accounts:
+          type: boolean
+        show_read_posts:
+          type: boolean
+        email_verified:
+          type: boolean
+        accepted_application:
+          type: boolean
+        open_links_in_new_tab:
+          type: boolean
+        blur_nsfw:
+          type: boolean
+        auto_expand:
+          type: boolean
+        infinite_scroll_enabled:
+          type: boolean
+        admin:
+          type: boolean
+        post_listing_mode:
+          $ref: "#/components/schemas/PostListingMode"
+        totp_2fa_enabled:
+          type: boolean
+        enable_keyboard_navigation:
+          type: boolean
+        enable_animated_images:
+          type: boolean
+        collapse_bot_comments:
+          type: boolean
+      nullable: false
+      required:
+        - id
+        - person_id
+        - show_nsfw
+        - theme
+        - default_sort_type
+        - default_listing_type
+        - interface_language
+        - show_avatars
+        - send_notifications_to_email
+        - show_scores
+        - show_bot_accounts
+        - show_read_posts
+        - email_verified
+        - accepted_application
+        - open_links_in_new_tab
+        - blur_nsfw
+        - auto_expand
+        - infinite_scroll_enabled
+        - admin
+        - post_listing_mode
+        - totp_2fa_enabled
+        - enable_keyboard_navigation
+        - enable_animated_images
+        - collapse_bot_comments
+    LocalUserVoteDisplayMode:
+      type: object
+      properties:
+        local_user_id:
+          type: number
+        score:
+          type: boolean
+        upvotes:
+          type: boolean
+        downvotes:
+          type: boolean
+        upvote_percentage:
+          type: boolean
+      nullable: false
+      required:
+        - local_user_id
+        - score
+        - upvotes
+        - downvotes
+        - upvote_percentage
+    CommunityFollowerView:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/Community"
+        follower:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - community
+        - follower
+    Community:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        removed:
+          type: boolean
+        published:
+          type: string
+        updated:
+          type: string
+        deleted:
+          type: boolean
+        nsfw:
+          type: boolean
+        actor_id:
+          type: string
+        local:
+          type: boolean
+        icon:
+          type: string
+        banner:
+          type: string
+        hidden:
+          type: boolean
+        posting_restricted_to_mods:
+          type: boolean
+        instance_id:
+          type: number
+        visibility:
+          $ref: "#/components/schemas/CommunityVisibility"
+      nullable: false
+      required:
+        - id
+        - name
+        - title
+        - removed
+        - published
+        - deleted
+        - nsfw
+        - actor_id
+        - local
+        - hidden
+        - posting_restricted_to_mods
+        - instance_id
+        - visibility
+    CommunityVisibility:
+      type: string
+      enum:
+        - Public
+        - LocalOnly
+    CommunityModeratorView:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/Community"
+        moderator:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - community
+        - moderator
+    CommunityBlockView:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        community:
+          $ref: "#/components/schemas/Community"
+      nullable: false
+      required:
+        - person
+        - community
+    InstanceBlockView:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        instance:
+          $ref: "#/components/schemas/Instance"
+        site:
+          $ref: "#/components/schemas/Site"
+      nullable: false
+      required:
+        - person
+        - instance
+    Instance:
+      type: object
+      properties:
+        id:
+          type: number
+        domain:
+          type: string
+        published:
+          type: string
+        updated:
+          type: string
+        software:
+          type: string
+        version:
+          type: string
+      nullable: false
+      required:
+        - id
+        - domain
+        - published
+    PersonBlockView:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+        target:
+          $ref: "#/components/schemas/Person"
+      nullable: false
+      required:
+        - person
+        - target
     Language:
       type: object
       properties:
@@ -3032,11 +2810,12 @@ components:
         - id
         - code
         - name
-      description: A language.
     Tagline:
       type: object
       properties:
         id:
+          type: number
+        local_site_id:
           type: number
         content:
           type: string
@@ -3047,98 +2826,61 @@ components:
       nullable: false
       required:
         - id
+        - local_site_id
         - content
         - published
-      description: A tagline, shown at the top of your site.
-    OAuthProvider:
+    CustomEmojiView:
+      type: object
+      properties:
+        custom_emoji:
+          $ref: "#/components/schemas/CustomEmoji"
+        keywords:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomEmojiKeyword"
+      nullable: false
+      required:
+        - custom_emoji
+        - keywords
+    CustomEmoji:
       type: object
       properties:
         id:
           type: number
-        display_name:
+        local_site_id:
+          type: number
+        shortcode:
           type: string
-          description: The OAuth 2.0 provider name displayed to the user on the Login page
-        issuer:
+        image_url:
           type: string
-          title: The issuer url of the OAUTH provider
-          description: The issuer url of the OAUTH provider.
-        authorization_endpoint:
+        alt_text:
           type: string
-          description: >-
-            The authorization endpoint is used to interact with the resource
-            owner and obtain an
-
-            authorization grant. This is usually provided by the OAUTH provider.
-        token_endpoint:
+        category:
           type: string
-          description: >-
-            The token endpoint is used by the client to obtain an access token
-            by presenting its
-
-            authorization grant or refresh token. This is usually provided by
-            the OAUTH provider.
-        userinfo_endpoint:
-          type: string
-          description: >-
-            The UserInfo Endpoint is an OAuth 2.0 Protected Resource that
-            returns Claims about the
-
-            authenticated End-User. This is defined in the OIDC specification.
-        id_claim:
-          type: string
-          description: >-
-            The OAuth 2.0 claim containing the unique user ID returned by the
-            provider. Usually this
-
-            should be set to "sub".
-        client_id:
-          type: string
-          description: >-
-            The client_id is provided by the OAuth 2.0 provider and is a unique
-            identifier to this
-
-            service
-        scopes:
-          type: string
-          description: >-
-            Lists the scopes requested from users. Users will have to grant
-            access to the requested scope
-
-            at sign up.
-        auto_verify_email:
-          type: boolean
-          description: Automatically sets email as verified on registration
-        account_linking_enabled:
-          type: boolean
-          description: Allows linking an OAUTH account to an existing user account by
-            matching emails
-        enabled:
-          type: boolean
-          description: switch to enable or disable an oauth provider
         published:
           type: string
         updated:
           type: string
-        use_pkce:
-          type: boolean
-          description: switch to enable or disable PKCE
       nullable: false
       required:
         - id
-        - display_name
-        - issuer
-        - authorization_endpoint
-        - token_endpoint
-        - userinfo_endpoint
-        - id_claim
-        - client_id
-        - scopes
-        - auto_verify_email
-        - account_linking_enabled
-        - enabled
+        - local_site_id
+        - shortcode
+        - image_url
+        - alt_text
+        - category
         - published
-        - use_pkce
-      description: oauth provider with client_secret - should never be sent to the client
+    CustomEmojiKeyword:
+      type: object
+      properties:
+        custom_emoji_id:
+          type: number
+        keyword:
+          type: string
+      nullable: false
+      required:
+        - custom_emoji_id
+        - keyword
     LocalSiteUrlBlocklist:
       type: object
       properties:
@@ -3168,6 +2910,8 @@ components:
           type: string
         banner:
           type: string
+        enable_downvotes:
+          type: boolean
         enable_nsfw:
           type: boolean
         community_creation_admin_only:
@@ -3187,16 +2931,10 @@ components:
             - Local
             - Subscribed
             - ModeratorView
-        default_post_listing_mode:
+        default_sort_type:
           type: string
           enum:
-            - List
-            - Card
-            - SmallCard
-        default_post_sort_type:
-          type: string
-          enum:
-            - MostComments
+            - Active
             - Hot
             - New
             - Old
@@ -3205,8 +2943,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
+            - MostComments
             - NewComments
-            - Active
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -3215,14 +2953,6 @@ components:
             - TopNineMonths
             - Controversial
             - Scaled
-        default_comment_sort_type:
-          type: string
-          enum:
-            - Hot
-            - New
-            - Old
-            - Controversial
-            - Top
         legal_information:
           type: string
         application_email_admins:
@@ -3269,44 +2999,35 @@ components:
           type: boolean
         captcha_difficulty:
           type: string
+        allowed_instances:
+          type: array
+          items:
+            type: string
+        blocked_instances:
+          type: array
+          items:
+            type: string
+        taglines:
+          type: array
+          items:
+            type: string
         registration_mode:
           type: string
           enum:
             - Closed
             - RequireApplication
             - Open
-        oauth_registration:
-          type: boolean
         content_warning:
           type: string
-        post_upvotes:
+        default_post_listing_mode:
           type: string
           enum:
-            - All
-            - Local
-            - Disable
-        post_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
+            - List
+            - Card
+            - SmallCard
       nullable: false
       required:
         - name
-      description: Creates a site. Should be done after first running lemmy.
     SiteResponse:
       type: object
       properties:
@@ -3314,13 +3035,12 @@ components:
           $ref: "#/components/schemas/SiteView"
         taglines:
           type: array
-          items: {}
-          description: deprecated, use field `tagline` or /api/v3/tagline/list
+          items:
+            $ref: "#/components/schemas/Tagline"
       nullable: false
       required:
         - site_view
         - taglines
-      description: The response for a site.
     EditSite:
       type: object
       properties:
@@ -3328,45 +3048,26 @@ components:
           type: string
         sidebar:
           type: string
-          title: A sidebar for the site, in markdown
-          description: A sidebar for the site, in markdown.
         description:
           type: string
-          title: A shorter, one line description of your site
-          description: A shorter, one line description of your site.
         icon:
           type: string
-          title: A url for your site's icon
-          description: A url for your site's icon.
         banner:
           type: string
-          title: A url for your site's banner
-          description: A url for your site's banner.
+        enable_downvotes:
+          type: boolean
         enable_nsfw:
           type: boolean
-          title: Whether to enable NSFW
-          description: Whether to enable NSFW.
         community_creation_admin_only:
           type: boolean
-          title: Limits community creation to admins only
-          description: Limits community creation to admins only.
         require_email_verification:
           type: boolean
-          title: Whether to require email verification
-          description: Whether to require email verification.
         application_question:
           type: string
-          title: Your application question form. This is in markdown, and can be many
-            questions
-          description: Your application question form. This is in markdown, and can be
-            many questions.
         private_instance:
           type: boolean
-          title: Whether your instance is public, or private
-          description: Whether your instance is public, or private.
         default_theme:
           type: string
-          description: The default theme. Usually "browser"
         default_post_listing_type:
           type: string
           enum:
@@ -3374,18 +3075,10 @@ components:
             - Local
             - Subscribed
             - ModeratorView
-          description: The default post listing type, usually "local"
-        default_post_listing_mode:
+        default_sort_type:
           type: string
           enum:
-            - List
-            - Card
-            - SmallCard
-          description: Default value for listing mode, usually "list"
-        default_post_sort_type:
-          type: string
-          enum:
-            - NewComments
+            - MostComments
             - Hot
             - New
             - Old
@@ -3394,8 +3087,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
+            - NewComments
             - Active
-            - MostComments
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -3404,97 +3097,68 @@ components:
             - TopNineMonths
             - Controversial
             - Scaled
-          description: The default post sort, usually "active"
-        default_comment_sort_type:
-          type: string
-          enum:
-            - Hot
-            - New
-            - Old
-            - Controversial
-            - Top
-          description: The default comment sort, usually "hot"
         legal_information:
           type: string
-          description: An optional page of legal information
         application_email_admins:
           type: boolean
-          title: Whether to email admins when receiving a new application
-          description: Whether to email admins when receiving a new application.
         hide_modlog_mod_names:
           type: boolean
-          title: Whether to hide moderator names from the modlog
-          description: Whether to hide moderator names from the modlog.
         discussion_languages:
           type: array
           items:
             type: number
-          title: A list of allowed discussion languages
-          description: A list of allowed discussion languages.
         slur_filter_regex:
           type: string
-          title: A regex string of items to filter
-          description: A regex string of items to filter.
         actor_name_max_length:
           type: number
-          title: The max length of actor names
-          description: The max length of actor names.
         rate_limit_message:
           type: number
-          title: The number of messages allowed in a given time frame
-          description: The number of messages allowed in a given time frame.
         rate_limit_message_per_second:
           type: number
         rate_limit_post:
           type: number
-          title: The number of posts allowed in a given time frame
-          description: The number of posts allowed in a given time frame.
         rate_limit_post_per_second:
           type: number
         rate_limit_register:
           type: number
-          title: The number of registrations allowed in a given time frame
-          description: The number of registrations allowed in a given time frame.
         rate_limit_register_per_second:
           type: number
         rate_limit_image:
           type: number
-          title: The number of image uploads allowed in a given time frame
-          description: The number of image uploads allowed in a given time frame.
         rate_limit_image_per_second:
           type: number
         rate_limit_comment:
           type: number
-          title: The number of comments allowed in a given time frame
-          description: The number of comments allowed in a given time frame.
         rate_limit_comment_per_second:
           type: number
         rate_limit_search:
           type: number
-          title: The number of searches allowed in a given time frame
-          description: The number of searches allowed in a given time frame.
         rate_limit_search_per_second:
           type: number
         federation_enabled:
           type: boolean
-          title: Whether to enable federation
-          description: Whether to enable federation.
         federation_debug:
           type: boolean
-          title: Enables federation debugging
-          description: Enables federation debugging.
         captcha_enabled:
           type: boolean
-          title: Whether to enable captchas for signups
-          description: Whether to enable captchas for signups.
         captcha_difficulty:
           type: string
-          description: The captcha difficulty. Can be easy, medium, or hard
+        allowed_instances:
+          type: array
+          items:
+            type: string
+        blocked_instances:
+          type: array
+          items:
+            type: string
         blocked_urls:
           type: array
           items:
             type: string
-          description: A list of blocked URLs
+        taglines:
+          type: array
+          items:
+            type: string
         registration_mode:
           type: string
           enum:
@@ -3503,53 +3167,15 @@ components:
             - Open
         reports_email_admins:
           type: boolean
-          title: Whether to email admins for new reports
-          description: Whether to email admins for new reports.
         content_warning:
           type: string
-          description: >-
-            If present, nsfw content is visible by default. Should be displayed
-            by frontends/clients
-
-            when the site is first opened by a user.
-        oauth_registration:
-          type: boolean
-          title: Whether or not external auth methods can auto-register users
-          description: Whether or not external auth methods can auto-register users.
-        post_upvotes:
+        default_post_listing_mode:
           type: string
           enum:
-            - All
-            - Local
-            - Disable
-          title: What kind of post upvotes your site allows
-          description: What kind of post upvotes your site allows.
-        post_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-          title: What kind of post downvotes your site allows
-          description: What kind of post downvotes your site allows.
-        comment_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-          title: What kind of comment upvotes your site allows
-          description: What kind of comment upvotes your site allows.
-        comment_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-          title: What kind of comment downvotes your site allows
-          description: What kind of comment downvotes your site allows.
+            - List
+            - Card
+            - SmallCard
       nullable: false
-      description: Edits a site.
     GenerateTotpSecretResponse:
       type: object
       properties:
@@ -3558,333 +3184,6 @@ components:
       nullable: false
       required:
         - totp_secret_url
-    MyUserInfo:
-      type: object
-      properties:
-        local_user_view:
-          $ref: "#/components/schemas/LocalUserView"
-        follows:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityFollowerView"
-        moderates:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityModeratorView"
-        community_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Community"
-        instance_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Instance"
-        person_blocks:
-          type: array
-          items:
-            $ref: "#/components/schemas/Person"
-        discussion_languages:
-          type: array
-          items:
-            type: number
-      nullable: false
-      required:
-        - local_user_view
-        - follows
-        - moderates
-        - community_blocks
-        - instance_blocks
-        - person_blocks
-        - discussion_languages
-      description: Your user info.
-    LocalUserView:
-      type: object
-      properties:
-        local_user:
-          $ref: "#/components/schemas/LocalUser"
-        local_user_vote_display_mode:
-          $ref: "#/components/schemas/LocalUserVoteDisplayMode"
-        person:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/PersonAggregates"
-      nullable: false
-      required:
-        - local_user
-        - local_user_vote_display_mode
-        - person
-        - counts
-      description: A local user view.
-    LocalUser:
-      type: object
-      properties:
-        id:
-          type: number
-        person_id:
-          type: number
-          title: The person_id for the local user
-          description: The person_id for the local user.
-        email:
-          type: string
-        show_nsfw:
-          type: boolean
-          title: Whether to show NSFW content
-          description: Whether to show NSFW content.
-        theme:
-          type: string
-        default_post_sort_type:
-          $ref: "#/components/schemas/PostSortType"
-        default_listing_type:
-          $ref: "#/components/schemas/ListingType"
-        interface_language:
-          type: string
-        show_avatars:
-          type: boolean
-          title: Whether to show avatars
-          description: Whether to show avatars.
-        send_notifications_to_email:
-          type: boolean
-        show_bot_accounts:
-          type: boolean
-          title: Whether to show bot accounts
-          description: Whether to show bot accounts.
-        show_read_posts:
-          type: boolean
-          title: Whether to show read posts
-          description: Whether to show read posts.
-        email_verified:
-          type: boolean
-          title: Whether their email has been verified
-          description: Whether their email has been verified.
-        accepted_application:
-          type: boolean
-          title: Whether their registration application has been accepted
-          description: Whether their registration application has been accepted.
-        open_links_in_new_tab:
-          type: boolean
-          title: Open links in a new tab
-          description: Open links in a new tab.
-        blur_nsfw:
-          type: boolean
-        infinite_scroll_enabled:
-          type: boolean
-          title: Whether infinite scroll is enabled
-          description: Whether infinite scroll is enabled.
-        admin:
-          type: boolean
-          title: Whether the person is an admin
-          description: Whether the person is an admin.
-        post_listing_mode:
-          $ref: "#/components/schemas/PostListingMode"
-          title: A post-view mode that changes how multiple post listings look
-          description: A post-view mode that changes how multiple post listings look.
-        totp_2fa_enabled:
-          type: boolean
-        enable_keyboard_navigation:
-          type: boolean
-          title: Whether to allow keyboard navigation (for browsing and interacting with
-            posts and comments)
-          description: Whether to allow keyboard navigation (for browsing and interacting
-            with posts and comments).
-        enable_animated_images:
-          type: boolean
-          description: >-
-            Whether user avatars and inline images in the UI that are gifs
-            should be allowed to play or
-
-            should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
-        collapse_bot_comments:
-          type: boolean
-          title: Whether to auto-collapse bot comments
-          description: Whether to auto-collapse bot comments.
-        default_comment_sort_type:
-          $ref: "#/components/schemas/CommentSortType"
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
-      nullable: false
-      required:
-        - id
-        - person_id
-        - show_nsfw
-        - theme
-        - default_post_sort_type
-        - default_listing_type
-        - interface_language
-        - show_avatars
-        - send_notifications_to_email
-        - show_bot_accounts
-        - show_read_posts
-        - email_verified
-        - accepted_application
-        - open_links_in_new_tab
-        - blur_nsfw
-        - infinite_scroll_enabled
-        - admin
-        - post_listing_mode
-        - totp_2fa_enabled
-        - enable_keyboard_navigation
-        - enable_animated_images
-        - enable_private_messages
-        - collapse_bot_comments
-        - default_comment_sort_type
-        - auto_mark_fetched_posts_as_read
-      description: A local user.
-    LocalUserVoteDisplayMode:
-      type: object
-      properties:
-        score:
-          type: boolean
-        upvotes:
-          type: boolean
-        downvotes:
-          type: boolean
-        upvote_percentage:
-          type: boolean
-      nullable: false
-      required:
-        - score
-        - upvotes
-        - downvotes
-        - upvote_percentage
-      description: The vote display settings for your user.
-    CommunityFollowerView:
-      type: object
-      properties:
-        community:
-          $ref: "#/components/schemas/Community"
-        follower:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - community
-        - follower
-      description: A community follower.
-    Community:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        title:
-          type: string
-          title: A longer title, that can contain other characters, and doesn't have to be
-            unique
-          description: A longer title, that can contain other characters, and doesn't have
-            to be unique.
-        sidebar:
-          type: string
-          title: A sidebar for the community in markdown
-          description: A sidebar for the community in markdown.
-        removed:
-          type: boolean
-          title: Whether the community is removed by a mod
-          description: Whether the community is removed by a mod.
-        published:
-          type: string
-        updated:
-          type: string
-        deleted:
-          type: boolean
-          title: Whether the community has been deleted by its creator
-          description: Whether the community has been deleted by its creator.
-        nsfw:
-          type: boolean
-          title: Whether its an NSFW community
-          description: Whether its an NSFW community.
-        actor_id:
-          type: string
-          title: The federated actor_id
-          description: The federated actor_id.
-        local:
-          type: boolean
-          title: Whether the community is local
-          description: Whether the community is local.
-        icon:
-          type: string
-          title: A URL for an icon
-          description: A URL for an icon.
-        banner:
-          type: string
-          title: A URL for a banner
-          description: A URL for a banner.
-        hidden:
-          type: boolean
-          title: Whether the community is hidden
-          description: Whether the community is hidden.
-        posting_restricted_to_mods:
-          type: boolean
-          title: Whether posting is restricted to mods only
-          description: Whether posting is restricted to mods only.
-        instance_id:
-          type: number
-        visibility:
-          $ref: "#/components/schemas/CommunityVisibility"
-        description:
-          type: string
-          title: A shorter, one-line description of the site
-          description: A shorter, one-line description of the site.
-      nullable: false
-      required:
-        - id
-        - name
-        - title
-        - removed
-        - published
-        - deleted
-        - nsfw
-        - actor_id
-        - local
-        - hidden
-        - posting_restricted_to_mods
-        - instance_id
-        - visibility
-      description: A community.
-    CommunityVisibility:
-      type: string
-      enum:
-        - Public
-        - LocalOnly
-        - Private
-      description: Defines who can browse and interact with content in a community.
-    CommunityModeratorView:
-      type: object
-      properties:
-        community:
-          $ref: "#/components/schemas/Community"
-        moderator:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - community
-        - moderator
-      description: A community moderator.
-    Instance:
-      type: object
-      properties:
-        id:
-          type: number
-        domain:
-          type: string
-        published:
-          type: string
-        updated:
-          type: string
-        software:
-          type: string
-        version:
-          type: string
-      nullable: false
-      required:
-        - id
-        - domain
-        - published
-      description: A federated instance / site.
     SuccessResponse:
       type: object
       properties:
@@ -3893,7 +3192,6 @@ components:
       nullable: false
       required:
         - success
-      description: Saves settings for your user.
     ListMedia:
       type: object
       properties:
@@ -3902,7 +3200,6 @@ components:
         limit:
           type: number
       nullable: false
-      description: Get your user's image / media uploads.
     ListMediaResponse:
       type: object
       properties:
@@ -3924,7 +3221,6 @@ components:
       required:
         - local_image
         - person
-      description: A local image view.
     LocalImage:
       type: object
       properties:
@@ -3990,8 +3286,6 @@ components:
             - AdminPurgeCommunity
             - AdminPurgePost
             - AdminPurgeComment
-            - AdminBlockInstance
-            - AdminAllowInstance
         other_person_id:
           type: number
         post_id:
@@ -3999,7 +3293,6 @@ components:
         comment_id:
           type: number
       nullable: false
-      description: Fetches the modlog.
     GetModlogResponse:
       type: object
       properties:
@@ -4063,14 +3356,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ModHideCommunityView"
-        admin_block_instance:
-          type: array
-          items:
-            $ref: "#/components/schemas/AdminBlockInstanceView"
-        admin_allow_instance:
-          type: array
-          items:
-            $ref: "#/components/schemas/AdminAllowInstanceView"
       nullable: false
       required:
         - removed_posts
@@ -4088,9 +3373,6 @@ components:
         - admin_purged_posts
         - admin_purged_comments
         - hidden_communities
-        - admin_block_instance
-        - admin_allow_instance
-      description: The modlog fetch response.
     ModRemovePostView:
       type: object
       properties:
@@ -4107,7 +3389,6 @@ components:
         - mod_remove_post
         - post
         - community
-      description: When a moderator removes a post.
     ModRemovePost:
       type: object
       properties:
@@ -4130,7 +3411,6 @@ components:
         - post_id
         - removed
         - when_
-      description: When a moderator removes a post.
     Post:
       type: object
       properties:
@@ -4140,81 +3420,46 @@ components:
           type: string
         url:
           type: string
-          title: An optional link / url for the post
-          description: An optional link / url for the post.
         body:
           type: string
-          title: An optional post body, in markdown
-          description: An optional post body, in markdown.
         creator_id:
           type: number
         community_id:
           type: number
         removed:
           type: boolean
-          title: Whether the post is removed
-          description: Whether the post is removed.
         locked:
           type: boolean
-          title: Whether the post is locked
-          description: Whether the post is locked.
         published:
           type: string
         updated:
           type: string
         deleted:
           type: boolean
-          title: Whether the post is deleted
-          description: Whether the post is deleted.
         nsfw:
           type: boolean
-          title: Whether the post is NSFW
-          description: Whether the post is NSFW.
         embed_title:
           type: string
-          title: A title for the link
-          description: A title for the link.
         embed_description:
           type: string
-          title: A description for the link
-          description: A description for the link.
         thumbnail_url:
           type: string
-          title: A thumbnail picture url
-          description: A thumbnail picture url.
         ap_id:
           type: string
-          title: The federated activity id / ap_id
-          description: The federated activity id / ap_id.
         local:
           type: boolean
-          title: Whether the post is local
-          description: Whether the post is local.
         embed_video_url:
           type: string
-          title: A video url for the link
-          description: A video url for the link.
         language_id:
           type: number
         featured_community:
           type: boolean
-          title: Whether the post is featured to its community
-          description: Whether the post is featured to its community.
         featured_local:
           type: boolean
-          title: Whether the post is featured to its site
-          description: Whether the post is featured to its site.
         url_content_type:
           type: string
         alt_text:
           type: string
-          title: An optional alt_text, usable for image posts
-          description: An optional alt_text, usable for image posts.
-        scheduled_publish_time:
-          type: string
-          title: Time at which the post will be published. None means publish immediately
-          description: Time at which the post will be published. None means publish
-            immediately.
       nullable: false
       required:
         - id
@@ -4231,7 +3476,6 @@ components:
         - language_id
         - featured_community
         - featured_local
-      description: A post.
     ModLockPostView:
       type: object
       properties:
@@ -4248,7 +3492,6 @@ components:
         - mod_lock_post
         - post
         - community
-      description: When a moderator locks a post (prevents new comments being made).
     ModLockPost:
       type: object
       properties:
@@ -4269,7 +3512,6 @@ components:
         - post_id
         - locked
         - when_
-      description: When a moderator locks a post (prevents new comments being made).
     ModFeaturePostView:
       type: object
       properties:
@@ -4286,7 +3528,6 @@ components:
         - mod_feature_post
         - post
         - community
-      description: When a moderator features a post on a community (pins it to the top).
     ModFeaturePost:
       type: object
       properties:
@@ -4310,7 +3551,6 @@ components:
         - featured
         - when_
         - is_featured_community
-      description: When a moderator features a post on a community (pins it to the top).
     ModRemoveCommentView:
       type: object
       properties:
@@ -4333,7 +3573,6 @@ components:
         - commenter
         - post
         - community
-      description: When a moderator removes a comment.
     ModRemoveComment:
       type: object
       properties:
@@ -4356,7 +3595,6 @@ components:
         - comment_id
         - removed
         - when_
-      description: When a moderator removes a comment.
     Comment:
       type: object
       properties:
@@ -4370,36 +3608,20 @@ components:
           type: string
         removed:
           type: boolean
-          title: Whether the comment has been removed
-          description: Whether the comment has been removed.
         published:
           type: string
         updated:
           type: string
         deleted:
           type: boolean
-          title: Whether the comment has been deleted by its creator
-          description: Whether the comment has been deleted by its creator.
         ap_id:
           type: string
-          title: The federated activity id / ap_id
-          description: The federated activity id / ap_id.
         local:
           type: boolean
-          title: Whether the comment is local
-          description: Whether the comment is local.
         path:
           type: string
-          description: >-
-            The path / tree location of a comment, separated by dots, ending
-            with the comment's id. Ex:
-
-            0.24.27
         distinguished:
           type: boolean
-          title: Whether the comment has been distinguished(speaking officially) by a mod
-          description: Whether the comment has been distinguished(speaking officially) by
-            a mod.
         language_id:
           type: number
       nullable: false
@@ -4416,7 +3638,6 @@ components:
         - path
         - distinguished
         - language_id
-      description: A comment.
     ModRemoveCommunityView:
       type: object
       properties:
@@ -4430,7 +3651,6 @@ components:
       required:
         - mod_remove_community
         - community
-      description: When a moderator removes a community.
     ModRemoveCommunity:
       type: object
       properties:
@@ -4453,7 +3673,6 @@ components:
         - community_id
         - removed
         - when_
-      description: When a moderator removes a community.
     ModBanFromCommunityView:
       type: object
       properties:
@@ -4470,7 +3689,6 @@ components:
         - mod_ban_from_community
         - community
         - banned_person
-      description: When someone is banned from a community.
     ModBanFromCommunity:
       type: object
       properties:
@@ -4498,7 +3716,6 @@ components:
         - community_id
         - banned
         - when_
-      description: When someone is banned from a community.
     ModBanView:
       type: object
       properties:
@@ -4512,7 +3729,6 @@ components:
       required:
         - mod_ban
         - banned_person
-      description: When someone is banned from the site.
     ModBan:
       type: object
       properties:
@@ -4537,7 +3753,6 @@ components:
         - other_person_id
         - banned
         - when_
-      description: When someone is banned from the site.
     ModAddCommunityView:
       type: object
       properties:
@@ -4554,7 +3769,6 @@ components:
         - mod_add_community
         - community
         - modded_person
-      description: When someone is added as a community moderator.
     ModAddCommunity:
       type: object
       properties:
@@ -4578,7 +3792,6 @@ components:
         - community_id
         - removed
         - when_
-      description: When someone is added as a community moderator.
     ModTransferCommunityView:
       type: object
       properties:
@@ -4595,7 +3808,6 @@ components:
         - mod_transfer_community
         - community
         - modded_person
-      description: When a moderator transfers a community to a new owner.
     ModTransferCommunity:
       type: object
       properties:
@@ -4616,7 +3828,6 @@ components:
         - other_person_id
         - community_id
         - when_
-      description: When a moderator transfers a community to a new owner.
     ModAddView:
       type: object
       properties:
@@ -4630,7 +3841,6 @@ components:
       required:
         - mod_add
         - modded_person
-      description: When someone is added as a site moderator.
     ModAdd:
       type: object
       properties:
@@ -4651,7 +3861,6 @@ components:
         - other_person_id
         - removed
         - when_
-      description: When someone is added as a site moderator.
     AdminPurgePersonView:
       type: object
       properties:
@@ -4662,7 +3871,6 @@ components:
       nullable: false
       required:
         - admin_purge_person
-      description: When an admin purges a person.
     AdminPurgePerson:
       type: object
       properties:
@@ -4679,7 +3887,6 @@ components:
         - id
         - admin_person_id
         - when_
-      description: When an admin purges a person.
     AdminPurgeCommunityView:
       type: object
       properties:
@@ -4690,7 +3897,6 @@ components:
       nullable: false
       required:
         - admin_purge_community
-      description: When an admin purges a community.
     AdminPurgeCommunity:
       type: object
       properties:
@@ -4707,7 +3913,6 @@ components:
         - id
         - admin_person_id
         - when_
-      description: When an admin purges a community.
     AdminPurgePostView:
       type: object
       properties:
@@ -4721,7 +3926,6 @@ components:
       required:
         - admin_purge_post
         - community
-      description: When an admin purges a post.
     AdminPurgePost:
       type: object
       properties:
@@ -4741,7 +3945,6 @@ components:
         - admin_person_id
         - community_id
         - when_
-      description: When an admin purges a post.
     AdminPurgeCommentView:
       type: object
       properties:
@@ -4755,7 +3958,6 @@ components:
       required:
         - admin_purge_comment
         - post
-      description: When an admin purges a comment.
     AdminPurgeComment:
       type: object
       properties:
@@ -4775,7 +3977,6 @@ components:
         - admin_person_id
         - post_id
         - when_
-      description: When an admin purges a comment.
     ModHideCommunityView:
       type: object
       properties:
@@ -4789,7 +3990,6 @@ components:
       required:
         - mod_hide_community
         - community
-      description: When a community is hidden from public view.
     ModHideCommunity:
       type: object
       properties:
@@ -4812,81 +4012,6 @@ components:
         - mod_person_id
         - when_
         - hidden
-      description: When a community is hidden from public view.
-    AdminBlockInstanceView:
-      type: object
-      properties:
-        admin_block_instance:
-          $ref: "#/components/schemas/AdminBlockInstance"
-        instance:
-          $ref: "#/components/schemas/Instance"
-        admin:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - admin_block_instance
-        - instance
-      description: When an admin purges a post.
-    AdminBlockInstance:
-      type: object
-      properties:
-        id:
-          type: number
-        instance_id:
-          type: number
-        admin_person_id:
-          type: number
-        blocked:
-          type: boolean
-        reason:
-          type: string
-        expires:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - instance_id
-        - admin_person_id
-        - blocked
-        - published
-    AdminAllowInstanceView:
-      type: object
-      properties:
-        admin_block_instance:
-          $ref: "#/components/schemas/AdminAllowInstance"
-        instance:
-          $ref: "#/components/schemas/Instance"
-        admin:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - admin_block_instance
-        - instance
-      description: When an admin purges a post.
-    AdminAllowInstance:
-      type: object
-      properties:
-        id:
-          type: number
-        instance_id:
-          type: number
-        admin_person_id:
-          type: number
-        allowed:
-          type: boolean
-        reason:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - instance_id
-        - admin_person_id
-        - allowed
-        - published
     Search:
       type: object
       properties:
@@ -4906,28 +4031,29 @@ components:
             - Posts
             - Communities
             - Users
+            - Url
         sort:
           type: string
           enum:
             - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
+            - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
             - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -4939,20 +4065,9 @@ components:
           type: number
         limit:
           type: number
-        title_only:
-          type: boolean
-        post_url_only:
-          type: boolean
-        saved_only:
-          type: boolean
-        liked_only:
-          type: boolean
-        disliked_only:
-          type: boolean
       nullable: false
       required:
         - q
-      description: Searches the site, given a query string, and some optional filters.
     SearchResponse:
       type: object
       properties:
@@ -4981,7 +4096,6 @@ components:
         - posts
         - communities
         - users
-      description: The search response, containing lists of the return type possibilities
     SearchType:
       type: string
       enum:
@@ -4990,7 +4104,7 @@ components:
         - Posts
         - Communities
         - Users
-      description: The type of content returned from a search.
+        - Url
     CommentView:
       type: object
       properties:
@@ -5034,7 +4148,6 @@ components:
         - subscribed
         - saved
         - creator_blocked
-      description: A comment view.
     CommentAggregates:
       type: object
       properties:
@@ -5050,12 +4163,6 @@ components:
           type: string
         child_count:
           type: number
-          title: The total number of children in this comment branch
-          description: The total number of children in this comment branch.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - comment_id
@@ -5064,17 +4171,12 @@ components:
         - downvotes
         - published
         - child_count
-        - report_count
-        - unresolved_report_count
-      description: Aggregate data for a comment.
     SubscribedType:
       type: string
       enum:
         - Subscribed
         - NotSubscribed
         - Pending
-        - ApprovalRequired
-      description: A type / status for a community subscribe.
     PostView:
       type: object
       properties:
@@ -5126,7 +4228,6 @@ components:
         - hidden
         - creator_blocked
         - unread_comments
-      description: A post view.
     ImageDetails:
       type: object
       properties:
@@ -5161,12 +4262,6 @@ components:
           type: string
         newest_comment_time:
           type: string
-          title: The time of the newest comment in the post
-          description: The time of the newest comment in the post.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - post_id
@@ -5176,9 +4271,6 @@ components:
         - downvotes
         - published
         - newest_comment_time
-        - report_count
-        - unresolved_report_count
-      description: Aggregate data for a post.
     CommunityView:
       type: object
       properties:
@@ -5199,7 +4291,6 @@ components:
         - blocked
         - counts
         - banned_from_community
-      description: A community view.
     CommunityAggregates:
       type: object
       properties:
@@ -5215,20 +4306,12 @@ components:
           type: string
         users_active_day:
           type: number
-          title: The number of users with any activity in the last day
-          description: The number of users with any activity in the last day.
         users_active_week:
           type: number
-          title: The number of users with any activity in the last week
-          description: The number of users with any activity in the last week.
         users_active_month:
           type: number
-          title: The number of users with any activity in the last month
-          description: The number of users with any activity in the last month.
         users_active_half_year:
           type: number
-          title: The number of users with any activity in the last year
-          description: The number of users with any activity in the last year.
         subscribers_local:
           type: number
       nullable: false
@@ -5243,18 +4326,14 @@ components:
         - users_active_month
         - users_active_half_year
         - subscribers_local
-      description: Aggregate data for a community.
     ResolveObject:
       type: object
       properties:
         q:
           type: string
-          description: "Can be the full url, or a shortened version like:
-            !fediverse@lemmy.ml"
       nullable: false
       required:
         - q
-      description: Does an apub fetch for an object.
     ResolveObjectResponse:
       type: object
       properties:
@@ -5267,42 +4346,23 @@ components:
         person:
           $ref: "#/components/schemas/PersonView"
       nullable: false
-      description: The response of an apub object fetch.
     CreateCommunity:
       type: object
       properties:
         name:
           type: string
-          title: The unique name
-          description: The unique name.
         title:
           type: string
-          title: A longer title
-          description: A longer title.
-        sidebar:
-          type: string
-          title: A sidebar for the community in markdown
-          description: A sidebar for the community in markdown.
         description:
           type: string
-          title: A shorter, one line description of your community
-          description: A shorter, one line description of your community.
         icon:
           type: string
-          title: An icon URL
-          description: An icon URL.
         banner:
           type: string
-          title: A banner URL
-          description: A banner URL.
         nsfw:
           type: boolean
-          title: Whether its an NSFW community
-          description: Whether its an NSFW community.
         posting_restricted_to_mods:
           type: boolean
-          title: Whether to restrict posting only to moderators
-          description: Whether to restrict posting only to moderators.
         discussion_languages:
           type: array
           items:
@@ -5312,12 +4372,10 @@ components:
           enum:
             - Public
             - LocalOnly
-            - Private
       nullable: false
       required:
         - name
         - title
-      description: Create a community.
     CommunityResponse:
       type: object
       properties:
@@ -5331,7 +4389,6 @@ components:
       required:
         - community_view
         - discussion_languages
-      description: A simple community response.
     GetCommunity:
       type: object
       properties:
@@ -5339,9 +4396,7 @@ components:
           type: number
         name:
           type: string
-          description: "Example: star_trek , or star_trek@xyz.tld"
       nullable: false
-      description: Get a community. Must provide either an id, or a name.
     GetCommunityResponse:
       type: object
       properties:
@@ -5362,7 +4417,6 @@ components:
         - community_view
         - moderators
         - discussion_languages
-      description: The community response.
     EditCommunity:
       type: object
       properties:
@@ -5370,32 +4424,16 @@ components:
           type: number
         title:
           type: string
-          title: A longer title
-          description: A longer title.
-        sidebar:
-          type: string
-          title: A sidebar for the community in markdown
-          description: A sidebar for the community in markdown.
         description:
           type: string
-          title: A shorter, one line description of your community
-          description: A shorter, one line description of your community.
         icon:
           type: string
-          title: An icon URL
-          description: An icon URL.
         banner:
           type: string
-          title: A banner URL
-          description: A banner URL.
         nsfw:
           type: boolean
-          title: Whether its an NSFW community
-          description: Whether its an NSFW community.
         posting_restricted_to_mods:
           type: boolean
-          title: Whether to restrict posting only to moderators
-          description: Whether to restrict posting only to moderators.
         discussion_languages:
           type: array
           items:
@@ -5405,11 +4443,9 @@ components:
           enum:
             - Public
             - LocalOnly
-            - Private
       nullable: false
       required:
         - community_id
-      description: Edit a community.
     ListCommunities:
       type: object
       properties:
@@ -5423,27 +4459,25 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - Active
             - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - NewComments
+            - Active
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         show_nsfw:
           type: boolean
         page:
@@ -5451,7 +4485,6 @@ components:
         limit:
           type: number
       nullable: false
-      description: Fetches a list of communities.
     ListCommunitiesResponse:
       type: object
       properties:
@@ -5462,7 +4495,6 @@ components:
       nullable: false
       required:
         - communities
-      description: The response for listing communities.
     FollowCommunity:
       type: object
       properties:
@@ -5474,77 +4506,6 @@ components:
       required:
         - community_id
         - follow
-      description: Follow / subscribe to a community.
-    GetCommunityPendingFollowsCount:
-      type: object
-      properties:
-        community_id:
-          type: number
-      nullable: false
-      required:
-        - community_id
-    GetCommunityPendingFollowsCountResponse:
-      type: object
-      properties:
-        count:
-          type: number
-      nullable: false
-      required:
-        - count
-    ListCommunityPendingFollows:
-      type: object
-      properties:
-        pending_only:
-          type: boolean
-          description: Only shows the unapproved applications
-        all_communities:
-          type: boolean
-        page:
-          type: number
-        limit:
-          type: number
-      nullable: false
-    ListCommunityPendingFollowsResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/PendingFollow"
-      nullable: false
-      required:
-        - items
-    PendingFollow:
-      type: object
-      properties:
-        person:
-          $ref: "#/components/schemas/Person"
-        community:
-          $ref: "#/components/schemas/Community"
-        is_new_instance:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-      nullable: false
-      required:
-        - person
-        - community
-        - is_new_instance
-        - subscribed
-    ApproveCommunityPendingFollower:
-      type: object
-      properties:
-        community_id:
-          type: number
-        follower_id:
-          type: number
-        approve:
-          type: boolean
-      nullable: false
-      required:
-        - community_id
-        - follower_id
-        - approve
     BlockCommunity:
       type: object
       properties:
@@ -5556,7 +4517,6 @@ components:
       required:
         - community_id
         - block
-      description: Block a community.
     BlockCommunityResponse:
       type: object
       properties:
@@ -5568,7 +4528,6 @@ components:
       required:
         - community_view
         - blocked
-      description: The block community response.
     DeleteCommunity:
       type: object
       properties:
@@ -5580,7 +4539,6 @@ components:
       required:
         - community_id
         - deleted
-      description: Delete your own community.
     HideCommunity:
       type: object
       properties:
@@ -5594,7 +4552,6 @@ components:
       required:
         - community_id
         - hidden
-      description: Hide a community from the main view.
     RemoveCommunity:
       type: object
       properties:
@@ -5608,7 +4565,6 @@ components:
       required:
         - community_id
         - removed
-      description: Remove a community (only doable by moderators).
     TransferCommunity:
       type: object
       properties:
@@ -5620,7 +4576,6 @@ components:
       required:
         - community_id
         - person_id
-      description: Transfer a community to a new owner.
     BanFromCommunity:
       type: object
       properties:
@@ -5630,33 +4585,17 @@ components:
           type: number
         ban:
           type: boolean
-        remove_or_restore_data:
+        remove_data:
           type: boolean
-          title: Optionally remove or restore all their data. Useful for new troll
-            accounts
-          description: >-
-            Optionally remove or restore all their data. Useful for new troll
-            accounts.
-
-            If ban is true, then this means remove. If ban is false, it means
-            restore.
         reason:
           type: string
         expires:
           type: number
-          title: A time that the ban will expire, in unix epoch seconds
-          description: >-
-            A time that the ban will expire, in unix epoch seconds.
-
-
-            An i64 unix timestamp is used for a simpler API client
-            implementation.
       nullable: false
       required:
         - community_id
         - person_id
         - ban
-      description: Ban a user from a community.
     BanFromCommunityResponse:
       type: object
       properties:
@@ -5668,7 +4607,6 @@ components:
       required:
         - person_view
         - banned
-      description: The response for banning a user from a community.
     AddModToCommunity:
       type: object
       properties:
@@ -5683,7 +4621,6 @@ components:
         - community_id
         - person_id
         - added
-      description: Add a moderator to a community.
     AddModToCommunityResponse:
       type: object
       properties:
@@ -5694,19 +4631,6 @@ components:
       nullable: false
       required:
         - moderators
-      description: The response of adding a moderator to a community.
-    GetRandomCommunity:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - All
-            - Local
-            - Subscribed
-            - ModeratorView
-      nullable: false
-      description: Fetches a random community
     CreatePost:
       type: object
       properties:
@@ -5718,34 +4642,20 @@ components:
           type: string
         body:
           type: string
-          title: An optional body for the post in markdown
-          description: An optional body for the post in markdown.
         alt_text:
           type: string
-          title: An optional alt_text, usable for image posts
-          description: An optional alt_text, usable for image posts.
         honeypot:
           type: string
-          title: A honeypot to catch bots. Should be None
-          description: A honeypot to catch bots. Should be None.
         nsfw:
           type: boolean
         language_id:
           type: number
         custom_thumbnail:
           type: string
-          title: Instead of fetching a thumbnail, use a custom one
-          description: Instead of fetching a thumbnail, use a custom one.
-        scheduled_publish_time:
-          type: number
-          title: Time when this post should be scheduled. Null means publish immediately
-          description: Time when this post should be scheduled. Null means publish
-            immediately.
       nullable: false
       required:
         - name
         - community_id
-      description: Create a post.
     PostResponse:
       type: object
       properties:
@@ -5762,7 +4672,6 @@ components:
         comment_id:
           type: number
       nullable: false
-      description: Get a post. Needs either the post id, or comment_id.
     GetPostResponse:
       type: object
       properties:
@@ -5778,17 +4687,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/PostView"
-          title: A list of cross-posts, or other times / communities this link has been
-            posted to
-          description: A list of cross-posts, or other times / communities this link has
-            been posted to.
       nullable: false
       required:
         - post_view
         - community_view
         - moderators
         - cross_posts
-      description: The post response.
     EditPost:
       type: object
       properties:
@@ -5800,29 +4704,17 @@ components:
           type: string
         body:
           type: string
-          title: An optional body for the post in markdown
-          description: An optional body for the post in markdown.
         alt_text:
           type: string
-          title: An optional alt_text, usable for image posts
-          description: An optional alt_text, usable for image posts.
         nsfw:
           type: boolean
         language_id:
           type: number
         custom_thumbnail:
           type: string
-          title: Instead of fetching a thumbnail, use a custom one
-          description: Instead of fetching a thumbnail, use a custom one.
-        scheduled_publish_time:
-          type: number
-          title: Time when this post should be scheduled. Null means publish immediately
-          description: Time when this post should be scheduled. Null means publish
-            immediately.
       nullable: false
       required:
         - post_id
-      description: Edit a post.
     DeletePost:
       type: object
       properties:
@@ -5834,7 +4726,6 @@ components:
       required:
         - post_id
         - deleted
-      description: Delete a post.
     RemovePost:
       type: object
       properties:
@@ -5848,42 +4739,32 @@ components:
       required:
         - post_id
         - removed
-      description: Remove a post (only doable by mods).
     MarkPostAsRead:
-      type: object
-      properties:
-        post_id:
-          type: number
-        read:
-          type: boolean
-      nullable: false
-      required:
-        - post_id
-        - read
-      description: Mark a post as read.
-    MarkManyPostsAsRead:
       type: object
       properties:
         post_ids:
           type: array
           items:
             type: number
+        read:
+          type: boolean
       nullable: false
       required:
         - post_ids
-      description: Mark several posts as read.
+        - read
     HidePost:
       type: object
       properties:
-        post_id:
-          type: number
+        post_ids:
+          type: array
+          items:
+            type: number
         hide:
           type: boolean
       nullable: false
       required:
-        - post_id
+        - post_ids
         - hide
-      description: Hide a post from list views
     LockPost:
       type: object
       properties:
@@ -5895,7 +4776,6 @@ components:
       required:
         - post_id
         - locked
-      description: Lock a post (prevent new comments).
     FeaturePost:
       type: object
       properties:
@@ -5910,13 +4790,11 @@ components:
         - post_id
         - featured
         - feature_type
-      description: Feature a post (stickies / pins to the top).
     PostFeatureType:
       type: string
       enum:
         - Local
         - Community
-      description: The feature type for a post.
     GetPosts:
       type: object
       properties:
@@ -5930,7 +4808,7 @@ components:
         sort:
           type: string
           enum:
-            - Active
+            - MostComments
             - Hot
             - New
             - Old
@@ -5939,8 +4817,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
-            - MostComments
             - NewComments
+            - Active
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -5951,7 +4829,6 @@ components:
             - Scaled
         page:
           type: number
-          description: DEPRECATED, use page_cursor
         limit:
           type: number
         community_id:
@@ -5968,23 +4845,11 @@ components:
           type: boolean
         show_read:
           type: boolean
-          description: If true, then show the read posts (even if your user setting is to
-            hide them)
         show_nsfw:
           type: boolean
-          description: If true, then show the nsfw posts (even if your user setting is to
-            hide them)
-        mark_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
-        no_comments_only:
-          type: boolean
-          description: If true, then only show posts with no comments
         page_cursor:
           type: string
       nullable: false
-      description: Get a list of posts.
     GetPostsResponse:
       type: object
       properties:
@@ -5994,11 +4859,9 @@ components:
             $ref: "#/components/schemas/PostView"
         next_page:
           type: string
-          description: the pagination cursor to use to fetch the next page
       nullable: false
       required:
         - posts
-      description: The post list response.
     CreatePostLike:
       type: object
       properties:
@@ -6006,13 +4869,10 @@ components:
           type: number
         score:
           type: number
-          title: Score must be -1, 0, or 1
-          description: Score must be -1, 0, or 1.
       nullable: false
       required:
         - post_id
         - score
-      description: Like a post.
     ListPostLikes:
       type: object
       properties:
@@ -6025,7 +4885,6 @@ components:
       nullable: false
       required:
         - post_id
-      description: List post likes. Admins-only.
     ListPostLikesResponse:
       type: object
       properties:
@@ -6036,7 +4895,6 @@ components:
       nullable: false
       required:
         - post_likes
-      description: The post likes response
     VoteView:
       type: object
       properties:
@@ -6051,7 +4909,6 @@ components:
         - creator
         - creator_banned_from_community
         - score
-      description: A vote view for checking a post or comments votes.
     SavePost:
       type: object
       properties:
@@ -6063,7 +4920,6 @@ components:
       required:
         - post_id
         - save
-      description: Save / bookmark a post.
     CreatePostReport:
       type: object
       properties:
@@ -6075,7 +4931,6 @@ components:
       required:
         - post_id
         - reason
-      description: Create a post report.
     PostReportResponse:
       type: object
       properties:
@@ -6084,7 +4939,6 @@ components:
       nullable: false
       required:
         - post_report_view
-      description: The post report response.
     PostReportView:
       type: object
       properties:
@@ -6139,7 +4993,6 @@ components:
         - creator_blocked
         - unread_comments
         - counts
-      description: A post report view.
     PostReport:
       type: object
       properties:
@@ -6151,16 +5004,10 @@ components:
           type: number
         original_post_name:
           type: string
-          title: The original post title
-          description: The original post title.
         original_post_url:
           type: string
-          title: The original post url
-          description: The original post url.
         original_post_body:
           type: string
-          title: The original post body
-          description: The original post body.
         reason:
           type: string
         resolved:
@@ -6180,7 +5027,6 @@ components:
         - reason
         - resolved
         - published
-      description: A post report.
     ResolvePostReport:
       type: object
       properties:
@@ -6192,7 +5038,6 @@ components:
       required:
         - report_id
         - resolved
-      description: Resolve a post report (mods only).
     ListPostReports:
       type: object
       properties:
@@ -6202,15 +5047,11 @@ components:
           type: number
         unresolved_only:
           type: boolean
-          description: Only shows the unresolved reports
         community_id:
           type: number
-          description: if no community is given, it returns reports for all communities
-            moderated by the auth user
         post_id:
           type: number
       nullable: false
-      description: List post reports.
     ListPostReportsResponse:
       type: object
       properties:
@@ -6221,7 +5062,6 @@ components:
       nullable: false
       required:
         - post_reports
-      description: The post reports response.
     GetSiteMetadata:
       type: object
       properties:
@@ -6230,7 +5070,6 @@ components:
       nullable: false
       required:
         - url
-      description: Get metadata for a given site.
     GetSiteMetadataResponse:
       type: object
       properties:
@@ -6239,12 +5078,9 @@ components:
       nullable: false
       required:
         - metadata
-      description: The site metadata response.
     LinkMetadata:
       type: object
       properties:
-        content_type:
-          type: string
         title:
           type: string
         description:
@@ -6253,8 +5089,9 @@ components:
           type: string
         embed_video_url:
           type: string
+        content_type:
+          type: string
       nullable: false
-      description: Site metadata, from its opengraph tags.
     CreateComment:
       type: object
       properties:
@@ -6270,7 +5107,6 @@ components:
       required:
         - content
         - post_id
-      description: Create a comment.
     CommentResponse:
       type: object
       properties:
@@ -6284,7 +5120,6 @@ components:
       required:
         - comment_view
         - recipient_ids
-      description: A comment response.
     EditComment:
       type: object
       properties:
@@ -6297,7 +5132,6 @@ components:
       nullable: false
       required:
         - comment_id
-      description: Edit a comment.
     DeleteComment:
       type: object
       properties:
@@ -6309,7 +5143,6 @@ components:
       required:
         - comment_id
         - deleted
-      description: Delete your own comment.
     RemoveComment:
       type: object
       properties:
@@ -6323,7 +5156,6 @@ components:
       required:
         - comment_id
         - removed
-      description: Remove a comment (only doable by mods).
     MarkCommentReplyAsRead:
       type: object
       properties:
@@ -6335,7 +5167,6 @@ components:
       required:
         - comment_reply_id
         - read
-      description: Mark a comment reply as read.
     CommentReplyResponse:
       type: object
       properties:
@@ -6344,7 +5175,6 @@ components:
       nullable: false
       required:
         - comment_reply_view
-      description: The response for a comment reply action.
     CommentReplyView:
       type: object
       properties:
@@ -6394,7 +5224,6 @@ components:
         - subscribed
         - saved
         - creator_blocked
-      description: A comment reply view.
     CommentReply:
       type: object
       properties:
@@ -6415,7 +5244,6 @@ components:
         - comment_id
         - read
         - published
-      description: A comment reply.
     CreateCommentLike:
       type: object
       properties:
@@ -6423,13 +5251,10 @@ components:
           type: number
         score:
           type: number
-          title: "Must be -1, 0, or 1 "
-          description: Must be -1, 0, or 1 .
       nullable: false
       required:
         - comment_id
         - score
-      description: Like a comment.
     ListCommentLikes:
       type: object
       properties:
@@ -6442,7 +5267,6 @@ components:
       nullable: false
       required:
         - comment_id
-      description: List comment likes. Admins-only.
     ListCommentLikesResponse:
       type: object
       properties:
@@ -6453,7 +5277,6 @@ components:
       nullable: false
       required:
         - comment_likes
-      description: The comment likes response
     SaveComment:
       type: object
       properties:
@@ -6465,7 +5288,6 @@ components:
       required:
         - comment_id
         - save
-      description: Save / bookmark a comment.
     DistinguishComment:
       type: object
       properties:
@@ -6477,7 +5299,6 @@ components:
       required:
         - comment_id
         - distinguished
-      description: Distinguish a comment (IE speak as moderator).
     GetComments:
       type: object
       properties:
@@ -6517,7 +5338,6 @@ components:
         disliked_only:
           type: boolean
       nullable: false
-      description: Get a list of comments.
     GetCommentsResponse:
       type: object
       properties:
@@ -6528,7 +5348,6 @@ components:
       nullable: false
       required:
         - comments
-      description: The comment list response.
     GetComment:
       type: object
       properties:
@@ -6537,7 +5356,6 @@ components:
       nullable: false
       required:
         - id
-      description: Fetch an individual comment.
     CreateCommentReport:
       type: object
       properties:
@@ -6549,7 +5367,6 @@ components:
       required:
         - comment_id
         - reason
-      description: Report a comment.
     CommentReportResponse:
       type: object
       properties:
@@ -6558,7 +5375,6 @@ components:
       nullable: false
       required:
         - comment_report_view
-      description: The comment report response.
     CommentReportView:
       type: object
       properties:
@@ -6607,7 +5423,6 @@ components:
         - creator_blocked
         - subscribed
         - saved
-      description: A comment report view.
     CommentReport:
       type: object
       properties:
@@ -6638,7 +5453,6 @@ components:
         - reason
         - resolved
         - published
-      description: A comment report.
     ResolveCommentReport:
       type: object
       properties:
@@ -6650,7 +5464,6 @@ components:
       required:
         - report_id
         - resolved
-      description: Resolve a comment report (only doable by mods).
     ListCommentReports:
       type: object
       properties:
@@ -6662,13 +5475,9 @@ components:
           type: number
         unresolved_only:
           type: boolean
-          description: Only shows the unresolved reports
         community_id:
           type: number
-          description: if no community is given, it returns reports for all communities
-            moderated by the auth user
       nullable: false
-      description: List comment reports.
     ListCommentReportsResponse:
       type: object
       properties:
@@ -6679,7 +5488,6 @@ components:
       nullable: false
       required:
         - comment_reports
-      description: The comment report list response.
     GetPrivateMessages:
       type: object
       properties:
@@ -6692,7 +5500,6 @@ components:
         creator_id:
           type: number
       nullable: false
-      description: Get your private messages.
     PrivateMessagesResponse:
       type: object
       properties:
@@ -6703,7 +5510,6 @@ components:
       nullable: false
       required:
         - private_messages
-      description: The private messages response.
     PrivateMessageView:
       type: object
       properties:
@@ -6718,7 +5524,6 @@ components:
         - private_message
         - creator
         - recipient
-      description: A private message view.
     PrivateMessage:
       type: object
       properties:
@@ -6753,7 +5558,6 @@ components:
         - published
         - ap_id
         - local
-      description: A private message.
     CreatePrivateMessage:
       type: object
       properties:
@@ -6765,7 +5569,6 @@ components:
       required:
         - content
         - recipient_id
-      description: Create a private message.
     PrivateMessageResponse:
       type: object
       properties:
@@ -6774,7 +5577,6 @@ components:
       nullable: false
       required:
         - private_message_view
-      description: A single private message response.
     EditPrivateMessage:
       type: object
       properties:
@@ -6786,7 +5588,6 @@ components:
       required:
         - private_message_id
         - content
-      description: Edit a private message.
     DeletePrivateMessage:
       type: object
       properties:
@@ -6798,7 +5599,6 @@ components:
       required:
         - private_message_id
         - deleted
-      description: Delete a private message.
     MarkPrivateMessageAsRead:
       type: object
       properties:
@@ -6810,7 +5610,6 @@ components:
       required:
         - private_message_id
         - read
-      description: Mark a private message as read.
     CreatePrivateMessageReport:
       type: object
       properties:
@@ -6822,7 +5621,6 @@ components:
       required:
         - private_message_id
         - reason
-      description: Create a report for a private message.
     PrivateMessageReportResponse:
       type: object
       properties:
@@ -6831,7 +5629,6 @@ components:
       nullable: false
       required:
         - private_message_report_view
-      description: A private message report response.
     PrivateMessageReportView:
       type: object
       properties:
@@ -6851,7 +5648,6 @@ components:
         - private_message
         - private_message_creator
         - creator
-      description: A private message report view.
     PrivateMessageReport:
       type: object
       properties:
@@ -6863,8 +5659,6 @@ components:
           type: number
         original_pm_text:
           type: string
-          title: The original text
-          description: The original text.
         reason:
           type: string
         resolved:
@@ -6884,7 +5678,6 @@ components:
         - reason
         - resolved
         - published
-      description: The private message report.
     ResolvePrivateMessageReport:
       type: object
       properties:
@@ -6896,7 +5689,6 @@ components:
       required:
         - report_id
         - resolved
-      description: Resolve a private message report.
     ListPrivateMessageReports:
       type: object
       properties:
@@ -6906,9 +5698,7 @@ components:
           type: number
         unresolved_only:
           type: boolean
-          description: Only shows the unresolved reports
       nullable: false
-      description: List private message reports.
     ListPrivateMessageReportsResponse:
       type: object
       properties:
@@ -6919,7 +5709,6 @@ components:
       nullable: false
       required:
         - private_message_reports
-      description: The response for list private message reports.
     Register:
       type: object
       properties:
@@ -6933,56 +5722,32 @@ components:
           type: boolean
         email:
           type: string
-          description: email is mandatory if email verification is enabled on the server
         captcha_uuid:
           type: string
-          title: The UUID of the captcha item
-          description: The UUID of the captcha item.
         captcha_answer:
           type: string
-          title: Your captcha answer
-          description: Your captcha answer.
         honeypot:
           type: string
-          title: A form field to trick signup bots. Should be None
-          description: A form field to trick signup bots. Should be None.
         answer:
           type: string
-          description: An answer is mandatory if require application is enabled on the
-            server
       nullable: false
       required:
         - username
         - password
         - password_verify
-      description: Register / Sign up to lemmy.
     LoginResponse:
       type: object
       properties:
         jwt:
           type: string
-          description: >-
-            This is None in response to `Register` if email verification is
-            enabled, or the server
-
-            requires registration applications.
         registration_created:
           type: boolean
-          title: If registration applications are required, this will return true for a
-            signup response
-          description: If registration applications are required, this will return true
-            for a signup response.
         verify_email_sent:
           type: boolean
-          title: If email verifications are required, this will return true for a signup
-            response
-          description: If email verifications are required, this will return true for a
-            signup response.
       nullable: false
       required:
         - registration_created
         - verify_email_sent
-      description: A response for your login.
     Login:
       type: object
       properties:
@@ -6992,13 +5757,10 @@ components:
           type: string
         totp_2fa_token:
           type: string
-          title: May be required, if totp is enabled for their account
-          description: May be required, if totp is enabled for their account.
       nullable: false
       required:
         - username_or_email
         - password
-      description: Logging into lemmy.
     GetPersonDetails:
       type: object
       properties:
@@ -7006,11 +5768,10 @@ components:
           type: number
         username:
           type: string
-          description: "Example: dessalines , or dessalines@xyz.tld"
         sort:
           type: string
           enum:
-            - Active
+            - MostComments
             - Hot
             - New
             - Old
@@ -7019,8 +5780,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
-            - MostComments
             - NewComments
+            - Active
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -7038,10 +5799,6 @@ components:
         saved_only:
           type: boolean
       nullable: false
-      description: |-
-        Gets a person's details.
-
-        Either person_id, or username are required.
     GetPersonDetailsResponse:
       type: object
       properties:
@@ -7067,7 +5824,6 @@ components:
         - comments
         - posts
         - moderates
-      description: A person's details response.
     GetPersonMentions:
       type: object
       properties:
@@ -7086,7 +5842,6 @@ components:
         unread_only:
           type: boolean
       nullable: false
-      description: Get mentions for your user.
     GetPersonMentionsResponse:
       type: object
       properties:
@@ -7097,7 +5852,6 @@ components:
       nullable: false
       required:
         - mentions
-      description: The response of mentions for your user.
     PersonMentionView:
       type: object
       properties:
@@ -7147,7 +5901,6 @@ components:
         - subscribed
         - saved
         - creator_blocked
-      description: A person mention view.
     PersonMention:
       type: object
       properties:
@@ -7168,7 +5921,6 @@ components:
         - comment_id
         - read
         - published
-      description: A person mention.
     MarkPersonMentionAsRead:
       type: object
       properties:
@@ -7180,7 +5932,6 @@ components:
       required:
         - person_mention_id
         - read
-      description: Mark a person mention as read.
     PersonMentionResponse:
       type: object
       properties:
@@ -7189,7 +5940,6 @@ components:
       nullable: false
       required:
         - person_mention_view
-      description: The response for a person mention action.
     GetReplies:
       type: object
       properties:
@@ -7208,7 +5958,6 @@ components:
         unread_only:
           type: boolean
       nullable: false
-      description: Get comment replies.
     GetRepliesResponse:
       type: object
       properties:
@@ -7219,7 +5968,6 @@ components:
       nullable: false
       required:
         - replies
-      description: Fetches your replies.
     BanPerson:
       type: object
       properties:
@@ -7227,32 +5975,16 @@ components:
           type: number
         ban:
           type: boolean
-        remove_or_restore_data:
+        remove_data:
           type: boolean
-          title: Optionally remove or restore all their data. Useful for new troll
-            accounts
-          description: >-
-            Optionally remove or restore all their data. Useful for new troll
-            accounts.
-
-            If ban is true, then this means remove. If ban is false, it means
-            restore.
         reason:
           type: string
         expires:
           type: number
-          title: A time that the ban will expire, in unix epoch seconds
-          description: >-
-            A time that the ban will expire, in unix epoch seconds.
-
-
-            An i64 unix timestamp is used for a simpler API client
-            implementation.
       nullable: false
       required:
         - person_id
         - ban
-      description: Ban a person from the site.
     BanPersonResponse:
       type: object
       properties:
@@ -7264,7 +5996,6 @@ components:
       required:
         - person_view
         - banned
-      description: A response for a banned person.
     BannedPersonsResponse:
       type: object
       properties:
@@ -7275,7 +6006,6 @@ components:
       nullable: false
       required:
         - banned
-      description: The list of banned persons.
     BlockPerson:
       type: object
       properties:
@@ -7287,7 +6017,6 @@ components:
       required:
         - person_id
         - block
-      description: Block a person.
     BlockPersonResponse:
       type: object
       properties:
@@ -7299,35 +6028,26 @@ components:
       required:
         - person_view
         - blocked
-      description: The response for a person block.
     GetCaptchaResponse:
       type: object
       properties:
         ok:
           $ref: "#/components/schemas/CaptchaResponse"
-          title: Will be None if captchas are disabled
-          description: Will be None if captchas are disabled.
       nullable: false
-      description: A wrapper for the captcha response.
     CaptchaResponse:
       type: object
       properties:
         png:
           type: string
-          description: A Base64 encoded png
         wav:
           type: string
-          description: A Base64 encoded wav audio
         uuid:
           type: string
-          title: The UUID for the captcha item
-          description: The UUID for the captcha item.
       nullable: false
       required:
         - png
         - wav
         - uuid
-      description: A captcha response.
     DeleteAccount:
       type: object
       properties:
@@ -7339,7 +6059,6 @@ components:
       required:
         - password
         - delete_content
-      description: Delete your account.
     PasswordReset:
       type: object
       properties:
@@ -7348,7 +6067,6 @@ components:
       nullable: false
       required:
         - email
-      description: Reset your password via email.
     PasswordChangeAfterReset:
       type: object
       properties:
@@ -7363,42 +6081,21 @@ components:
         - token
         - password
         - password_verify
-      description: Change your password after receiving a reset request.
     SaveUserSettings:
       type: object
       properties:
         show_nsfw:
           type: boolean
-          title: Show nsfw posts
-          description: Show nsfw posts.
         blur_nsfw:
           type: boolean
-          title: Blur nsfw posts
-          description: Blur nsfw posts.
+        auto_expand:
+          type: boolean
         theme:
           type: string
-          title: Your user's theme
-          description: Your user's theme.
-        default_listing_type:
+        default_sort_type:
           type: string
           enum:
-            - All
-            - Local
-            - Subscribed
-            - ModeratorView
-          description: The default post listing type, usually "local"
-        post_listing_mode:
-          type: string
-          enum:
-            - List
-            - Card
-            - SmallCard
-          title: A post-view mode that changes how multiple post listings look
-          description: A post-view mode that changes how multiple post listings look.
-        default_post_sort_type:
-          type: string
-          enum:
-            - MostComments
+            - NewComments
             - Scaled
             - Controversial
             - TopNineMonths
@@ -7407,8 +6104,8 @@ components:
             - TopTwelveHour
             - TopSixHour
             - TopHour
-            - NewComments
             - Active
+            - MostComments
             - TopAll
             - TopYear
             - TopMonth
@@ -7417,113 +6114,66 @@ components:
             - Old
             - New
             - Hot
-          description: The default post sort, usually "active"
-        default_comment_sort_type:
+        default_listing_type:
           type: string
           enum:
-            - Hot
-            - New
-            - Old
-            - Controversial
-            - Top
-          description: The default comment sort, usually "hot"
+            - All
+            - Local
+            - Subscribed
+            - ModeratorView
         interface_language:
           type: string
-          description: The language of the lemmy interface
         avatar:
           type: string
-          title: A URL for your avatar
-          description: A URL for your avatar.
         banner:
           type: string
-          title: A URL for your banner
-          description: A URL for your banner.
         display_name:
           type: string
-          title: Your display name, which can contain strange characters, and does not
-            need to be unique
-          description: Your display name, which can contain strange characters, and does
-            not need to be unique.
         email:
           type: string
-          title: Your email
-          description: Your email.
         bio:
           type: string
-          title: Your bio / info, in markdown
-          description: Your bio / info, in markdown.
         matrix_user_id:
           type: string
-          description: "Your matrix user id. Ex:"
         show_avatars:
           type: boolean
-          title: Whether to show or hide avatars
-          description: Whether to show or hide avatars.
         send_notifications_to_email:
           type: boolean
-          title: Sends notifications to your email
-          description: Sends notifications to your email.
         bot_account:
           type: boolean
-          title: Whether this account is a bot account. Users can hide these accounts
-            easily if they wish
-          description: Whether this account is a bot account. Users can hide these
-            accounts easily if they wish.
         show_bot_accounts:
           type: boolean
-          title: Whether to show bot accounts
-          description: Whether to show bot accounts.
         show_read_posts:
           type: boolean
-          title: Whether to show read posts
-          description: Whether to show read posts.
         discussion_languages:
           type: array
           items:
             type: number
-          title: A list of languages you are able to see discussion in
-          description: A list of languages you are able to see discussion in.
         open_links_in_new_tab:
           type: boolean
-          description: Open links in a new tab
         infinite_scroll_enabled:
           type: boolean
-          description: Enable infinite scroll
+        post_listing_mode:
+          type: string
+          enum:
+            - List
+            - Card
+            - SmallCard
         enable_keyboard_navigation:
           type: boolean
-          title: Whether to allow keyboard navigation (for browsing and interacting with
-            posts and comments)
-          description: Whether to allow keyboard navigation (for browsing and interacting
-            with posts and comments).
         enable_animated_images:
           type: boolean
-          description: >-
-            Whether user avatars or inline images in the UI that are gifs should
-            be allowed to play or
-
-            should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
-          title: Whether to auto-collapse bot comments
-          description: Whether to auto-collapse bot comments.
         show_scores:
           type: boolean
-          description: Some vote display mode settings
         show_upvotes:
           type: boolean
         show_downvotes:
           type: boolean
         show_upvote_percentage:
           type: boolean
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
       nullable: false
-      description: Saves settings for your user.
     ChangePassword:
       type: object
       properties:
@@ -7538,14 +6188,12 @@ components:
         - new_password
         - new_password_verify
         - old_password
-      description: Changes your account password.
     GetReportCount:
       type: object
       properties:
         community_id:
           type: number
       nullable: false
-      description: Get a count of the number of reports.
     GetReportCountResponse:
       type: object
       properties:
@@ -7561,7 +6209,6 @@ components:
       required:
         - comment_reports
         - post_reports
-      description: A response for the number of reports.
     GetUnreadCountResponse:
       type: object
       properties:
@@ -7576,7 +6223,6 @@ components:
         - replies
         - mentions
         - private_messages
-      description: A response containing counts for your notifications.
     VerifyEmail:
       type: object
       properties:
@@ -7585,7 +6231,6 @@ components:
       nullable: false
       required:
         - token
-      description: Verify your email.
     AddAdmin:
       type: object
       properties:
@@ -7597,7 +6242,6 @@ components:
       required:
         - person_id
         - added
-      description: Adds an admin to a site.
     AddAdminResponse:
       type: object
       properties:
@@ -7608,7 +6252,6 @@ components:
       nullable: false
       required:
         - admins
-      description: The response of current admins.
     GetUnreadRegistrationApplicationCountResponse:
       type: object
       properties:
@@ -7617,19 +6260,16 @@ components:
       nullable: false
       required:
         - registration_applications
-      description: The count of unread registration applications.
     ListRegistrationApplications:
       type: object
       properties:
         unread_only:
           type: boolean
-          description: Only shows the unread applications (IE those without an admin actor)
         page:
           type: number
         limit:
           type: number
       nullable: false
-      description: Fetches a list of registration applications.
     ListRegistrationApplicationsResponse:
       type: object
       properties:
@@ -7640,7 +6280,6 @@ components:
       nullable: false
       required:
         - registration_applications
-      description: The list of registration applications.
     RegistrationApplicationView:
       type: object
       properties:
@@ -7657,7 +6296,6 @@ components:
         - registration_application
         - creator_local_user
         - creator
-      description: A registration application view.
     RegistrationApplication:
       type: object
       properties:
@@ -7679,7 +6317,6 @@ components:
         - local_user_id
         - answer
         - published
-      description: A registration application.
     ApproveRegistrationApplication:
       type: object
       properties:
@@ -7693,7 +6330,6 @@ components:
       required:
         - id
         - approve
-      description: Approves a registration application.
     RegistrationApplicationResponse:
       type: object
       properties:
@@ -7702,7 +6338,6 @@ components:
       nullable: false
       required:
         - registration_application
-      description: The response of an action done to a registration application.
     GetRegistrationApplication:
       type: object
       properties:
@@ -7711,7 +6346,6 @@ components:
       nullable: false
       required:
         - person_id
-      description: Gets a registration application for a person
     PurgePerson:
       type: object
       properties:
@@ -7722,8 +6356,6 @@ components:
       nullable: false
       required:
         - person_id
-      description: Purges a person from the database. This will delete all content
-        attached to that person.
     PurgeCommunity:
       type: object
       properties:
@@ -7734,8 +6366,6 @@ components:
       nullable: false
       required:
         - community_id
-      description: Purges a community from the database. This will delete all content
-        attached to that community.
     PurgePost:
       type: object
       properties:
@@ -7746,8 +6376,6 @@ components:
       nullable: false
       required:
         - post_id
-      description: Purges a post from the database. This will delete all content
-        attached to that post.
     PurgeComment:
       type: object
       properties:
@@ -7758,8 +6386,6 @@ components:
       nullable: false
       required:
         - comment_id
-      description: Purges a comment from the database. This will delete all content
-        attached to that comment.
     CreateCustomEmoji:
       type: object
       properties:
@@ -7782,7 +6408,6 @@ components:
         - image_url
         - alt_text
         - keywords
-      description: Create a custom emoji.
     CustomEmojiResponse:
       type: object
       properties:
@@ -7791,59 +6416,6 @@ components:
       nullable: false
       required:
         - custom_emoji
-      description: A response for a custom emoji.
-    CustomEmojiView:
-      type: object
-      properties:
-        custom_emoji:
-          $ref: "#/components/schemas/CustomEmoji"
-        keywords:
-          type: array
-          items:
-            $ref: "#/components/schemas/CustomEmojiKeyword"
-      nullable: false
-      required:
-        - custom_emoji
-        - keywords
-      description: A custom emoji view.
-    CustomEmoji:
-      type: object
-      properties:
-        id:
-          type: number
-        shortcode:
-          type: string
-        image_url:
-          type: string
-        alt_text:
-          type: string
-        category:
-          type: string
-        published:
-          type: string
-        updated:
-          type: string
-      nullable: false
-      required:
-        - id
-        - shortcode
-        - image_url
-        - alt_text
-        - category
-        - published
-      description: A custom emoji.
-    CustomEmojiKeyword:
-      type: object
-      properties:
-        custom_emoji_id:
-          type: number
-        keyword:
-          type: string
-      nullable: false
-      required:
-        - custom_emoji_id
-        - keyword
-      description: A custom keyword for an emoji.
     EditCustomEmoji:
       type: object
       properties:
@@ -7866,7 +6438,6 @@ components:
         - image_url
         - alt_text
         - keywords
-      description: Edit  a custom emoji.
     DeleteCustomEmoji:
       type: object
       properties:
@@ -7875,205 +6446,12 @@ components:
       nullable: false
       required:
         - id
-      description: Delete a custom emoji.
-    ListCustomEmojis:
-      type: object
-      properties:
-        page:
-          type: number
-        limit:
-          type: number
-        category:
-          type: string
-        ignore_page_limits:
-          type: boolean
-      nullable: false
-      description: Fetches a list of custom emojis.
-    ListCustomEmojisResponse:
-      type: object
-      properties:
-        custom_emojis:
-          type: array
-          items:
-            $ref: "#/components/schemas/CustomEmojiView"
-      nullable: false
-      required:
-        - custom_emojis
-      description: A response for custom emojis.
-    CreateTagline:
-      type: object
-      properties:
-        content:
-          type: string
-      nullable: false
-      required:
-        - content
-      description: Create a tagline
-    TaglineResponse:
-      type: object
-      properties:
-        tagline:
-          $ref: "#/components/schemas/Tagline"
-      nullable: false
-      required:
-        - tagline
-    UpdateTagline:
-      type: object
-      properties:
-        id:
-          type: number
-        content:
-          type: string
-      nullable: false
-      required:
-        - id
-        - content
-      description: Update a tagline
-    DeleteTagline:
-      type: object
-      properties:
-        id:
-          type: number
-      nullable: false
-      required:
-        - id
-      description: Delete a tagline
-    ListTaglines:
-      type: object
-      properties:
-        page:
-          type: number
-        limit:
-          type: number
-      nullable: false
-      description: Fetches a list of taglines.
-    ListTaglinesResponse:
-      type: object
-      properties:
-        taglines:
-          type: array
-          items:
-            $ref: "#/components/schemas/Tagline"
-      nullable: false
-      required:
-        - taglines
-      description: A response for taglines.
-    CreateOAuthProvider:
-      type: object
-      properties:
-        display_name:
-          type: string
-        issuer:
-          type: string
-        authorization_endpoint:
-          type: string
-        token_endpoint:
-          type: string
-        userinfo_endpoint:
-          type: string
-        id_claim:
-          type: string
-        client_id:
-          type: string
-        client_secret:
-          type: string
-        scopes:
-          type: string
-        auto_verify_email:
-          type: boolean
-        account_linking_enabled:
-          type: boolean
-        use_pkce:
-          type: boolean
-        enabled:
-          type: boolean
-      nullable: false
-      required:
-        - display_name
-        - issuer
-        - authorization_endpoint
-        - token_endpoint
-        - userinfo_endpoint
-        - id_claim
-        - client_id
-        - client_secret
-        - scopes
-      description: Create an external auth method.
-    EditOAuthProvider:
-      type: object
-      properties:
-        id:
-          type: number
-        display_name:
-          type: string
-        authorization_endpoint:
-          type: string
-        token_endpoint:
-          type: string
-        userinfo_endpoint:
-          type: string
-        id_claim:
-          type: string
-        client_secret:
-          type: string
-        scopes:
-          type: string
-        auto_verify_email:
-          type: boolean
-        account_linking_enabled:
-          type: boolean
-        use_pkce:
-          type: boolean
-        enabled:
-          type: boolean
-      nullable: false
-      required:
-        - id
-      description: Edit an external auth method.
-    DeleteOAuthProvider:
-      type: object
-      properties:
-        id:
-          type: number
-      nullable: false
-      required:
-        - id
-      description: Delete an external auth method.
-    AuthenticateWithOauth:
-      type: object
-      properties:
-        code:
-          type: string
-        pkce_code_verifier:
-          type: string
-        oauth_provider_id:
-          type: number
-        redirect_uri:
-          type: string
-        show_nsfw:
-          type: boolean
-        username:
-          type: string
-          description: Username is mandatory at registration time
-        answer:
-          type: string
-          description: An answer is mandatory if require application is enabled on the
-            server
-      nullable: false
-      required:
-        - code
-        - oauth_provider_id
-        - redirect_uri
-      description: Logging in with an OAuth 2.0 authorization
     GetFederatedInstancesResponse:
       type: object
       properties:
         federated_instances:
           $ref: "#/components/schemas/FederatedInstances"
-          title: Optional, because federation may be disabled
-          description: Optional, because federation may be disabled.
       nullable: false
-      description: A response of federated instances.
     FederatedInstances:
       type: object
       properties:
@@ -8094,17 +6472,9 @@ components:
         - linked
         - allowed
         - blocked
-      description: A list of federated instances.
     InstanceWithFederationState:
       type: object
       properties:
-        federation_state:
-          $ref: "#/components/schemas/ReadableFederationState"
-          description: >-
-            if federation to this instance is or was active, show state of
-            outgoing federation to this
-
-            instance
         id:
           type: number
         domain:
@@ -8117,6 +6487,8 @@ components:
           type: string
         version:
           type: string
+        federation_state:
+          $ref: "#/components/schemas/ReadableFederationState"
       nullable: false
       required:
         - id
@@ -8125,28 +6497,23 @@ components:
     ReadableFederationState:
       type: object
       properties:
-        next_retry:
-          type: string
-          description: timestamp of the next retry attempt (null if fail count is 0)
         instance_id:
           type: number
         last_successful_id:
           type: number
-          description: the last successfully sent activity id
         last_successful_published_time:
           type: string
         fail_count:
           type: number
-          description: how many failed attempts have been made to send the next activity
         last_retry:
           type: string
-          description: timestamp of the last retry attempt (when the last failing activity
-            was resent)
+        next_retry:
+          type: string
       nullable: false
       required:
         - instance_id
         - fail_count
-    UserBlockInstanceParams:
+    BlockInstance:
       type: object
       properties:
         instance_id:
@@ -8157,35 +6524,14 @@ components:
       required:
         - instance_id
         - block
-      description: Block an instance as user
-    AdminBlockInstanceParams:
+    BlockInstanceResponse:
       type: object
       properties:
-        instance:
-          type: string
-        block:
+        blocked:
           type: boolean
-        reason:
-          type: string
-        expires:
-          type: string
       nullable: false
       required:
-        - instance
-        - block
-    AdminAllowInstanceParams:
-      type: object
-      properties:
-        instance:
-          type: string
-        allow:
-          type: boolean
-        reason:
-          type: string
-      nullable: false
-      required:
-        - instance
-        - allow
+        - blocked
     UploadImage:
       type: object
       properties:
