@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.9"
+    "version": "0.19.4-alpha.8"
   },
   "servers": [
     {
@@ -27,9 +27,6 @@
     },
     {
       "name": "User/Totp"
-    },
-    {
-      "name": "Admin"
     },
     {
       "name": "Modlog"
@@ -69,6 +66,9 @@
     },
     {
       "name": "User/Mention"
+    },
+    {
+      "name": "Admin"
     },
     {
       "name": "Admin/RegistrationApplication"
@@ -298,43 +298,6 @@
         ],
         "tags": [
           "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListMediaResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/list_all_media": {
-      "get": {
-        "operationId": "listAllMedia",
-        "description": "List all the media known to your instance.",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListMedia/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListMedia/properties/limit"
-            }
-          }
-        ],
-        "tags": [
-          "Admin"
         ],
         "responses": {
           "200": {
@@ -3558,6 +3521,12 @@
             "items": {
               "$ref": "#/components/schemas/CustomEmojiView"
             }
+          },
+          "blocked_urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalSiteUrlBlocklist"
+            }
           }
         },
         "nullable": false,
@@ -3568,7 +3537,8 @@
           "all_languages",
           "discussion_languages",
           "taglines",
-          "custom_emojis"
+          "custom_emojis",
+          "blocked_urls"
         ]
       },
       "SiteView": {
@@ -3631,6 +3601,12 @@
           "inbox_url": {
             "type": "string"
           },
+          "private_key": {
+            "type": "string"
+          },
+          "public_key": {
+            "type": "string"
+          },
           "instance_id": {
             "type": "number"
           },
@@ -3646,6 +3622,7 @@
           "actor_id",
           "last_refreshed_at",
           "inbox_url",
+          "public_key",
           "instance_id"
         ]
       },
@@ -4090,9 +4067,6 @@
           "local_user": {
             "$ref": "#/components/schemas/LocalUser"
           },
-          "local_user_vote_display_mode": {
-            "$ref": "#/components/schemas/LocalUserVoteDisplayMode"
-          },
           "person": {
             "$ref": "#/components/schemas/Person"
           },
@@ -4103,7 +4077,6 @@
         "nullable": false,
         "required": [
           "local_user",
-          "local_user_vote_display_mode",
           "person",
           "counts"
         ]
@@ -4213,34 +4186,6 @@
           "enable_keyboard_navigation",
           "enable_animated_images",
           "collapse_bot_comments"
-        ]
-      },
-      "LocalUserVoteDisplayMode": {
-        "type": "object",
-        "properties": {
-          "local_user_id": {
-            "type": "number"
-          },
-          "score": {
-            "type": "boolean"
-          },
-          "upvotes": {
-            "type": "boolean"
-          },
-          "downvotes": {
-            "type": "boolean"
-          },
-          "upvote_percentage": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "local_user_id",
-          "score",
-          "upvotes",
-          "downvotes",
-          "upvote_percentage"
         ]
       },
       "CommunityFollowerView": {
@@ -4553,6 +4498,29 @@
         "required": [
           "custom_emoji_id",
           "keyword"
+        ]
+      },
+      "LocalSiteUrlBlocklist": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "url",
+          "published"
         ]
       },
       "CreateSite": {
@@ -4911,6 +4879,12 @@
               "type": "string"
             }
           },
+          "blocked_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "taglines": {
             "type": "array",
             "items": {
@@ -5011,6 +4985,7 @@
         },
         "nullable": false,
         "required": [
+          "local_user_id",
           "pictrs_alias",
           "pictrs_delete_token",
           "published"
@@ -7396,31 +7371,7 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
-          "creator_is_moderator": {
-            "type": "boolean"
-          },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
-          },
-          "saved": {
-            "type": "boolean"
-          },
-          "read": {
-            "type": "boolean"
-          },
-          "hidden": {
-            "type": "boolean"
-          },
-          "creator_blocked": {
-            "type": "boolean"
-          },
           "my_vote": {
-            "type": "number"
-          },
-          "unread_comments": {
             "type": "number"
           },
           "counts": {
@@ -7438,14 +7389,6 @@
           "creator",
           "post_creator",
           "creator_banned_from_community",
-          "creator_is_moderator",
-          "creator_is_admin",
-          "subscribed",
-          "saved",
-          "read",
-          "hidden",
-          "creator_blocked",
-          "unread_comments",
           "counts"
         ]
       },
@@ -8025,21 +7968,6 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
-          "creator_is_moderator": {
-            "type": "boolean"
-          },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
-          "creator_blocked": {
-            "type": "boolean"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
-          },
-          "saved": {
-            "type": "boolean"
-          },
           "my_vote": {
             "type": "number"
           },
@@ -8056,12 +7984,7 @@
           "creator",
           "comment_creator",
           "counts",
-          "creator_banned_from_community",
-          "creator_is_moderator",
-          "creator_is_admin",
-          "creator_blocked",
-          "subscribed",
-          "saved"
+          "creator_banned_from_community"
         ]
       },
       "CommentReport": {
@@ -9014,6 +8937,9 @@
           "auto_expand": {
             "type": "boolean"
           },
+          "show_scores": {
+            "type": "boolean"
+          },
           "theme": {
             "type": "string"
           },
@@ -9113,18 +9039,6 @@
             "type": "boolean"
           },
           "collapse_bot_comments": {
-            "type": "boolean"
-          },
-          "show_scores": {
-            "type": "boolean"
-          },
-          "show_upvotes": {
-            "type": "boolean"
-          },
-          "show_downvotes": {
-            "type": "boolean"
-          },
-          "show_upvote_percentage": {
             "type": "boolean"
           }
         },

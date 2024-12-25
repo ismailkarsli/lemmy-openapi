@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.9
+  version: 0.19.4-alpha.8
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -13,7 +13,6 @@ tags:
   - name: Site
   - name: User
   - name: User/Totp
-  - name: Admin
   - name: Modlog
   - name: Search
   - name: ResolveObject
@@ -27,6 +26,7 @@ tags:
   - name: PrivateMessage
   - name: PrivateMessage/Report
   - name: User/Mention
+  - name: Admin
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -171,28 +171,6 @@ paths:
             $ref: "#/components/schemas/ListMedia/properties/limit"
       tags:
         - User
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListMediaResponse"
-  /admin/list_all_media:
-    get:
-      operationId: listAllMedia
-      description: List all the media known to your instance.
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/limit"
-      tags:
-        - Admin
       responses:
         "200":
           description: Successful response
@@ -2126,6 +2104,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CustomEmojiView"
+        blocked_urls:
+          type: array
+          items:
+            $ref: "#/components/schemas/LocalSiteUrlBlocklist"
       nullable: false
       required:
         - site_view
@@ -2135,6 +2117,7 @@ components:
         - discussion_languages
         - taglines
         - custom_emojis
+        - blocked_urls
     SiteView:
       type: object
       properties:
@@ -2177,6 +2160,10 @@ components:
           type: string
         inbox_url:
           type: string
+        private_key:
+          type: string
+        public_key:
+          type: string
         instance_id:
           type: number
         content_warning:
@@ -2189,6 +2176,7 @@ components:
         - actor_id
         - last_refreshed_at
         - inbox_url
+        - public_key
         - instance_id
     LocalSite:
       type: object
@@ -2514,8 +2502,6 @@ components:
       properties:
         local_user:
           $ref: "#/components/schemas/LocalUser"
-        local_user_vote_display_mode:
-          $ref: "#/components/schemas/LocalUserVoteDisplayMode"
         person:
           $ref: "#/components/schemas/Person"
         counts:
@@ -2523,7 +2509,6 @@ components:
       nullable: false
       required:
         - local_user
-        - local_user_vote_display_mode
         - person
         - counts
     LocalUser:
@@ -2605,26 +2590,6 @@ components:
         - enable_keyboard_navigation
         - enable_animated_images
         - collapse_bot_comments
-    LocalUserVoteDisplayMode:
-      type: object
-      properties:
-        local_user_id:
-          type: number
-        score:
-          type: boolean
-        upvotes:
-          type: boolean
-        downvotes:
-          type: boolean
-        upvote_percentage:
-          type: boolean
-      nullable: false
-      required:
-        - local_user_id
-        - score
-        - upvotes
-        - downvotes
-        - upvote_percentage
     CommunityFollowerView:
       type: object
       properties:
@@ -2844,6 +2809,22 @@ components:
       required:
         - custom_emoji_id
         - keyword
+    LocalSiteUrlBlocklist:
+      type: object
+      properties:
+        id:
+          type: number
+        url:
+          type: string
+        published:
+          type: string
+        updated:
+          type: string
+      nullable: false
+      required:
+        - id
+        - url
+        - published
     CreateSite:
       type: object
       properties:
@@ -3098,6 +3079,10 @@ components:
           type: array
           items:
             type: string
+        blocked_urls:
+          type: array
+          items:
+            type: string
         taglines:
           type: array
           items:
@@ -3166,6 +3151,7 @@ components:
           type: string
       nullable: false
       required:
+        - local_user_id
         - pictrs_alias
         - pictrs_delete_token
         - published
@@ -4854,23 +4840,7 @@ components:
           $ref: "#/components/schemas/Person"
         creator_banned_from_community:
           type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        read:
-          type: boolean
-        hidden:
-          type: boolean
-        creator_blocked:
-          type: boolean
         my_vote:
-          type: number
-        unread_comments:
           type: number
         counts:
           $ref: "#/components/schemas/PostAggregates"
@@ -4884,14 +4854,6 @@ components:
         - creator
         - post_creator
         - creator_banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - subscribed
-        - saved
-        - read
-        - hidden
-        - creator_blocked
-        - unread_comments
         - counts
     PostReport:
       type: object
@@ -5291,16 +5253,6 @@ components:
           $ref: "#/components/schemas/CommentAggregates"
         creator_banned_from_community:
           type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
         my_vote:
           type: number
         resolver:
@@ -5315,11 +5267,6 @@ components:
         - comment_creator
         - counts
         - creator_banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - creator_blocked
-        - subscribed
-        - saved
     CommentReport:
       type: object
       properties:
@@ -5985,6 +5932,8 @@ components:
           type: boolean
         auto_expand:
           type: boolean
+        show_scores:
+          type: boolean
         theme:
           type: string
         default_sort_type:
@@ -6059,14 +6008,6 @@ components:
         enable_animated_images:
           type: boolean
         collapse_bot_comments:
-          type: boolean
-        show_scores:
-          type: boolean
-        show_upvotes:
-          type: boolean
-        show_downvotes:
-          type: boolean
-        show_upvote_percentage:
           type: boolean
       nullable: false
     ChangePassword:
