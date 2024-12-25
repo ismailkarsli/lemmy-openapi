@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.5"
+    "version": "0.20.0-alpha.4"
   },
   "servers": [
     {
@@ -5434,9 +5434,6 @@
           },
           "alt_text": {
             "type": "string"
-          },
-          "scheduled_publish_time": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -7016,7 +7013,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_data": {
+          "remove_or_restore_data": {
             "type": "boolean"
           },
           "reason": {
@@ -7112,9 +7109,6 @@
             "type": "number"
           },
           "custom_thumbnail": {
-            "type": "string"
-          },
-          "scheduled_publish_time": {
             "type": "string"
           }
         },
@@ -9008,7 +9002,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_data": {
+          "remove_or_restore_data": {
             "type": "boolean"
           },
           "reason": {

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-alpha.5
+  version: 0.20.0-alpha.4
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -3460,8 +3460,6 @@ components:
           type: string
         alt_text:
           type: string
-        scheduled_publish_time:
-          type: string
       nullable: false
       required:
         - id
@@ -4587,7 +4585,7 @@ components:
           type: number
         ban:
           type: boolean
-        remove_data:
+        remove_or_restore_data:
           type: boolean
         reason:
           type: string
@@ -4653,8 +4651,6 @@ components:
         language_id:
           type: number
         custom_thumbnail:
-          type: string
-        scheduled_publish_time:
           type: string
       nullable: false
       required:
@@ -5979,7 +5975,7 @@ components:
           type: number
         ban:
           type: boolean
-        remove_data:
+        remove_or_restore_data:
           type: boolean
         reason:
           type: string
