@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.18
+  version: 0.19.4-alpha.17
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -3188,11 +3188,14 @@ components:
       properties:
         local_image:
           $ref: "#/components/schemas/LocalImage"
+        local_user:
+          $ref: "#/components/schemas/LocalUser"
         person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - local_image
+        - local_user
         - person
     LocalImage:
       type: object
