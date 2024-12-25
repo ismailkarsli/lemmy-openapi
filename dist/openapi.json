@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.13"
+    "version": "0.20.0-alpha.12"
   },
   "servers": [
     {
@@ -541,6 +541,34 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/Search/properties/post_title_only"
+            }
+          },
+          {
+            "name": "post_url_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/post_url_only"
+            }
+          },
+          {
+            "name": "saved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/saved_only"
+            }
+          },
+          {
+            "name": "liked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/liked_only"
+            }
+          },
+          {
+            "name": "disliked_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/disliked_only"
             }
           }
         ],
@@ -5517,9 +5545,6 @@
           },
           "alt_text": {
             "type": "string"
-          },
-          "scheduled_publish_time": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -6324,8 +6349,7 @@
               "Comments",
               "Posts",
               "Communities",
-              "Users",
-              "Url"
+              "Users"
             ]
           },
           "sort": {
@@ -6368,6 +6392,18 @@
             "type": "number"
           },
           "post_title_only": {
+            "type": "boolean"
+          },
+          "post_url_only": {
+            "type": "boolean"
+          },
+          "saved_only": {
+            "type": "boolean"
+          },
+          "liked_only": {
+            "type": "boolean"
+          },
+          "disliked_only": {
             "type": "boolean"
           }
         },
@@ -6423,8 +6459,7 @@
           "Comments",
           "Posts",
           "Communities",
-          "Users",
-          "Url"
+          "Users"
         ]
       },
       "CommentView": {
@@ -7199,9 +7234,6 @@
           },
           "custom_thumbnail": {
             "type": "string"
-          },
-          "scheduled_publish_time": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7290,9 +7322,6 @@
           },
           "custom_thumbnail": {
             "type": "string"
-          },
-          "scheduled_publish_time": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7338,11 +7367,8 @@
       "MarkPostAsRead": {
         "type": "object",
         "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "post_id": {
+            "type": "number"
           },
           "read": {
             "type": "boolean"
@@ -7350,18 +7376,15 @@
         },
         "nullable": false,
         "required": [
-          "post_ids",
+          "post_id",
           "read"
         ]
       },
       "HidePost": {
         "type": "object",
         "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "post_id": {
+            "type": "number"
           },
           "hide": {
             "type": "boolean"
@@ -7369,7 +7392,7 @@
         },
         "nullable": false,
         "required": [
-          "post_ids",
+          "post_id",
           "hide"
         ]
       },
