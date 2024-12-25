@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.1"
+    "version": "0.19.5-alpha.1"
   },
   "servers": [
     {
@@ -6405,6 +6405,9 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
+          "image_details": {
+            "$ref": "#/components/schemas/ImageDetails"
+          },
           "creator_banned_from_community": {
             "type": "boolean"
           },
@@ -6458,6 +6461,30 @@
           "hidden",
           "creator_blocked",
           "unread_comments"
+        ]
+      },
+      "ImageDetails": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "content_type": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "link",
+          "width",
+          "height",
+          "content_type"
         ]
       },
       "PostAggregates": {
@@ -6942,7 +6969,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_or_restore_data": {
+          "remove_data": {
             "type": "boolean"
           },
           "reason": {
@@ -8925,7 +8952,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_or_restore_data": {
+          "remove_data": {
             "type": "boolean"
           },
           "reason": {
