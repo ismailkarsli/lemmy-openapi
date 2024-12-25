@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.5"
+    "version": "0.20.0-api-v4.4"
   },
   "servers": [
     {
@@ -29,13 +29,13 @@
       "name": "Account/Auth/Totp"
     },
     {
-      "name": "Account"
-    },
-    {
       "name": "Account/Settings"
     },
     {
       "name": "User"
+    },
+    {
+      "name": "Account"
     },
     {
       "name": "Modlog"
@@ -230,12 +230,12 @@
         }
       }
     },
-    "/account/my_user": {
+    "/account/settings": {
       "get": {
         "operationId": "getMyUser",
         "description": "Get data of current user.",
         "tags": [
-          "Account"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -244,6 +244,34 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MyUserInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveUserSettings",
+        "description": "Save your user settings.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUserSettings"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Account/Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -3120,36 +3148,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetRepliesResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/account/settings": {
-      "put": {
-        "operationId": "saveUserSettings",
-        "description": "Save your user settings.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SaveUserSettings"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Account/Settings"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }

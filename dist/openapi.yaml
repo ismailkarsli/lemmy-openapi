@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.5
+  version: 0.20.0-api-v4.4
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -13,9 +13,9 @@ tags:
   - name: Site
   - name: Admin
   - name: Account/Auth/Totp
-  - name: Account
   - name: Account/Settings
   - name: User
+  - name: Account
   - name: Modlog
   - name: Search
   - name: ResolveObject
@@ -118,12 +118,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /account/my_user:
+  /account/settings:
     get:
       operationId: getMyUser
       description: Get data of current user.
       tags:
-        - Account
+        - Account/Settings
       responses:
         "200":
           description: Successful response
@@ -131,6 +131,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MyUserInfo"
+    put:
+      operationId: saveUserSettings
+      description: Save your user settings.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveUserSettings"
+      tags:
+        - Account/Settings
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
   /account/settings/export:
     get:
       operationId: exportSettings
@@ -1857,24 +1874,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /account/settings:
-    put:
-      operationId: saveUserSettings
-      description: Save your user settings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveUserSettings"
-      tags:
-        - Account/Settings
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
   /user/change_password:
     put:
       operationId: changePassword
