@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-alpha.16
+  version: 0.20.0-alpha.15
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -31,7 +31,7 @@ tags:
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
-  - name: Admin/Tagline
+  - name: Tagline
   - name: OauthProvider
   - name: Oauth
   - name: FederatedInstances
@@ -2062,7 +2062,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/tagline:
+  /tagline:
     post:
       operationId: createTagline
       description: Create a new tagline
@@ -2072,7 +2072,7 @@ paths:
             schema:
               $ref: "#/components/schemas/CreateTagline"
       tags:
-        - Admin/Tagline
+        - Tagline
       responses:
         "200":
           description: Successful response
@@ -2089,7 +2089,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateTagline"
       tags:
-        - Admin/Tagline
+        - Tagline
       responses:
         "200":
           description: Successful response
@@ -2097,7 +2097,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TaglineResponse"
-  /admin/tagline/delete:
+  /tagline/delete:
     post:
       operationId: deleteTagline
       description: Delete a tagline
@@ -2107,7 +2107,7 @@ paths:
             schema:
               $ref: "#/components/schemas/DeleteTagline"
       tags:
-        - Admin/Tagline
+        - Tagline
       responses:
         "200":
           description: Successful response
@@ -2115,7 +2115,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/tagline/list:
+  /tagline/list:
     get:
       operationId: listTaglines
       description: List taglines
@@ -2129,7 +2129,7 @@ paths:
           schema:
             $ref: "#/components/schemas/ListTaglines/properties/limit"
       tags:
-        - Admin/Tagline
+        - Tagline
       responses:
         "200":
           description: Successful response
@@ -6743,6 +6743,9 @@ components:
         - client_id
         - client_secret
         - scopes
+        - auto_verify_email
+        - account_linking_enabled
+        - enabled
     EditOAuthProvider:
       type: object
       properties:
@@ -6750,27 +6753,47 @@ components:
           type: number
         display_name:
           type: string
+          nullable: true
         authorization_endpoint:
           type: string
+          nullable: true
         token_endpoint:
           type: string
+          nullable: true
         userinfo_endpoint:
           type: string
+          nullable: true
         id_claim:
           type: string
+          nullable: true
         client_secret:
           type: string
+          nullable: true
         scopes:
           type: string
+          nullable: true
         auto_verify_email:
           type: boolean
+          nullable: true
         account_linking_enabled:
           type: boolean
+          nullable: true
         enabled:
           type: boolean
+          nullable: true
       nullable: false
       required:
         - id
+        - display_name
+        - authorization_endpoint
+        - token_endpoint
+        - userinfo_endpoint
+        - id_claim
+        - client_secret
+        - scopes
+        - auto_verify_email
+        - account_linking_enabled
+        - enabled
     DeleteOAuthProvider:
       type: object
       properties:

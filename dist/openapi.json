@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.16"
+    "version": "0.20.0-alpha.15"
   },
   "servers": [
     {
@@ -83,7 +83,7 @@
       "name": "CustomEmoji"
     },
     {
-      "name": "Admin/Tagline"
+      "name": "Tagline"
     },
     {
       "name": "OauthProvider"
@@ -3462,7 +3462,7 @@
         }
       }
     },
-    "/admin/tagline": {
+    "/tagline": {
       "post": {
         "operationId": "createTagline",
         "description": "Create a new tagline",
@@ -3476,7 +3476,7 @@
           }
         },
         "tags": [
-          "Admin/Tagline"
+          "Tagline"
         ],
         "responses": {
           "200": {
@@ -3504,7 +3504,7 @@
           }
         },
         "tags": [
-          "Admin/Tagline"
+          "Tagline"
         ],
         "responses": {
           "200": {
@@ -3520,7 +3520,7 @@
         }
       }
     },
-    "/admin/tagline/delete": {
+    "/tagline/delete": {
       "post": {
         "operationId": "deleteTagline",
         "description": "Delete a tagline",
@@ -3534,7 +3534,7 @@
           }
         },
         "tags": [
-          "Admin/Tagline"
+          "Tagline"
         ],
         "responses": {
           "200": {
@@ -3550,7 +3550,7 @@
         }
       }
     },
-    "/admin/tagline/list": {
+    "/tagline/list": {
       "get": {
         "operationId": "listTaglines",
         "description": "List taglines",
@@ -3571,7 +3571,7 @@
           }
         ],
         "tags": [
-          "Admin/Tagline"
+          "Tagline"
         ],
         "responses": {
           "200": {
@@ -10147,7 +10147,10 @@
           "id_claim",
           "client_id",
           "client_secret",
-          "scopes"
+          "scopes",
+          "auto_verify_email",
+          "account_linking_enabled",
+          "enabled"
         ]
       },
       "EditOAuthProvider": {
@@ -10157,39 +10160,59 @@
             "type": "number"
           },
           "display_name": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "authorization_endpoint": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "token_endpoint": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "userinfo_endpoint": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "id_claim": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "client_secret": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "scopes": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "auto_verify_email": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "account_linking_enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           }
         },
         "nullable": false,
         "required": [
-          "id"
+          "id",
+          "display_name",
+          "authorization_endpoint",
+          "token_endpoint",
+          "userinfo_endpoint",
+          "id_claim",
+          "client_secret",
+          "scopes",
+          "auto_verify_email",
+          "account_linking_enabled",
+          "enabled"
         ]
       },
       "DeleteOAuthProvider": {
