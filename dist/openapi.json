@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.3-alpha.2"
+    "version": "0.19.3-alpha.1"
   },
   "servers": [
     {
@@ -6170,9 +6170,6 @@
           },
           "users_active_half_year": {
             "type": "number"
-          },
-          "subscribers_local": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -6185,8 +6182,7 @@
           "users_active_day",
           "users_active_week",
           "users_active_month",
-          "users_active_half_year",
-          "subscribers_local"
+          "users_active_half_year"
         ]
       },
       "ResolveObject": {
