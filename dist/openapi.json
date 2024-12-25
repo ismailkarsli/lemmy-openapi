@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.6"
+    "version": "0.20.0-api-v4.5"
   },
   "servers": [
     {
@@ -3127,7 +3127,7 @@
         }
       }
     },
-    "/account/settings/save": {
+    "/account/settings": {
       "put": {
         "operationId": "saveUserSettings",
         "description": "Save your user settings.",
