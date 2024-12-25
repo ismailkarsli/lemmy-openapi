@@ -2,6 +2,7 @@
 
 import type { OpenAPIV3 } from "openapi-types";
 import oxc, {
+	type StringLiteral,
 	type FormalParameters,
 	type IdentifierName,
 	type TSTypeParameterInstantiation,
@@ -154,8 +155,9 @@ const pathStatements = lemmyMethods
 			if (!methodProperty) throw new Error("Could not find method property");
 			method = methodProperty.value.property.name.toUpperCase();
 
-			const isPictrs = is<PictrsUrlObject>(fetchStatement.arguments[0]);
-			if (isPictrs) {
+			if (is<StringLiteral>(fetchStatement.arguments[0])) {
+				endpoint = fetchStatement.arguments[0].value;
+			} else if (is<PictrsUrlObject>(fetchStatement.arguments[0])) {
 				endpoint = "/pictrs/image";
 			} else if (is<IdentifierName>(fetchStatement.arguments[0])) {
 				const varName = fetchStatement.arguments[0].name;
