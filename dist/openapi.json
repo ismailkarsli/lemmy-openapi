@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.7"
+    "version": "0.19.4-alpha.6"
   },
   "servers": [
     {
@@ -276,43 +276,6 @@
         }
       }
     },
-    "/user/list_media": {
-      "get": {
-        "operationId": "listMedia",
-        "description": "List all the media for your user",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListMedia/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListMedia/properties/limit"
-            }
-          }
-        ],
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListMediaResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/user/totp/update": {
       "post": {
         "operationId": "updateTotp",
@@ -388,20 +351,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetModlog/properties/other_person_id"
-            }
-          },
-          {
-            "name": "post_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetModlog/properties/post_id"
-            }
-          },
-          {
-            "name": "comment_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetModlog/properties/comment_id"
             }
           }
         ],
@@ -1112,36 +1061,6 @@
         }
       }
     },
-    "/post/hide": {
-      "post": {
-        "operationId": "hidePost",
-        "description": "Hide a post from list views.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HidePost"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Post"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/post/lock": {
       "post": {
         "operationId": "lockPost",
@@ -1268,13 +1187,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetPosts/properties/disliked_only"
-            }
-          },
-          {
-            "name": "show_hidden",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPosts/properties/show_hidden"
             }
           },
           {
@@ -1497,13 +1409,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/ListPostReports/properties/community_id"
-            }
-          },
-          {
-            "name": "post_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/post_id"
             }
           }
         ],
@@ -2036,13 +1941,6 @@
         "operationId": "listCommentReports",
         "description": "List comment reports.",
         "parameters": [
-          {
-            "name": "comment_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/comment_id"
-            }
-          },
           {
             "name": "page",
             "in": "query",
@@ -4545,24 +4443,24 @@
             "type": "string",
             "enum": [
               "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
+              "Hot",
+              "New",
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
               "Active",
               "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "legal_information": {
@@ -4748,24 +4646,24 @@
             "type": "string",
             "enum": [
               "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
+              "Hot",
+              "New",
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
               "MostComments",
               "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "legal_information": {
@@ -4904,57 +4802,6 @@
           "success"
         ]
       },
-      "ListMedia": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          }
-        },
-        "nullable": false
-      },
-      "ListMediaResponse": {
-        "type": "object",
-        "properties": {
-          "images": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalImage"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "images"
-        ]
-      },
-      "LocalImage": {
-        "type": "object",
-        "properties": {
-          "local_user_id": {
-            "type": "number"
-          },
-          "pictrs_alias": {
-            "type": "string"
-          },
-          "pictrs_delete_token": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "local_user_id",
-          "pictrs_alias",
-          "pictrs_delete_token",
-          "published"
-        ]
-      },
       "UpdateTotp": {
         "type": "object",
         "properties": {
@@ -5020,12 +4867,6 @@
             ]
           },
           "other_person_id": {
-            "type": "number"
-          },
-          "post_id": {
-            "type": "number"
-          },
-          "comment_id": {
             "type": "number"
           }
         },
@@ -6080,25 +5921,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "MostComments",
               "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "listing_type": {
@@ -6301,9 +6142,6 @@
           "read": {
             "type": "boolean"
           },
-          "hidden": {
-            "type": "boolean"
-          },
           "creator_blocked": {
             "type": "boolean"
           },
@@ -6326,7 +6164,6 @@
           "subscribed",
           "saved",
           "read",
-          "hidden",
           "creator_blocked",
           "unread_comments"
         ]
@@ -6635,25 +6472,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "MostComments",
               "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "Active",
+              "MostComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "show_nsfw": {
@@ -7043,6 +6880,9 @@
       "MarkPostAsRead": {
         "type": "object",
         "properties": {
+          "post_id": {
+            "type": "number"
+          },
           "post_ids": {
             "type": "array",
             "items": {
@@ -7055,27 +6895,7 @@
         },
         "nullable": false,
         "required": [
-          "post_ids",
           "read"
-        ]
-      },
-      "HidePost": {
-        "type": "object",
-        "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "hide": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_ids",
-          "hide"
         ]
       },
       "LockPost": {
@@ -7176,9 +6996,6 @@
             "type": "boolean"
           },
           "disliked_only": {
-            "type": "boolean"
-          },
-          "show_hidden": {
             "type": "boolean"
           },
           "page_cursor": {
@@ -7433,9 +7250,6 @@
             "type": "boolean"
           },
           "community_id": {
-            "type": "number"
-          },
-          "post_id": {
             "type": "number"
           }
         },
@@ -8012,9 +7826,6 @@
       "ListCommentReports": {
         "type": "object",
         "properties": {
-          "comment_id": {
-            "type": "number"
-          },
           "page": {
             "type": "number"
           },

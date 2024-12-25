@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.7
+  version: 0.19.4-alpha.6
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -156,28 +156,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/list_media:
-    get:
-      operationId: listMedia
-      description: List all the media for your user
-      parameters:
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListMedia/properties/limit"
-      tags:
-        - User
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListMediaResponse"
   /user/totp/update:
     post:
       operationId: updateTotp
@@ -232,14 +210,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetModlog/properties/other_person_id"
-        - name: post_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetModlog/properties/post_id"
-        - name: comment_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetModlog/properties/comment_id"
       tags:
         - Modlog
       responses:
@@ -661,24 +631,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /post/hide:
-    post:
-      operationId: hidePost
-      description: Hide a post from list views.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/HidePost"
-      tags:
-        - Post
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
   /post/lock:
     post:
       operationId: lockPost
@@ -757,10 +709,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/disliked_only"
-        - name: show_hidden
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/show_hidden"
         - name: page_cursor
           in: query
           schema:
@@ -893,10 +841,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/ListPostReports/properties/community_id"
-        - name: post_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListPostReports/properties/post_id"
       tags:
         - Post/Report
       responses:
@@ -1213,10 +1157,6 @@ paths:
       operationId: listCommentReports
       description: List comment reports.
       parameters:
-        - name: comment_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListCommentReports/properties/comment_id"
         - name: page
           in: query
           schema:
@@ -2842,24 +2782,24 @@ components:
           type: string
           enum:
             - NewComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
+            - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
             - Active
             - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
-            - Hot
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         legal_information:
           type: string
         application_email_admins:
@@ -2986,24 +2926,24 @@ components:
           type: string
           enum:
             - Active
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
+            - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
             - MostComments
             - NewComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
-            - Hot
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         legal_information:
           type: string
         application_email_admins:
@@ -3095,41 +3035,6 @@ components:
       nullable: false
       required:
         - success
-    ListMedia:
-      type: object
-      properties:
-        page:
-          type: number
-        limit:
-          type: number
-      nullable: false
-    ListMediaResponse:
-      type: object
-      properties:
-        images:
-          type: array
-          items:
-            $ref: "#/components/schemas/LocalImage"
-      nullable: false
-      required:
-        - images
-    LocalImage:
-      type: object
-      properties:
-        local_user_id:
-          type: number
-        pictrs_alias:
-          type: string
-        pictrs_delete_token:
-          type: string
-        published:
-          type: string
-      nullable: false
-      required:
-        - local_user_id
-        - pictrs_alias
-        - pictrs_delete_token
-        - published
     UpdateTotp:
       type: object
       properties:
@@ -3180,10 +3085,6 @@ components:
             - AdminPurgePost
             - AdminPurgeComment
         other_person_id:
-          type: number
-        post_id:
-          type: number
-        comment_id:
           type: number
       nullable: false
     GetModlogResponse:
@@ -3928,25 +3829,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -4090,8 +3991,6 @@ components:
           type: boolean
         read:
           type: boolean
-        hidden:
-          type: boolean
         creator_blocked:
           type: boolean
         my_vote:
@@ -4110,7 +4009,6 @@ components:
         - subscribed
         - saved
         - read
-        - hidden
         - creator_blocked
         - unread_comments
     PostAggregates:
@@ -4327,25 +4225,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - MostComments
             - NewComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         show_nsfw:
           type: boolean
         page:
@@ -4610,6 +4508,8 @@ components:
     MarkPostAsRead:
       type: object
       properties:
+        post_id:
+          type: number
         post_ids:
           type: array
           items:
@@ -4618,21 +4518,7 @@ components:
           type: boolean
       nullable: false
       required:
-        - post_ids
         - read
-    HidePost:
-      type: object
-      properties:
-        post_ids:
-          type: array
-          items:
-            type: number
-        hide:
-          type: boolean
-      nullable: false
-      required:
-        - post_ids
-        - hide
     LockPost:
       type: object
       properties:
@@ -4708,8 +4594,6 @@ components:
         liked_only:
           type: boolean
         disliked_only:
-          type: boolean
-        show_hidden:
           type: boolean
         page_cursor:
           type: string
@@ -4885,8 +4769,6 @@ components:
         unresolved_only:
           type: boolean
         community_id:
-          type: number
-        post_id:
           type: number
       nullable: false
     ListPostReportsResponse:
@@ -5286,8 +5168,6 @@ components:
     ListCommentReports:
       type: object
       properties:
-        comment_id:
-          type: number
         page:
           type: number
         limit:
