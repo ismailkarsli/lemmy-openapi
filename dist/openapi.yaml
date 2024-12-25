@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.8
+  version: 0.19.4-alpha.7
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2104,10 +2104,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CustomEmojiView"
-        blocked_urls:
-          type: array
-          items:
-            $ref: "#/components/schemas/LocalSiteUrlBlocklist"
       nullable: false
       required:
         - site_view
@@ -2117,7 +2113,6 @@ components:
         - discussion_languages
         - taglines
         - custom_emojis
-        - blocked_urls
     SiteView:
       type: object
       properties:
@@ -2809,22 +2804,6 @@ components:
       required:
         - custom_emoji_id
         - keyword
-    LocalSiteUrlBlocklist:
-      type: object
-      properties:
-        id:
-          type: number
-        url:
-          type: string
-        published:
-          type: string
-        updated:
-          type: string
-      nullable: false
-      required:
-        - id
-        - url
-        - published
     CreateSite:
       type: object
       properties:
@@ -3076,10 +3055,6 @@ components:
           items:
             type: string
         blocked_instances:
-          type: array
-          items:
-            type: string
-        blocked_urls:
           type: array
           items:
             type: string

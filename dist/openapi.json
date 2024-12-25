@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.8"
+    "version": "0.19.4-alpha.7"
   },
   "servers": [
     {
@@ -3521,12 +3521,6 @@
             "items": {
               "$ref": "#/components/schemas/CustomEmojiView"
             }
-          },
-          "blocked_urls": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalSiteUrlBlocklist"
-            }
           }
         },
         "nullable": false,
@@ -3537,8 +3531,7 @@
           "all_languages",
           "discussion_languages",
           "taglines",
-          "custom_emojis",
-          "blocked_urls"
+          "custom_emojis"
         ]
       },
       "SiteView": {
@@ -4500,29 +4493,6 @@
           "keyword"
         ]
       },
-      "LocalSiteUrlBlocklist": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "url": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "url",
-          "published"
-        ]
-      },
       "CreateSite": {
         "type": "object",
         "properties": {
@@ -4874,12 +4844,6 @@
             }
           },
           "blocked_instances": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "blocked_urls": {
             "type": "array",
             "items": {
               "type": "string"
