@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.7"
+    "version": "0.19.6-alpha.1"
   },
   "servers": [
     {
@@ -81,12 +81,6 @@
     },
     {
       "name": "CustomEmoji"
-    },
-    {
-      "name": "OauthProvider"
-    },
-    {
-      "name": "Oauth"
     },
     {
       "name": "FederatedInstances"
@@ -534,13 +528,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/Search/properties/limit"
-            }
-          },
-          {
-            "name": "post_title_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Search/properties/post_title_only"
             }
           }
         ],
@@ -3431,124 +3418,6 @@
         }
       }
     },
-    "/oauth_provider": {
-      "post": {
-        "operationId": "createOAuthProvider",
-        "description": "Create a new oauth provider method",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateOAuthProvider"
-              }
-            }
-          }
-        },
-        "tags": [
-          "OauthProvider"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthProvider"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "editOAuthProvider",
-        "description": "Edit an existing oauth provider method",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditOAuthProvider"
-              }
-            }
-          }
-        },
-        "tags": [
-          "OauthProvider"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OAuthProvider"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/oauth_provider/delete": {
-      "post": {
-        "operationId": "deleteOAuthProvider",
-        "description": "Delete an oauth provider method",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeleteOAuthProvider"
-              }
-            }
-          }
-        },
-        "tags": [
-          "OauthProvider"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/oauth/authenticate": {
-      "post": {
-        "operationId": "authenticateWithOAuth",
-        "description": "Authenticate with OAuth",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AuthenticateWithOauth"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Oauth"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/federated_instances": {
       "get": {
         "operationId": "getFederatedInstances",
@@ -3738,18 +3607,6 @@
               "$ref": "#/components/schemas/CustomEmojiView"
             }
           },
-          "oauth_providers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OAuthProvider"
-            }
-          },
-          "admin_oauth_providers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OAuthProvider"
-            }
-          },
           "blocked_urls": {
             "type": "array",
             "items": {
@@ -3866,6 +3723,9 @@
           "enable_downvotes": {
             "type": "boolean"
           },
+          "enable_nsfw": {
+            "type": "boolean"
+          },
           "community_creation_admin_only": {
             "type": "boolean"
           },
@@ -3928,9 +3788,6 @@
           },
           "default_sort_type": {
             "$ref": "#/components/schemas/SortType"
-          },
-          "oauth_registration": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -3939,6 +3796,7 @@
           "site_id",
           "site_setup",
           "enable_downvotes",
+          "enable_nsfw",
           "community_creation_admin_only",
           "require_email_verification",
           "private_instance",
@@ -3955,8 +3813,7 @@
           "reports_email_admins",
           "federation_signed_fetch",
           "default_post_listing_mode",
-          "default_sort_type",
-          "oauth_registration"
+          "default_sort_type"
         ]
       },
       "ListingType": {
@@ -4253,19 +4110,19 @@
           "community_blocks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Community"
+              "$ref": "#/components/schemas/CommunityBlockView"
             }
           },
           "instance_blocks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Instance"
+              "$ref": "#/components/schemas/InstanceBlockView"
             }
           },
           "person_blocks": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Person"
+              "$ref": "#/components/schemas/PersonBlockView"
             }
           },
           "discussion_languages": {
@@ -4343,6 +4200,9 @@
           "send_notifications_to_email": {
             "type": "boolean"
           },
+          "show_scores": {
+            "type": "boolean"
+          },
           "show_bot_accounts": {
             "type": "boolean"
           },
@@ -4397,6 +4257,7 @@
           "interface_language",
           "show_avatars",
           "send_notifications_to_email",
+          "show_scores",
           "show_bot_accounts",
           "show_read_posts",
           "email_verified",
@@ -4416,6 +4277,9 @@
       "LocalUserVoteDisplayMode": {
         "type": "object",
         "properties": {
+          "local_user_id": {
+            "type": "number"
+          },
           "score": {
             "type": "boolean"
           },
@@ -4431,6 +4295,7 @@
         },
         "nullable": false,
         "required": [
+          "local_user_id",
           "score",
           "upvotes",
           "downvotes",
@@ -4548,6 +4413,41 @@
           "moderator"
         ]
       },
+      "CommunityBlockView": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "person",
+          "community"
+        ]
+      },
+      "InstanceBlockView": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/Instance"
+          },
+          "site": {
+            "$ref": "#/components/schemas/Site"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "person",
+          "instance"
+        ]
+      },
       "Instance": {
         "type": "object",
         "properties": {
@@ -4575,6 +4475,22 @@
           "id",
           "domain",
           "published"
+        ]
+      },
+      "PersonBlockView": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "target": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "person",
+          "target"
         ]
       },
       "Language": {
@@ -4698,69 +4614,6 @@
           "keyword"
         ]
       },
-      "OAuthProvider": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "display_name": {
-            "type": "string"
-          },
-          "issuer": {
-            "type": "string"
-          },
-          "authorization_endpoint": {
-            "type": "string"
-          },
-          "token_endpoint": {
-            "type": "string"
-          },
-          "userinfo_endpoint": {
-            "type": "string"
-          },
-          "id_claim": {
-            "type": "string"
-          },
-          "client_id": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "string"
-          },
-          "auto_verify_email": {
-            "type": "boolean"
-          },
-          "account_linking_enabled": {
-            "type": "boolean"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "display_name",
-          "issuer",
-          "authorization_endpoint",
-          "token_endpoint",
-          "userinfo_endpoint",
-          "id_claim",
-          "client_id",
-          "scopes",
-          "auto_verify_email",
-          "account_linking_enabled",
-          "enabled",
-          "published"
-        ]
-      },
       "LocalSiteUrlBlocklist": {
         "type": "object",
         "properties": {
@@ -4835,25 +4688,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "legal_information": {
@@ -4951,9 +4804,6 @@
               "Open"
             ]
           },
-          "oauth_registration": {
-            "type": "boolean"
-          },
           "content_warning": {
             "type": "string"
           },
@@ -5041,25 +4891,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "legal_information": {
@@ -5162,9 +5012,6 @@
               "RequireApplication",
               "Open"
             ]
-          },
-          "oauth_registration": {
-            "type": "boolean"
           },
           "reports_email_admins": {
             "type": "boolean"
@@ -5587,6 +5434,9 @@
           },
           "alt_text": {
             "type": "string"
+          },
+          "scheduled_publish_time": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -6398,25 +6248,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "MostComments",
-              "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "NewComments",
+              "Active",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "listing_type": {
@@ -6433,9 +6283,6 @@
           },
           "limit": {
             "type": "number"
-          },
-          "post_title_only": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -6991,25 +6838,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "show_nsfw": {
@@ -7169,7 +7016,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_or_restore_data": {
+          "remove_data": {
             "type": "boolean"
           },
           "reason": {
@@ -7266,6 +7113,9 @@
           },
           "custom_thumbnail": {
             "type": "string"
+          },
+          "scheduled_publish_time": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -7354,6 +7204,9 @@
           },
           "custom_thumbnail": {
             "type": "string"
+          },
+          "scheduled_publish_time": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -7492,25 +7345,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "page": {
@@ -8874,25 +8727,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "page": {
@@ -9158,7 +9011,7 @@
           "ban": {
             "type": "boolean"
           },
-          "remove_or_restore_data": {
+          "remove_data": {
             "type": "boolean"
           },
           "reason": {
@@ -9332,25 +9185,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "NewComments",
-              "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "default_listing_type": {
@@ -9838,165 +9691,6 @@
         "nullable": false,
         "required": [
           "id"
-        ]
-      },
-      "CreateOAuthProvider": {
-        "type": "object",
-        "properties": {
-          "display_name": {
-            "type": "string"
-          },
-          "issuer": {
-            "type": "string"
-          },
-          "authorization_endpoint": {
-            "type": "string"
-          },
-          "token_endpoint": {
-            "type": "string"
-          },
-          "userinfo_endpoint": {
-            "type": "string"
-          },
-          "id_claim": {
-            "type": "string"
-          },
-          "client_id": {
-            "type": "string"
-          },
-          "client_secret": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "string"
-          },
-          "auto_verify_email": {
-            "type": "boolean"
-          },
-          "account_linking_enabled": {
-            "type": "boolean"
-          },
-          "enabled": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "display_name",
-          "issuer",
-          "authorization_endpoint",
-          "token_endpoint",
-          "userinfo_endpoint",
-          "id_claim",
-          "client_id",
-          "client_secret",
-          "scopes",
-          "auto_verify_email",
-          "account_linking_enabled",
-          "enabled"
-        ]
-      },
-      "EditOAuthProvider": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "display_name": {
-            "type": "string",
-            "nullable": true
-          },
-          "authorization_endpoint": {
-            "type": "string",
-            "nullable": true
-          },
-          "token_endpoint": {
-            "type": "string",
-            "nullable": true
-          },
-          "userinfo_endpoint": {
-            "type": "string",
-            "nullable": true
-          },
-          "id_claim": {
-            "type": "string",
-            "nullable": true
-          },
-          "client_secret": {
-            "type": "string",
-            "nullable": true
-          },
-          "scopes": {
-            "type": "string",
-            "nullable": true
-          },
-          "auto_verify_email": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "account_linking_enabled": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "enabled": {
-            "type": "boolean",
-            "nullable": true
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "display_name",
-          "authorization_endpoint",
-          "token_endpoint",
-          "userinfo_endpoint",
-          "id_claim",
-          "client_secret",
-          "scopes",
-          "auto_verify_email",
-          "account_linking_enabled",
-          "enabled"
-        ]
-      },
-      "DeleteOAuthProvider": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id"
-        ]
-      },
-      "AuthenticateWithOauth": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "oauth_provider_id": {
-            "type": "string"
-          },
-          "redirect_uri": {
-            "type": "string"
-          },
-          "show_nsfw": {
-            "type": "boolean"
-          },
-          "username": {
-            "type": "string"
-          },
-          "answer": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "code",
-          "oauth_provider_id",
-          "redirect_uri"
         ]
       },
       "GetFederatedInstancesResponse": {
