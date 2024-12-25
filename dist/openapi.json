@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.2-alpha.1"
+    "version": "0.19.0"
   },
   "servers": [
     {
@@ -44,16 +44,10 @@
       "name": "Post"
     },
     {
-      "name": "Post/Like"
-    },
-    {
       "name": "Post/Report"
     },
     {
       "name": "Comment"
-    },
-    {
-      "name": "Comment/Like"
     },
     {
       "name": "Comment/Report"
@@ -1228,7 +1222,7 @@
           }
         },
         "tags": [
-          "Post/Like"
+          "Post"
         ],
         "responses": {
           "200": {
@@ -1237,50 +1231,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PostResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/post/like/list": {
-      "get": {
-        "operationId": "listPostLikes",
-        "description": "List a post's likes. Admin-only.",
-        "parameters": [
-          {
-            "name": "post_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostLikes/properties/post_id"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostLikes/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostLikes/properties/limit"
-            }
-          }
-        ],
-        "tags": [
-          "Post/Like"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListPostLikesResponse"
                 }
               }
             }
@@ -1649,7 +1599,7 @@
           }
         },
         "tags": [
-          "Comment/Like"
+          "Comment"
         ],
         "responses": {
           "200": {
@@ -1658,50 +1608,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CommentResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/comment/like/list": {
-      "get": {
-        "operationId": "listCommentLikes",
-        "description": "List a comment's likes. Admin-only.",
-        "parameters": [
-          {
-            "name": "comment_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentLikes/properties/comment_id"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentLikes/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentLikes/properties/limit"
-            }
-          }
-        ],
-        "tags": [
-          "Comment/Like"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListCommentLikesResponse"
                 }
               }
             }
@@ -5823,7 +5729,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -5832,8 +5738,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -6348,7 +6254,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -6357,8 +6263,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -6820,7 +6726,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -6829,8 +6735,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "Active",
               "MostComments",
-              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -6899,55 +6805,6 @@
         "nullable": false,
         "required": [
           "post_id",
-          "score"
-        ]
-      },
-      "ListPostLikes": {
-        "type": "object",
-        "properties": {
-          "post_id": {
-            "type": "number"
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_id"
-        ]
-      },
-      "ListPostLikesResponse": {
-        "type": "object",
-        "properties": {
-          "post_likes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VoteView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_likes"
-        ]
-      },
-      "VoteView": {
-        "type": "object",
-        "properties": {
-          "creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "score": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "creator",
           "score"
         ]
       },
@@ -7403,39 +7260,6 @@
         "required": [
           "comment_id",
           "score"
-        ]
-      },
-      "ListCommentLikes": {
-        "type": "object",
-        "properties": {
-          "comment_id": {
-            "type": "number"
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "comment_id"
-        ]
-      },
-      "ListCommentLikesResponse": {
-        "type": "object",
-        "properties": {
-          "comment_likes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VoteView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "comment_likes"
         ]
       },
       "SaveComment": {
