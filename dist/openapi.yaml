@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-image-api-rework.6
+  version: 0.20.0-api-v4.10
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -15,6 +15,7 @@ tags:
   - name: Account/Auth/Totp
   - name: Account
   - name: Account/Settings
+  - name: User
   - name: Modlog
   - name: Search
   - name: ResolveObject
@@ -22,7 +23,6 @@ tags:
   - name: Community/PendingFollows
   - name: Account/Block
   - name: Post
-  - name: Post/MarkAsRead
   - name: Post/Like
   - name: Post/Report
   - name: Comment
@@ -33,7 +33,6 @@ tags:
   - name: Account/Auth
   - name: Person
   - name: Account/Mention
-  - name: Account/Mention/MarkAsRead
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -41,7 +40,7 @@ tags:
   - name: OauthProvider
   - name: Oauth
   - name: FederatedInstances
-  - name: Admin/Instance
+  - name: Admin/Block
   - name: Pictrs/Image
 paths:
   /site:
@@ -110,8 +109,8 @@ paths:
       description: >-
         Generate a TOTP / two-factor secret.
 
-        Afterwards you need to call `/account/auth/totp/update` with a valid
-        token to enable it.
+        Afterwards you need to call `/user/totp/update` with a valid token to
+        enable it.
       tags:
         - Account/Auth/Totp
       responses:
@@ -121,7 +120,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /account:
+  /account/my_user:
     get:
       operationId: getMyUser
       description: Get data of current user.
@@ -158,21 +157,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/list_logins:
+  /user/list_logins:
     get:
       operationId: listLogins
       description: List login tokens for your user
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: No content
-  /account/validate_auth:
+  /user/validate_auth:
     get:
       operationId: validateAuth
       description: Returns an error message if your auth token is invalid
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -230,8 +229,8 @@ paths:
       description: >-
         Enable / Disable TOTP / two-factor authentication.
 
-        To enable, you need to first call `/account/auth/totp/generate` and then
-        pass a valid token to this.
+        To enable, you need to first call `/user/totp/generate` and then pass a
+        valid token to this.
 
         Disabling is only possible if 2FA was previously enabled. Again it is
         necessary to pass a valid token.
@@ -802,25 +801,7 @@ paths:
             schema:
               $ref: "#/components/schemas/MarkPostAsRead"
       tags:
-        - Post/MarkAsRead
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /post/mark_as_read/many:
-    post:
-      operationId: markManyPostAsRead
-      description: Mark multiple posts as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkManyPostsAsRead"
-      tags:
-        - Post/MarkAsRead
+        - Post
       responses:
         "200":
           description: Successful response
@@ -1680,7 +1661,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonDetailsResponse"
-  /account/mention:
+  /user/mention:
     get:
       operationId: getPersonMentions
       description: Get mentions for your user.
@@ -1702,7 +1683,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonMentions/properties/unread_only"
       tags:
-        - Account/Mention
+        - User
       responses:
         "200":
           description: Successful response
@@ -1715,7 +1696,7 @@ paths:
       operationId: markPersonAllMentionAsRead
       description: Mark a person mention as read.
       tags:
-        - Account/Mention/MarkAsRead
+        - Account/Mention
       responses:
         "200":
           description: Successful response
@@ -1723,7 +1704,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonMentionResponse"
-  /account/replies:
+  /user/replies:
     get:
       operationId: getReplies
       description: Get comment replies.
@@ -1745,7 +1726,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReplies/properties/unread_only"
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1869,12 +1850,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/mention/mark_as_read/all:
+  /user/mark_all_as_read:
     post:
       operationId: markAllAsRead
       description: Mark all replies as read.
       tags:
-        - Account/Mention/MarkAsRead
+        - User
       responses:
         "200":
           description: Successful response
@@ -1900,7 +1881,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/auth/change_password:
+  /user/change_password:
     put:
       operationId: changePassword
       description: Change your user password.
@@ -1910,7 +1891,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ChangePassword"
       tags:
-        - Account/Auth
+        - User
       responses:
         "200":
           description: Successful response
@@ -1918,7 +1899,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /account/report_count:
+  /user/report_count:
     get:
       operationId: getReportCount
       description: Get counts for your reports
@@ -1928,7 +1909,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetReportCount/properties/community_id"
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -1936,12 +1917,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetReportCountResponse"
-  /account/unread_count:
+  /user/unread_count:
     get:
       operationId: getUnreadCount
       description: Get your unread counts
       tags:
-        - Account
+        - User
       responses:
         "200":
           description: Successful response
@@ -2393,7 +2374,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/block:
+  /admin/block/instance:
     post:
       operationId: adminBlockInstance
       description: Globally block an instance as admin.
@@ -2403,7 +2384,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminBlockInstanceParams"
       tags:
-        - Admin/Instance
+        - Admin/Block
       responses:
         "200":
           description: Successful response
@@ -2411,7 +2392,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/instance/allow:
+  /admin/allow_instance:
     post:
       operationId: adminAllowInstance
       description: Globally allow an instance as admin.
@@ -2421,7 +2402,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminAllowInstanceParams"
       tags:
-        - Admin/Instance
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -3119,9 +3100,6 @@ components:
           type: string
         updated:
           type: string
-        use_pkce:
-          type: boolean
-          description: switch to enable or disable PKCE
       nullable: false
       required:
         - id
@@ -3137,7 +3115,6 @@ components:
         - account_linking_enabled
         - enabled
         - published
-        - use_pkce
       description: oauth provider with client_secret - should never be sent to the client
     LocalSiteUrlBlocklist:
       type: object
@@ -3196,25 +3173,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         default_comment_sort_type:
           type: string
           enum:
@@ -3385,25 +3362,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
             - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -3974,24 +3951,24 @@ components:
         type_:
           type: string
           enum:
-            - All
-            - ModRemovePost
-            - ModLockPost
-            - ModFeaturePost
-            - ModRemoveComment
-            - ModRemoveCommunity
-            - ModBanFromCommunity
-            - ModAddCommunity
-            - ModTransferCommunity
             - ModAdd
-            - ModBan
-            - ModHideCommunity
-            - AdminPurgePerson
-            - AdminPurgeCommunity
-            - AdminPurgePost
-            - AdminPurgeComment
-            - AdminBlockInstance
             - AdminAllowInstance
+            - AdminBlockInstance
+            - AdminPurgeComment
+            - AdminPurgePost
+            - AdminPurgeCommunity
+            - AdminPurgePerson
+            - ModHideCommunity
+            - ModBan
+            - All
+            - ModTransferCommunity
+            - ModAddCommunity
+            - ModBanFromCommunity
+            - ModRemoveCommunity
+            - ModRemoveComment
+            - ModFeaturePost
+            - ModLockPost
+            - ModRemovePost
         other_person_id:
           type: number
         post_id:
@@ -4909,25 +4886,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -5052,10 +5029,6 @@ components:
           type: number
           title: The total number of children in this comment branch
           description: The total number of children in this comment branch.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - comment_id
@@ -5064,8 +5037,6 @@ components:
         - downvotes
         - published
         - child_count
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a comment.
     SubscribedType:
       type: string
@@ -5163,10 +5134,6 @@ components:
           type: string
           title: The time of the newest comment in the post
           description: The time of the newest comment in the post.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - post_id
@@ -5176,8 +5143,6 @@ components:
         - downvotes
         - published
         - newest_comment_time
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a post.
     CommunityView:
       type: object
@@ -5423,27 +5388,27 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
+            - NameAsc
+            - NameDesc
         show_nsfw:
           type: boolean
         page:
@@ -5861,17 +5826,6 @@ components:
         - post_id
         - read
       description: Mark a post as read.
-    MarkManyPostsAsRead:
-      type: object
-      properties:
-        post_ids:
-          type: array
-          items:
-            type: number
-      nullable: false
-      required:
-        - post_ids
-      description: Mark several posts as read.
     HidePost:
       type: object
       properties:
@@ -7983,8 +7937,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -8022,8 +7974,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -8043,8 +7993,6 @@ components:
       type: object
       properties:
         code:
-          type: string
-        pkce_code_verifier:
           type: string
         oauth_provider_id:
           type: number

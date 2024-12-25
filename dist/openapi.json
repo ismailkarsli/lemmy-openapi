@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-image-api-rework.6"
+    "version": "0.20.0-api-v4.10"
   },
   "servers": [
     {
@@ -35,6 +35,9 @@
       "name": "Account/Settings"
     },
     {
+      "name": "User"
+    },
+    {
       "name": "Modlog"
     },
     {
@@ -54,9 +57,6 @@
     },
     {
       "name": "Post"
-    },
-    {
-      "name": "Post/MarkAsRead"
     },
     {
       "name": "Post/Like"
@@ -89,9 +89,6 @@
       "name": "Account/Mention"
     },
     {
-      "name": "Account/Mention/MarkAsRead"
-    },
-    {
       "name": "Admin/RegistrationApplication"
     },
     {
@@ -113,7 +110,7 @@
       "name": "FederatedInstances"
     },
     {
-      "name": "Admin/Instance"
+      "name": "Admin/Block"
     },
     {
       "name": "Pictrs/Image"
@@ -221,7 +218,7 @@
     "/account/auth/totp/generate": {
       "post": {
         "operationId": "generateTotpSecret",
-        "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/account/auth/totp/update` with a valid token to enable it.",
+        "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/user/totp/update` with a valid token to enable it.",
         "tags": [
           "Account/Auth/Totp"
         ],
@@ -239,7 +236,7 @@
         }
       }
     },
-    "/account": {
+    "/account/my_user": {
       "get": {
         "operationId": "getMyUser",
         "description": "Get data of current user.",
@@ -295,12 +292,12 @@
         }
       }
     },
-    "/account/list_logins": {
+    "/user/list_logins": {
       "get": {
         "operationId": "listLogins",
         "description": "List login tokens for your user",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -309,12 +306,12 @@
         }
       }
     },
-    "/account/validate_auth": {
+    "/user/validate_auth": {
       "get": {
         "operationId": "validateAuth",
         "description": "Returns an error message if your auth token is invalid",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -407,7 +404,7 @@
     "/account/auth/totp/update": {
       "post": {
         "operationId": "updateTotp",
-        "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/account/auth/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
+        "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/user/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1360,37 +1357,7 @@
           }
         },
         "tags": [
-          "Post/MarkAsRead"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/post/mark_as_read/many": {
-      "post": {
-        "operationId": "markManyPostAsRead",
-        "description": "Mark multiple posts as read.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MarkManyPostsAsRead"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Post/MarkAsRead"
+          "Post"
         ],
         "responses": {
           "200": {
@@ -2837,7 +2804,7 @@
         }
       }
     },
-    "/account/mention": {
+    "/user/mention": {
       "get": {
         "operationId": "getPersonMentions",
         "description": "Get mentions for your user.",
@@ -2872,7 +2839,7 @@
           }
         ],
         "tags": [
-          "Account/Mention"
+          "User"
         ],
         "responses": {
           "200": {
@@ -2893,7 +2860,7 @@
         "operationId": "markPersonAllMentionAsRead",
         "description": "Mark a person mention as read.",
         "tags": [
-          "Account/Mention/MarkAsRead"
+          "Account/Mention"
         ],
         "responses": {
           "200": {
@@ -2909,7 +2876,7 @@
         }
       }
     },
-    "/account/replies": {
+    "/user/replies": {
       "get": {
         "operationId": "getReplies",
         "description": "Get comment replies.",
@@ -2944,7 +2911,7 @@
           }
         ],
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3152,12 +3119,12 @@
         }
       }
     },
-    "/account/mention/mark_as_read/all": {
+    "/user/mark_all_as_read": {
       "post": {
         "operationId": "markAllAsRead",
         "description": "Mark all replies as read.",
         "tags": [
-          "Account/Mention/MarkAsRead"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3203,7 +3170,7 @@
         }
       }
     },
-    "/account/auth/change_password": {
+    "/user/change_password": {
       "put": {
         "operationId": "changePassword",
         "description": "Change your user password.",
@@ -3217,7 +3184,7 @@
           }
         },
         "tags": [
-          "Account/Auth"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3233,7 +3200,7 @@
         }
       }
     },
-    "/account/report_count": {
+    "/user/report_count": {
       "get": {
         "operationId": "getReportCount",
         "description": "Get counts for your reports",
@@ -3247,7 +3214,7 @@
           }
         ],
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3263,12 +3230,12 @@
         }
       }
     },
-    "/account/unread_count": {
+    "/user/unread_count": {
       "get": {
         "operationId": "getUnreadCount",
         "description": "Get your unread counts",
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -4022,7 +3989,7 @@
         }
       }
     },
-    "/admin/instance/block": {
+    "/admin/block/instance": {
       "post": {
         "operationId": "adminBlockInstance",
         "description": "Globally block an instance as admin.",
@@ -4036,7 +4003,7 @@
           }
         },
         "tags": [
-          "Admin/Instance"
+          "Admin/Block"
         ],
         "responses": {
           "200": {
@@ -4052,7 +4019,7 @@
         }
       }
     },
-    "/admin/instance/allow": {
+    "/admin/allow_instance": {
       "post": {
         "operationId": "adminAllowInstance",
         "description": "Globally allow an instance as admin.",
@@ -4066,7 +4033,7 @@
           }
         },
         "tags": [
-          "Admin/Instance"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -4952,10 +4919,6 @@
           },
           "updated": {
             "type": "string"
-          },
-          "use_pkce": {
-            "type": "boolean",
-            "description": "switch to enable or disable PKCE"
           }
         },
         "nullable": false,
@@ -4972,8 +4935,7 @@
           "auto_verify_email",
           "account_linking_enabled",
           "enabled",
-          "published",
-          "use_pkce"
+          "published"
         ],
         "description": "oauth provider with client_secret - should never be sent to the client"
       },
@@ -5056,25 +5018,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "default_comment_sort_type": {
@@ -5305,25 +5267,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "Active",
               "MostComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "NewComments",
+              "Active",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ],
             "description": "The default post sort, usually \"active\""
           },
@@ -6069,24 +6031,24 @@
           "type_": {
             "type": "string",
             "enum": [
-              "All",
-              "ModRemovePost",
-              "ModLockPost",
-              "ModFeaturePost",
-              "ModRemoveComment",
-              "ModRemoveCommunity",
-              "ModBanFromCommunity",
-              "ModAddCommunity",
-              "ModTransferCommunity",
               "ModAdd",
-              "ModBan",
-              "ModHideCommunity",
-              "AdminPurgePerson",
-              "AdminPurgeCommunity",
-              "AdminPurgePost",
-              "AdminPurgeComment",
+              "AdminAllowInstance",
               "AdminBlockInstance",
-              "AdminAllowInstance"
+              "AdminPurgeComment",
+              "AdminPurgePost",
+              "AdminPurgeCommunity",
+              "AdminPurgePerson",
+              "ModHideCommunity",
+              "ModBan",
+              "All",
+              "ModTransferCommunity",
+              "ModAddCommunity",
+              "ModBanFromCommunity",
+              "ModRemoveCommunity",
+              "ModRemoveComment",
+              "ModFeaturePost",
+              "ModLockPost",
+              "ModRemovePost"
             ]
           },
           "other_person_id": {
@@ -7348,25 +7310,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "listing_type": {
@@ -7540,12 +7502,6 @@
             "type": "number",
             "title": "The total number of children in this comment branch",
             "description": "The total number of children in this comment branch."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7555,9 +7511,7 @@
           "upvotes",
           "downvotes",
           "published",
-          "child_count",
-          "report_count",
-          "unresolved_report_count"
+          "child_count"
         ],
         "description": "Aggregate data for a comment."
       },
@@ -7691,12 +7645,6 @@
             "type": "string",
             "title": "The time of the newest comment in the post",
             "description": "The time of the newest comment in the post."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7707,9 +7655,7 @@
           "upvotes",
           "downvotes",
           "published",
-          "newest_comment_time",
-          "report_count",
-          "unresolved_report_count"
+          "newest_comment_time"
         ],
         "description": "Aggregate data for a post."
       },
@@ -8038,27 +7984,27 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "NameDesc",
-              "NameAsc",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled",
+              "NameAsc",
+              "NameDesc"
             ]
           },
           "show_nsfw": {
@@ -8628,22 +8574,6 @@
           "read"
         ],
         "description": "Mark a post as read."
-      },
-      "MarkManyPostsAsRead": {
-        "type": "object",
-        "properties": {
-          "post_ids": {
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_ids"
-        ],
-        "description": "Mark several posts as read."
       },
       "HidePost": {
         "type": "object",
@@ -11519,9 +11449,6 @@
           "account_linking_enabled": {
             "type": "boolean"
           },
-          "use_pkce": {
-            "type": "boolean"
-          },
           "enabled": {
             "type": "boolean"
           }
@@ -11573,9 +11500,6 @@
           "account_linking_enabled": {
             "type": "boolean"
           },
-          "use_pkce": {
-            "type": "boolean"
-          },
           "enabled": {
             "type": "boolean"
           }
@@ -11603,9 +11527,6 @@
         "type": "object",
         "properties": {
           "code": {
-            "type": "string"
-          },
-          "pkce_code_verifier": {
             "type": "string"
           },
           "oauth_provider_id": {
