@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.10"
+    "version": "0.20.0-api-v4.9"
   },
   "servers": [
     {
@@ -3959,7 +3959,7 @@
         }
       }
     },
-    "/account/block/instance": {
+    "/account/block_instance": {
       "post": {
         "operationId": "userBlockInstance",
         "description": "Block an instance as user.",
@@ -3973,7 +3973,7 @@
           }
         },
         "tags": [
-          "Account/Block"
+          "Account"
         ],
         "responses": {
           "200": {

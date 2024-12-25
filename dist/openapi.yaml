@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.10
+  version: 0.20.0-api-v4.9
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -2356,7 +2356,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
-  /account/block/instance:
+  /account/block_instance:
     post:
       operationId: userBlockInstance
       description: Block an instance as user.
@@ -2366,7 +2366,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UserBlockInstanceParams"
       tags:
-        - Account/Block
+        - Account
       responses:
         "200":
           description: Successful response
