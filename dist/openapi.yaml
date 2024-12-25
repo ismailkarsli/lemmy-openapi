@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-private-community.4
+  version: 0.20.0-private-community.3
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -526,7 +526,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ApproveCommunityPendingFollower"
+              $ref: "#/components/schemas/ApproveCommunityPendingFollows"
       tags:
         - Community/PendingFollows
       responses:
@@ -4887,7 +4887,7 @@ components:
       nullable: false
       required:
         - items
-    ApproveCommunityPendingFollower:
+    ApproveCommunityPendingFollows:
       type: object
       properties:
         community_id:

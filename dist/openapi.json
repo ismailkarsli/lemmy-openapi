@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.4"
+    "version": "0.20.0-private-community.3"
   },
   "servers": [
     {
@@ -892,7 +892,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApproveCommunityPendingFollower"
+                "$ref": "#/components/schemas/ApproveCommunityPendingFollows"
               }
             }
           }
@@ -7505,7 +7505,7 @@
           "items"
         ]
       },
-      "ApproveCommunityPendingFollower": {
+      "ApproveCommunityPendingFollows": {
         "type": "object",
         "properties": {
           "community_id": {
