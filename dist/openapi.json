@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.2"
+    "version": "0.20.0-private-community.1"
   },
   "servers": [
     {
@@ -809,15 +809,6 @@
     "/community/pending_follows/count": {
       "get": {
         "operationId": "getCommunityPendingFollowsCount",
-        "parameters": [
-          {
-            "name": "community_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetCommunityPendingFollowsCount/properties/community_id"
-            }
-          }
-        ],
         "tags": [
           "Community/PendingFollows"
         ],
@@ -838,36 +829,6 @@
     "/community/pending_follows/list": {
       "get": {
         "operationId": "listCommunityPendingFollows",
-        "parameters": [
-          {
-            "name": "community_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/community_id"
-            }
-          },
-          {
-            "name": "pending_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/pending_only"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommunityPendingFollows/properties/limit"
-            }
-          }
-        ],
         "tags": [
           "Community/PendingFollows"
         ],
@@ -7436,88 +7397,6 @@
         "required": [
           "community_id",
           "follow"
-        ]
-      },
-      "GetCommunityPendingFollowsCount": {
-        "type": "object",
-        "properties": {
-          "community_id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "community_id"
-        ]
-      },
-      "GetCommunityPendingFollowsCountResponse": {
-        "type": "object",
-        "properties": {
-          "count": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "count"
-        ]
-      },
-      "ListCommunityPendingFollows": {
-        "type": "object",
-        "properties": {
-          "community_id": {
-            "type": "number"
-          },
-          "pending_only": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "page": {
-            "type": "number",
-            "nullable": true
-          },
-          "limit": {
-            "type": "number",
-            "nullable": true
-          }
-        },
-        "nullable": false,
-        "required": [
-          "community_id",
-          "pending_only",
-          "page",
-          "limit"
-        ]
-      },
-      "ListCommunityPendingFollowsResponse": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Person"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "items"
-        ]
-      },
-      "ApproveCommunityPendingFollows": {
-        "type": "object",
-        "properties": {
-          "community_id": {
-            "type": "number"
-          },
-          "follower_id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "community_id",
-          "follower_id"
         ]
       },
       "BlockCommunity": {
