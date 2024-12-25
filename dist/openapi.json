@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.1"
+    "version": "0.19.3-alpha.6"
   },
   "servers": [
     {
@@ -3500,9 +3500,6 @@
           },
           "instance_id": {
             "type": "number"
-          },
-          "content_warning": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -3591,12 +3588,6 @@
           },
           "federation_signed_fetch": {
             "type": "boolean"
-          },
-          "default_post_listing_mode": {
-            "$ref": "#/components/schemas/PostListingMode"
-          },
-          "default_sort_type": {
-            "$ref": "#/components/schemas/SortType"
           }
         },
         "nullable": false,
@@ -3620,9 +3611,7 @@
           "published",
           "registration_mode",
           "reports_email_admins",
-          "federation_signed_fetch",
-          "default_post_listing_mode",
-          "default_sort_type"
+          "federation_signed_fetch"
         ]
       },
       "ListingType": {
@@ -3640,38 +3629,6 @@
           "Closed",
           "RequireApplication",
           "Open"
-        ]
-      },
-      "PostListingMode": {
-        "type": "string",
-        "enum": [
-          "List",
-          "Card",
-          "SmallCard"
-        ]
-      },
-      "SortType": {
-        "type": "string",
-        "enum": [
-          "Active",
-          "Hot",
-          "New",
-          "Old",
-          "TopDay",
-          "TopWeek",
-          "TopMonth",
-          "TopYear",
-          "TopAll",
-          "MostComments",
-          "NewComments",
-          "TopHour",
-          "TopSixHour",
-          "TopTwelveHour",
-          "TopThreeMonths",
-          "TopSixMonths",
-          "TopNineMonths",
-          "Controversial",
-          "Scaled"
         ]
       },
       "LocalSiteRateLimit": {
@@ -4079,6 +4036,38 @@
           "collapse_bot_comments"
         ]
       },
+      "SortType": {
+        "type": "string",
+        "enum": [
+          "Active",
+          "Hot",
+          "New",
+          "Old",
+          "TopDay",
+          "TopWeek",
+          "TopMonth",
+          "TopYear",
+          "TopAll",
+          "MostComments",
+          "NewComments",
+          "TopHour",
+          "TopSixHour",
+          "TopTwelveHour",
+          "TopThreeMonths",
+          "TopSixMonths",
+          "TopNineMonths",
+          "Controversial",
+          "Scaled"
+        ]
+      },
+      "PostListingMode": {
+        "type": "string",
+        "enum": [
+          "List",
+          "Card",
+          "SmallCard"
+        ]
+      },
       "CommunityFollowerView": {
         "type": "object",
         "properties": {
@@ -4145,9 +4134,6 @@
           },
           "instance_id": {
             "type": "number"
-          },
-          "visibility": {
-            "$ref": "#/components/schemas/CommunityVisibility"
           }
         },
         "nullable": false,
@@ -4163,15 +4149,7 @@
           "local",
           "hidden",
           "posting_restricted_to_mods",
-          "instance_id",
-          "visibility"
-        ]
-      },
-      "CommunityVisibility": {
-        "type": "string",
-        "enum": [
-          "Public",
-          "LocalOnly"
+          "instance_id"
         ]
       },
       "CommunityModeratorView": {
@@ -4439,30 +4417,6 @@
               "ModeratorView"
             ]
           },
-          "default_sort_type": {
-            "type": "string",
-            "enum": [
-              "NewComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "Active",
-              "MostComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
-              "Controversial",
-              "Scaled"
-            ]
-          },
           "legal_information": {
             "type": "string"
           },
@@ -4557,17 +4511,6 @@
               "RequireApplication",
               "Open"
             ]
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "default_post_listing_mode": {
-            "type": "string",
-            "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
           }
         },
         "nullable": false,
@@ -4640,30 +4583,6 @@
               "Local",
               "Subscribed",
               "ModeratorView"
-            ]
-          },
-          "default_sort_type": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "MostComments",
-              "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
-              "Controversial",
-              "Scaled"
             ]
           },
           "legal_information": {
@@ -4763,17 +4682,6 @@
           },
           "reports_email_admins": {
             "type": "boolean"
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "default_post_listing_mode": {
-            "type": "string",
-            "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
           }
         },
         "nullable": false
@@ -5104,9 +5012,6 @@
           },
           "featured_local": {
             "type": "boolean"
-          },
-          "url_content_type": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -6254,9 +6159,6 @@
           },
           "users_active_half_year": {
             "type": "number"
-          },
-          "subscribers_local": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -6269,8 +6171,7 @@
           "users_active_day",
           "users_active_week",
           "users_active_month",
-          "users_active_half_year",
-          "subscribers_local"
+          "users_active_half_year"
         ]
       },
       "ResolveObject": {
@@ -6332,13 +6233,6 @@
             "items": {
               "type": "number"
             }
-          },
-          "visibility": {
-            "type": "string",
-            "enum": [
-              "Public",
-              "LocalOnly"
-            ]
           }
         },
         "nullable": false,
@@ -6436,13 +6330,6 @@
             "items": {
               "type": "number"
             }
-          },
-          "visibility": {
-            "type": "string",
-            "enum": [
-              "Public",
-              "LocalOnly"
-            ]
           }
         },
         "nullable": false,
@@ -6734,9 +6621,6 @@
           },
           "language_id": {
             "type": "number"
-          },
-          "custom_thumbnail": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -6819,9 +6703,6 @@
           },
           "language_id": {
             "type": "number"
-          },
-          "custom_thumbnail": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -7273,7 +7154,7 @@
         "type": "object",
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/LinkMetadata"
+            "$ref": "#/components/schemas/SiteMetadata"
           }
         },
         "nullable": false,
@@ -7281,7 +7162,7 @@
           "metadata"
         ]
       },
-      "LinkMetadata": {
+      "SiteMetadata": {
         "type": "object",
         "properties": {
           "title": {
@@ -7294,9 +7175,6 @@
             "type": "string"
           },
           "embed_video_url": {
-            "type": "string"
-          },
-          "content_type": {
             "type": "string"
           }
         },

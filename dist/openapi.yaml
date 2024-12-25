@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.1
+  version: 0.19.3-alpha.6
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2101,8 +2101,6 @@ components:
           type: string
         instance_id:
           type: number
-        content_warning:
-          type: string
       nullable: false
       required:
         - id
@@ -2164,10 +2162,6 @@ components:
           type: boolean
         federation_signed_fetch:
           type: boolean
-        default_post_listing_mode:
-          $ref: "#/components/schemas/PostListingMode"
-        default_sort_type:
-          $ref: "#/components/schemas/SortType"
       nullable: false
       required:
         - id
@@ -2190,8 +2184,6 @@ components:
         - registration_mode
         - reports_email_admins
         - federation_signed_fetch
-        - default_post_listing_mode
-        - default_sort_type
     ListingType:
       type: string
       enum:
@@ -2205,34 +2197,6 @@ components:
         - Closed
         - RequireApplication
         - Open
-    PostListingMode:
-      type: string
-      enum:
-        - List
-        - Card
-        - SmallCard
-    SortType:
-      type: string
-      enum:
-        - Active
-        - Hot
-        - New
-        - Old
-        - TopDay
-        - TopWeek
-        - TopMonth
-        - TopYear
-        - TopAll
-        - MostComments
-        - NewComments
-        - TopHour
-        - TopSixHour
-        - TopTwelveHour
-        - TopThreeMonths
-        - TopSixMonths
-        - TopNineMonths
-        - Controversial
-        - Scaled
     LocalSiteRateLimit:
       type: object
       properties:
@@ -2525,6 +2489,34 @@ components:
         - enable_keyboard_navigation
         - enable_animated_images
         - collapse_bot_comments
+    SortType:
+      type: string
+      enum:
+        - Active
+        - Hot
+        - New
+        - Old
+        - TopDay
+        - TopWeek
+        - TopMonth
+        - TopYear
+        - TopAll
+        - MostComments
+        - NewComments
+        - TopHour
+        - TopSixHour
+        - TopTwelveHour
+        - TopThreeMonths
+        - TopSixMonths
+        - TopNineMonths
+        - Controversial
+        - Scaled
+    PostListingMode:
+      type: string
+      enum:
+        - List
+        - Card
+        - SmallCard
     CommunityFollowerView:
       type: object
       properties:
@@ -2571,8 +2563,6 @@ components:
           type: boolean
         instance_id:
           type: number
-        visibility:
-          $ref: "#/components/schemas/CommunityVisibility"
       nullable: false
       required:
         - id
@@ -2587,12 +2577,6 @@ components:
         - hidden
         - posting_restricted_to_mods
         - instance_id
-        - visibility
-    CommunityVisibility:
-      type: string
-      enum:
-        - Public
-        - LocalOnly
     CommunityModeratorView:
       type: object
       properties:
@@ -2778,28 +2762,6 @@ components:
             - Local
             - Subscribed
             - ModeratorView
-        default_sort_type:
-          type: string
-          enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
-            - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
         legal_information:
           type: string
         application_email_admins:
@@ -2864,14 +2826,6 @@ components:
             - Closed
             - RequireApplication
             - Open
-        content_warning:
-          type: string
-        default_post_listing_mode:
-          type: string
-          enum:
-            - List
-            - Card
-            - SmallCard
       nullable: false
       required:
         - name
@@ -2922,28 +2876,6 @@ components:
             - Local
             - Subscribed
             - ModeratorView
-        default_sort_type:
-          type: string
-          enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
-            - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
         legal_information:
           type: string
         application_email_admins:
@@ -3010,14 +2942,6 @@ components:
             - Open
         reports_email_admins:
           type: boolean
-        content_warning:
-          type: string
-        default_post_listing_mode:
-          type: string
-          enum:
-            - List
-            - Card
-            - SmallCard
       nullable: false
     GenerateTotpSecretResponse:
       type: object
@@ -3250,8 +3174,6 @@ components:
           type: boolean
         featured_local:
           type: boolean
-        url_content_type:
-          type: string
       nullable: false
       required:
         - id
@@ -4073,8 +3995,6 @@ components:
           type: number
         users_active_half_year:
           type: number
-        subscribers_local:
-          type: number
       nullable: false
       required:
         - community_id
@@ -4086,7 +4006,6 @@ components:
         - users_active_week
         - users_active_month
         - users_active_half_year
-        - subscribers_local
     ResolveObject:
       type: object
       properties:
@@ -4128,11 +4047,6 @@ components:
           type: array
           items:
             type: number
-        visibility:
-          type: string
-          enum:
-            - Public
-            - LocalOnly
       nullable: false
       required:
         - name
@@ -4199,11 +4113,6 @@ components:
           type: array
           items:
             type: number
-        visibility:
-          type: string
-          enum:
-            - Public
-            - LocalOnly
       nullable: false
       required:
         - community_id
@@ -4409,8 +4318,6 @@ components:
           type: boolean
         language_id:
           type: number
-        custom_thumbnail:
-          type: string
       nullable: false
       required:
         - name
@@ -4467,8 +4374,6 @@ components:
           type: boolean
         language_id:
           type: number
-        custom_thumbnail:
-          type: string
       nullable: false
       required:
         - post_id
@@ -4784,11 +4689,11 @@ components:
       type: object
       properties:
         metadata:
-          $ref: "#/components/schemas/LinkMetadata"
+          $ref: "#/components/schemas/SiteMetadata"
       nullable: false
       required:
         - metadata
-    LinkMetadata:
+    SiteMetadata:
       type: object
       properties:
         title:
@@ -4798,8 +4703,6 @@ components:
         image:
           type: string
         embed_video_url:
-          type: string
-        content_type:
           type: string
       nullable: false
     CreateComment:
