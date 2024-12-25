@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.6"
+    "version": "0.20.0-private-community.5"
   },
   "servers": [
     {
@@ -7495,30 +7495,12 @@
         "properties": {
           "items": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PendingFollow"
-            }
+            "items": {}
           }
         },
         "nullable": false,
         "required": [
           "items"
-        ]
-      },
-      "PendingFollow": {
-        "type": "object",
-        "properties": {
-          "person": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "is_new_instance": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "person",
-          "is_new_instance"
         ]
       },
       "ApproveCommunityPendingFollower": {
