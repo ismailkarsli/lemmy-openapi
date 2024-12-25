@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.17"
+    "version": "0.20.0-alpha.16"
   },
   "servers": [
     {
@@ -3462,57 +3462,6 @@
         }
       }
     },
-    "/custom_emoji/list": {
-      "get": {
-        "operationId": "listCustomEmojis",
-        "description": "List custom emojis",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCustomEmojis/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCustomEmojis/properties/limit"
-            }
-          },
-          {
-            "name": "category",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCustomEmojis/properties/category"
-            }
-          },
-          {
-            "name": "ignore_page_limits",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCustomEmojis/properties/ignore_page_limits"
-            }
-          }
-        ],
-        "tags": [
-          "CustomEmoji"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListCustomEmojisResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/admin/tagline": {
       "post": {
         "operationId": "createTagline",
@@ -4975,7 +4924,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -4984,8 +4933,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "NewComments",
               "Active",
+              "MostComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -5178,7 +5127,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -5187,8 +5136,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -6533,7 +6482,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Hot",
               "New",
               "Old",
@@ -6542,8 +6491,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -7137,7 +7086,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -7146,8 +7095,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -7644,7 +7593,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -7653,8 +7602,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -9026,7 +8975,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -9035,8 +8984,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -9498,7 +9447,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -9507,8 +9456,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
-              "MostComments",
               "NewComments",
+              "Active",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -10067,39 +10016,6 @@
         "nullable": false,
         "required": [
           "id"
-        ]
-      },
-      "ListCustomEmojis": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "category": {
-            "type": "string"
-          },
-          "ignore_page_limits": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false
-      },
-      "ListCustomEmojisResponse": {
-        "type": "object",
-        "properties": {
-          "custom_emojis": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomEmojiView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "custom_emojis"
         ]
       },
       "CreateTagline": {
