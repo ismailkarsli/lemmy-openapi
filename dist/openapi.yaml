@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-api-v4.9
+  version: 0.20.0-api-v4.8
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -21,7 +21,6 @@ tags:
   - name: ResolveObject
   - name: Community
   - name: Community/PendingFollows
-  - name: Account/Block
   - name: Post
   - name: Post/Like
   - name: Post/Report
@@ -40,7 +39,6 @@ tags:
   - name: OauthProvider
   - name: Oauth
   - name: FederatedInstances
-  - name: Admin/Block
   - name: Pictrs/Image
 paths:
   /site:
@@ -555,7 +553,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/block/community:
+  /community/block:
     post:
       operationId: blockCommunity
       description: Block a community.
@@ -565,7 +563,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockCommunity"
       tags:
-        - Account/Block
+        - Community
       responses:
         "200":
           description: Successful response
@@ -1765,7 +1763,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BannedPersonsResponse"
-  /account/block/person:
+  /user/block:
     post:
       operationId: blockPerson
       description: Block a person.
@@ -1775,7 +1773,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BlockPerson"
       tags:
-        - Account/Block
+        - User
       responses:
         "200":
           description: Successful response
@@ -2356,7 +2354,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
-  /account/block_instance:
+  /site/block:
     post:
       operationId: userBlockInstance
       description: Block an instance as user.
@@ -2366,7 +2364,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UserBlockInstanceParams"
       tags:
-        - Account
+        - Site
       responses:
         "200":
           description: Successful response
@@ -2374,7 +2372,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /admin/block/instance:
+  /admin/block_instance:
     post:
       operationId: adminBlockInstance
       description: Globally block an instance as admin.
@@ -2384,7 +2382,7 @@ paths:
             schema:
               $ref: "#/components/schemas/AdminBlockInstanceParams"
       tags:
-        - Admin/Block
+        - Admin
       responses:
         "200":
           description: Successful response

@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-api-v4.9"
+    "version": "0.20.0-api-v4.8"
   },
   "servers": [
     {
@@ -51,9 +51,6 @@
     },
     {
       "name": "Community/PendingFollows"
-    },
-    {
-      "name": "Account/Block"
     },
     {
       "name": "Post"
@@ -108,9 +105,6 @@
     },
     {
       "name": "FederatedInstances"
-    },
-    {
-      "name": "Admin/Block"
     },
     {
       "name": "Pictrs/Image"
@@ -950,7 +944,7 @@
         }
       }
     },
-    "/account/block/community": {
+    "/community/block": {
       "post": {
         "operationId": "blockCommunity",
         "description": "Block a community.",
@@ -964,7 +958,7 @@
           }
         },
         "tags": [
-          "Account/Block"
+          "Community"
         ],
         "responses": {
           "200": {
@@ -2978,7 +2972,7 @@
         }
       }
     },
-    "/account/block/person": {
+    "/user/block": {
       "post": {
         "operationId": "blockPerson",
         "description": "Block a person.",
@@ -2992,7 +2986,7 @@
           }
         },
         "tags": [
-          "Account/Block"
+          "User"
         ],
         "responses": {
           "200": {
@@ -3959,7 +3953,7 @@
         }
       }
     },
-    "/account/block_instance": {
+    "/site/block": {
       "post": {
         "operationId": "userBlockInstance",
         "description": "Block an instance as user.",
@@ -3973,7 +3967,7 @@
           }
         },
         "tags": [
-          "Account"
+          "Site"
         ],
         "responses": {
           "200": {
@@ -3989,7 +3983,7 @@
         }
       }
     },
-    "/admin/block/instance": {
+    "/admin/block_instance": {
       "post": {
         "operationId": "adminBlockInstance",
         "description": "Globally block an instance as admin.",
@@ -4003,7 +3997,7 @@
           }
         },
         "tags": [
-          "Admin/Block"
+          "Admin"
         ],
         "responses": {
           "200": {
