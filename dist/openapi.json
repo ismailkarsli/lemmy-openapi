@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.2-alpha.4"
+    "version": "0.19.2-alpha.3"
   },
   "servers": [
     {
@@ -3588,12 +3588,6 @@
           },
           "federation_signed_fetch": {
             "type": "boolean"
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "auto_expand_images": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -3617,8 +3611,7 @@
           "published",
           "registration_mode",
           "reports_email_admins",
-          "federation_signed_fetch",
-          "auto_expand_images"
+          "federation_signed_fetch"
         ]
       },
       "ListingType": {
@@ -4141,12 +4134,6 @@
           },
           "instance_id": {
             "type": "number"
-          },
-          "only_followers_can_vote": {
-            "type": "boolean"
-          },
-          "visibility": {
-            "$ref": "#/components/schemas/CommunityVisibility"
           }
         },
         "nullable": false,
@@ -4162,16 +4149,7 @@
           "local",
           "hidden",
           "posting_restricted_to_mods",
-          "instance_id",
-          "only_followers_can_vote",
-          "visibility"
-        ]
-      },
-      "CommunityVisibility": {
-        "type": "string",
-        "enum": [
-          "Public",
-          "LocalOnly"
+          "instance_id"
         ]
       },
       "CommunityModeratorView": {
@@ -4533,12 +4511,6 @@
               "RequireApplication",
               "Open"
             ]
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "auto_expand_images": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -4709,12 +4681,6 @@
             ]
           },
           "reports_email_admins": {
-            "type": "boolean"
-          },
-          "content_warning": {
-            "type": "string"
-          },
-          "auto_expand_images": {
             "type": "boolean"
           }
         },
@@ -6124,9 +6090,6 @@
           },
           "published": {
             "type": "string"
-          },
-          "newest_comment_time": {
-            "type": "string"
           }
         },
         "nullable": false,
@@ -6136,8 +6099,7 @@
           "score",
           "upvotes",
           "downvotes",
-          "published",
-          "newest_comment_time"
+          "published"
         ]
       },
       "CommunityView": {
@@ -6272,15 +6234,8 @@
               "type": "number"
             }
           },
-          "only_followers_can_vote": {
+          "local_only": {
             "type": "boolean"
-          },
-          "visibility": {
-            "type": "string",
-            "enum": [
-              "Public",
-              "LocalOnly"
-            ]
           }
         },
         "nullable": false,
@@ -6379,15 +6334,8 @@
               "type": "number"
             }
           },
-          "only_followers_can_vote": {
+          "local_only": {
             "type": "boolean"
-          },
-          "visibility": {
-            "type": "string",
-            "enum": [
-              "Public",
-              "LocalOnly"
-            ]
           }
         },
         "nullable": false,
@@ -8229,9 +8177,6 @@
           "person_view": {
             "$ref": "#/components/schemas/PersonView"
           },
-          "site": {
-            "$ref": "#/components/schemas/Site.Nullable"
-          },
           "comments": {
             "type": "array",
             "items": {
@@ -8254,68 +8199,9 @@
         "nullable": false,
         "required": [
           "person_view",
-          "site",
           "comments",
           "posts",
           "moderates"
-        ]
-      },
-      "Site.Nullable": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          },
-          "sidebar": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          },
-          "icon": {
-            "type": "string"
-          },
-          "banner": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "actor_id": {
-            "type": "string"
-          },
-          "last_refreshed_at": {
-            "type": "string"
-          },
-          "inbox_url": {
-            "type": "string"
-          },
-          "private_key": {
-            "type": "string"
-          },
-          "public_key": {
-            "type": "string"
-          },
-          "instance_id": {
-            "type": "number"
-          }
-        },
-        "nullable": true,
-        "required": [
-          "id",
-          "name",
-          "published",
-          "actor_id",
-          "last_refreshed_at",
-          "inbox_url",
-          "public_key",
-          "instance_id"
         ]
       },
       "GetPersonMentions": {
