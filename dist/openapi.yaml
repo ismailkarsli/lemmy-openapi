@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.6-alpha.1
+  version: 0.20.0-alpha.6
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -4716,8 +4716,6 @@ components:
           type: number
         custom_thumbnail:
           type: string
-        scheduled_publish_time:
-          type: number
       nullable: false
       required:
         - post_id
