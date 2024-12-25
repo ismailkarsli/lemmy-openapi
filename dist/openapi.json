@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.12"
+    "version": "0.19.4-alpha.10"
   },
   "servers": [
     {
@@ -27,9 +27,6 @@
     },
     {
       "name": "User/Totp"
-    },
-    {
-      "name": "Account"
     },
     {
       "name": "Admin"
@@ -279,7 +276,7 @@
         }
       }
     },
-    "/account/list_media": {
+    "/user/list_media": {
       "get": {
         "operationId": "listMedia",
         "description": "List all the media for your user",
@@ -300,7 +297,7 @@
           }
         ],
         "tags": [
-          "Account"
+          "User"
         ],
         "responses": {
           "200": {
@@ -6294,9 +6291,6 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
-          "banned_from_community": {
-            "type": "boolean"
-          },
           "creator_is_moderator": {
             "type": "boolean"
           },
@@ -6324,7 +6318,6 @@
           "community",
           "counts",
           "creator_banned_from_community",
-          "banned_from_community",
           "creator_is_moderator",
           "creator_is_admin",
           "subscribed",
@@ -6387,9 +6380,6 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
-          "banned_from_community": {
-            "type": "boolean"
-          },
           "creator_is_moderator": {
             "type": "boolean"
           },
@@ -6427,7 +6417,6 @@
           "creator",
           "community",
           "creator_banned_from_community",
-          "banned_from_community",
           "creator_is_moderator",
           "creator_is_admin",
           "counts",
