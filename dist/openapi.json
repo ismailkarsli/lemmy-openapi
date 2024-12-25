@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.2"
+    "version": "0.19.4-alpha.1"
   },
   "servers": [
     {
