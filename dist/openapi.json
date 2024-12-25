@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.3"
+    "version": "0.20.0-alpha.1"
   },
   "servers": [
     {
@@ -1315,20 +1315,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetPosts/properties/show_hidden"
-            }
-          },
-          {
-            "name": "show_read",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPosts/properties/show_read"
-            }
-          },
-          {
-            "name": "show_nsfw",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPosts/properties/show_nsfw"
             }
           },
           {
@@ -3180,36 +3166,6 @@
         }
       }
     },
-    "/admin/registration_application": {
-      "get": {
-        "operationId": "getRegistrationApplication",
-        "description": "Get the application a user submitted when they first registered their account",
-        "parameters": [
-          {
-            "name": "person_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetRegistrationApplication/properties/person_id"
-            }
-          }
-        ],
-        "tags": [
-          "Admin/RegistrationApplication"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationApplicationResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/admin/purge/person": {
       "post": {
         "operationId": "purgePerson",
@@ -4688,25 +4644,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "MostComments",
               "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "legal_information": {
@@ -4891,25 +4847,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "legal_information": {
@@ -6245,25 +6201,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "NewComments",
               "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "listing_type": {
@@ -6449,9 +6405,6 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
-          "image_details": {
-            "$ref": "#/components/schemas/ImageDetails"
-          },
           "creator_banned_from_community": {
             "type": "boolean"
           },
@@ -6505,30 +6458,6 @@
           "hidden",
           "creator_blocked",
           "unread_comments"
-        ]
-      },
-      "ImageDetails": {
-        "type": "object",
-        "properties": {
-          "link": {
-            "type": "string"
-          },
-          "width": {
-            "type": "number"
-          },
-          "height": {
-            "type": "number"
-          },
-          "content_type": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "link",
-          "width",
-          "height",
-          "content_type"
         ]
       },
       "PostAggregates": {
@@ -6835,25 +6764,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "show_nsfw": {
@@ -7336,25 +7265,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "page": {
@@ -7379,12 +7308,6 @@
             "type": "boolean"
           },
           "show_hidden": {
-            "type": "boolean"
-          },
-          "show_read": {
-            "type": "boolean"
-          },
-          "show_nsfw": {
             "type": "boolean"
           },
           "page_cursor": {
@@ -8718,25 +8641,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
               "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "page": {
@@ -9176,25 +9099,25 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "Active",
               "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "default_listing_type": {
@@ -9524,18 +9447,6 @@
         "nullable": false,
         "required": [
           "registration_application"
-        ]
-      },
-      "GetRegistrationApplication": {
-        "type": "object",
-        "properties": {
-          "person_id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "person_id"
         ]
       },
       "PurgePerson": {

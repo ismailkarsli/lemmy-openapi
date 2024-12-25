@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-alpha.3
+  version: 0.20.0-alpha.1
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -784,14 +784,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/show_hidden"
-        - name: show_read
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/show_read"
-        - name: show_nsfw
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/show_nsfw"
         - name: page_cursor
           in: query
           schema:
@@ -1895,25 +1887,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RegistrationApplicationResponse"
-  /admin/registration_application:
-    get:
-      operationId: getRegistrationApplication
-      description: Get the application a user submitted when they first registered
-        their account
-      parameters:
-        - name: person_id
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetRegistrationApplication/properties/person_id"
-      tags:
-        - Admin/RegistrationApplication
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RegistrationApplicationResponse"
   /admin/purge/person:
     post:
       operationId: purgePerson
@@ -2934,25 +2907,25 @@ components:
         default_sort_type:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         legal_information:
           type: string
         application_email_admins:
@@ -3078,25 +3051,25 @@ components:
         default_sort_type:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         legal_information:
           type: string
         application_email_admins:
@@ -4035,25 +4008,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - NewComments
             - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         listing_type:
           type: string
           enum:
@@ -4186,8 +4159,6 @@ components:
           $ref: "#/components/schemas/Person"
         community:
           $ref: "#/components/schemas/Community"
-        image_details:
-          $ref: "#/components/schemas/ImageDetails"
         creator_banned_from_community:
           type: boolean
         banned_from_community:
@@ -4228,23 +4199,6 @@ components:
         - hidden
         - creator_blocked
         - unread_comments
-    ImageDetails:
-      type: object
-      properties:
-        link:
-          type: string
-        width:
-          type: number
-        height:
-          type: number
-        content_type:
-          type: string
-      nullable: false
-      required:
-        - link
-        - width
-        - height
-        - content_type
     PostAggregates:
       type: object
       properties:
@@ -4459,25 +4413,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         show_nsfw:
           type: boolean
         page:
@@ -4808,25 +4762,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
         limit:
@@ -4842,10 +4796,6 @@ components:
         disliked_only:
           type: boolean
         show_hidden:
-          type: boolean
-        show_read:
-          type: boolean
-        show_nsfw:
           type: boolean
         page_cursor:
           type: string
@@ -5771,25 +5721,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
         limit:
@@ -6095,25 +6045,25 @@ components:
         default_sort_type:
           type: string
           enum:
-            - NewComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - Active
             - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - NewComments
+            - Active
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         default_listing_type:
           type: string
           enum:
@@ -6338,14 +6288,6 @@ components:
       nullable: false
       required:
         - registration_application
-    GetRegistrationApplication:
-      type: object
-      properties:
-        person_id:
-          type: number
-      nullable: false
-      required:
-        - person_id
     PurgePerson:
       type: object
       properties:
