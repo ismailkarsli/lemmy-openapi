@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4-alpha.17
+  version: 0.19.4-alpha.16
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -1468,7 +1468,6 @@ paths:
   /user/logout:
     post:
       operationId: logout
-      description: Invalidate the currently used auth token.
       tags:
         - User
       responses:
@@ -2184,8 +2183,6 @@ components:
           type: string
         inbox_url:
           type: string
-        public_key:
-          type: string
         instance_id:
           type: number
         content_warning:
@@ -2198,7 +2195,6 @@ components:
         - actor_id
         - last_refreshed_at
         - inbox_url
-        - public_key
         - instance_id
     LocalSite:
       type: object
@@ -3179,24 +3175,10 @@ components:
         images:
           type: array
           items:
-            $ref: "#/components/schemas/LocalImageView"
+            $ref: "#/components/schemas/LocalImage"
       nullable: false
       required:
         - images
-    LocalImageView:
-      type: object
-      properties:
-        local_image:
-          $ref: "#/components/schemas/LocalImage"
-        local_user:
-          $ref: "#/components/schemas/LocalUser"
-        person:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - local_image
-        - local_user
-        - person
     LocalImage:
       type: object
       properties:
