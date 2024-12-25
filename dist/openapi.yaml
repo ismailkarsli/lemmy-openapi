@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.2-alpha.2
+  version: 0.19.2-alpha.1
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -3992,8 +3992,6 @@ components:
           type: number
         users_active_half_year:
           type: number
-        subscribers_local:
-          type: number
       nullable: false
       required:
         - community_id
@@ -4005,7 +4003,6 @@ components:
         - users_active_week
         - users_active_month
         - users_active_half_year
-        - subscribers_local
     ResolveObject:
       type: object
       properties:
