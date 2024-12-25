@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-instance-blocks.4
+  version: 0.20.0-instance-blocks.3
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -8098,8 +8098,7 @@ components:
     AdminBlockInstanceParams:
       type: object
       properties:
-        instance:
-          $ref: "#/components/schemas/InstanceIdOrDomain"
+        instance: {}
         block:
           type: boolean
         reason:
@@ -8110,27 +8109,10 @@ components:
       required:
         - instance
         - block
-    InstanceIdOrDomain:
-      oneOf:
-        - type: object
-          properties:
-            InstanceId:
-              type: number
-          nullable: false
-          required:
-            - InstanceId
-        - type: object
-          properties:
-            Domain:
-              type: string
-          nullable: false
-          required:
-            - Domain
     AdminAllowInstanceParams:
       type: object
       properties:
-        instance:
-          $ref: "#/components/schemas/InstanceIdOrDomain"
+        instance: {}
         allow:
           type: boolean
         reason:
