@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-instance-blocks.1
+  version: 0.20.0-instance-blocks.0
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2345,13 +2345,13 @@ paths:
                 $ref: "#/components/schemas/GetFederatedInstancesResponse"
   /site/block:
     post:
-      operationId: userBlockInstance
-      description: Block an instance as user.
+      operationId: blockInstance
+      description: Block an instance.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserBlockInstanceParams"
+              $ref: "#/components/schemas/BlockInstance"
       tags:
         - Site
       responses:
@@ -2360,43 +2360,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /admin/block_instance:
-    post:
-      operationId: adminBlockInstance
-      description: Globally block an instance as admin.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminBlockInstanceParams"
-      tags:
-        - Admin
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /admin/allow_instance:
-    post:
-      operationId: adminAllowInstance
-      description: Globally allow an instance as admin.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AdminAllowInstanceParams"
-      tags:
-        - Admin
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                $ref: "#/components/schemas/BlockInstanceResponse"
   /pictrs/image:
     servers:
       - url: https://lemy.lol
@@ -3489,25 +3453,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
             - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         default_comment_sort_type:
           type: string
           enum:
@@ -3686,25 +3650,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -3960,24 +3924,24 @@ components:
         type_:
           type: string
           enum:
-            - ModAdd
-            - AdminAllowInstance
-            - AdminBlockInstance
-            - AdminPurgeComment
-            - AdminPurgePost
-            - AdminPurgeCommunity
-            - AdminPurgePerson
-            - ModHideCommunity
-            - ModBan
             - All
-            - ModTransferCommunity
-            - ModAddCommunity
-            - ModBanFromCommunity
-            - ModRemoveCommunity
-            - ModRemoveComment
-            - ModFeaturePost
-            - ModLockPost
             - ModRemovePost
+            - ModLockPost
+            - ModFeaturePost
+            - ModRemoveComment
+            - ModRemoveCommunity
+            - ModBanFromCommunity
+            - ModAddCommunity
+            - ModTransferCommunity
+            - ModAdd
+            - ModBan
+            - ModHideCommunity
+            - AdminPurgePerson
+            - AdminPurgeCommunity
+            - AdminPurgePost
+            - AdminPurgeComment
+            - AdminBlockInstance
+            - AdminAllowInstance
         other_person_id:
           type: number
         post_id:
@@ -4895,25 +4859,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - MostComments
             - NewComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         listing_type:
           type: string
           enum:
@@ -5397,27 +5361,27 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
-            - NewComments
             - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
-            - NameAsc
             - NameDesc
+            - NameAsc
+            - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - Active
+            - NewComments
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         show_nsfw:
           type: boolean
         page:
@@ -5893,25 +5857,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
           description: DEPRECATED, use page_cursor
@@ -6973,25 +6937,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
         limit:
@@ -7361,25 +7325,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
-            - NewComments
             - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -8103,46 +8067,6 @@ components:
       required:
         - instance_id
         - fail_count
-    UserBlockInstanceParams:
-      type: object
-      properties:
-        instance_id:
-          type: number
-        block:
-          type: boolean
-      nullable: false
-      required:
-        - instance_id
-        - block
-      description: Block an instance as user
-    AdminBlockInstanceParams:
-      type: object
-      properties:
-        instance_id:
-          type: number
-        block:
-          type: boolean
-        reason:
-          type: string
-        expires:
-          type: string
-      nullable: false
-      required:
-        - instance_id
-        - block
-    AdminAllowInstanceParams:
-      type: object
-      properties:
-        instance_id:
-          type: number
-        allow:
-          type: boolean
-        reason:
-          type: string
-      nullable: false
-      required:
-        - instance_id
-        - allow
     UploadImage:
       type: object
       properties:
