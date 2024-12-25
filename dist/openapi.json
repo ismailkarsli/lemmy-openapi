@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-instance-blocks.3"
+    "version": "0.20.0-instance-blocks.2"
   },
   "servers": [
     {
@@ -11658,7 +11658,9 @@
       "AdminBlockInstanceParams": {
         "type": "object",
         "properties": {
-          "instance": {},
+          "instance_id": {
+            "type": "number"
+          },
           "block": {
             "type": "boolean"
           },
@@ -11671,14 +11673,16 @@
         },
         "nullable": false,
         "required": [
-          "instance",
+          "instance_id",
           "block"
         ]
       },
       "AdminAllowInstanceParams": {
         "type": "object",
         "properties": {
-          "instance": {},
+          "instance_id": {
+            "type": "number"
+          },
           "allow": {
             "type": "boolean"
           },
@@ -11688,7 +11692,7 @@
         },
         "nullable": false,
         "required": [
-          "instance",
+          "instance_id",
           "allow"
         ]
       },

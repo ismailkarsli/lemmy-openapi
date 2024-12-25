@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-instance-blocks.3
+  version: 0.20.0-instance-blocks.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -8098,7 +8098,8 @@ components:
     AdminBlockInstanceParams:
       type: object
       properties:
-        instance: {}
+        instance_id:
+          type: number
         block:
           type: boolean
         reason:
@@ -8107,19 +8108,20 @@ components:
           type: string
       nullable: false
       required:
-        - instance
+        - instance_id
         - block
     AdminAllowInstanceParams:
       type: object
       properties:
-        instance: {}
+        instance_id:
+          type: number
         allow:
           type: boolean
         reason:
           type: string
       nullable: false
       required:
-        - instance
+        - instance_id
         - allow
     UploadImage:
       type: object
