@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4"
+    "version": "0.19.4-alpha.18"
   },
   "servers": [
     {
@@ -8588,7 +8588,8 @@
         "required": [
           "username",
           "password",
-          "password_verify"
+          "password_verify",
+          "show_nsfw"
         ]
       },
       "LoginResponse": {

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.4
+  version: 0.19.4-alpha.18
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -5685,6 +5685,7 @@ components:
         - username
         - password
         - password_verify
+        - show_nsfw
     LoginResponse:
       type: object
       properties:
