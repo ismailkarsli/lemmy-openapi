@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-alpha.14
+  version: 0.20.0-alpha.13
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -315,26 +315,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/Search/properties/limit"
-        - name: title_only
+        - name: post_title_only
           in: query
           schema:
-            $ref: "#/components/schemas/Search/properties/title_only"
-        - name: post_url_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/post_url_only"
-        - name: saved_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/saved_only"
-        - name: liked_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/liked_only"
-        - name: disliked_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/disliked_only"
+            $ref: "#/components/schemas/Search/properties/post_title_only"
       tags:
         - Search
       responses:
@@ -2702,6 +2686,8 @@ components:
           type: boolean
         blur_nsfw:
           type: boolean
+        auto_expand:
+          type: boolean
         infinite_scroll_enabled:
           type: boolean
         admin:
@@ -2735,6 +2721,7 @@ components:
         - accepted_application
         - open_links_in_new_tab
         - blur_nsfw
+        - auto_expand
         - infinite_scroll_enabled
         - admin
         - post_listing_mode
@@ -3522,7 +3509,7 @@ components:
         alt_text:
           type: string
         scheduled_publish_time:
-          type: string
+          type: number
       nullable: false
       required:
         - id
@@ -4094,6 +4081,7 @@ components:
             - Posts
             - Communities
             - Users
+            - Url
         sort:
           type: string
           enum:
@@ -4127,15 +4115,7 @@ components:
           type: number
         limit:
           type: number
-        title_only:
-          type: boolean
-        post_url_only:
-          type: boolean
-        saved_only:
-          type: boolean
-        liked_only:
-          type: boolean
-        disliked_only:
+        post_title_only:
           type: boolean
       nullable: false
       required:
@@ -4176,6 +4156,7 @@ components:
         - Posts
         - Communities
         - Users
+        - Url
     CommentView:
       type: object
       properties:
@@ -6162,6 +6143,8 @@ components:
         show_nsfw:
           type: boolean
         blur_nsfw:
+          type: boolean
+        auto_expand:
           type: boolean
         theme:
           type: string
