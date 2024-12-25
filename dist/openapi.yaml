@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-private-community.1
+  version: 0.20.0-alpha.17
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -19,7 +19,6 @@ tags:
   - name: Search
   - name: ResolveObject
   - name: Community
-  - name: Community/PendingFollows
   - name: Post
   - name: Post/Like
   - name: Post/Report
@@ -472,47 +471,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommunityResponse"
-  /community/pending_follows/count:
-    get:
-      operationId: getCommunityPendingFollowsCount
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GetCommunityPendingFollowsCountResponse"
-  /community/pending_follows/list:
-    get:
-      operationId: listCommunityPendingFollows
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListCommunityPendingFollowsResponse"
-  /community/pending_follows/approve:
-    post:
-      operationId: approveCommunityPendingFollow
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ApproveCommunityPendingFollows"
-      tags:
-        - Community/PendingFollows
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
   /community/block:
     post:
       operationId: blockCommunity
@@ -639,24 +597,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AddModToCommunityResponse"
-  /community/random:
-    get:
-      operationId: getRandomCommunity
-      description: Get a random community.
-      parameters:
-        - name: type_
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetRandomCommunity/properties/type_"
-      tags:
-        - Community
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CommunityResponse"
   /post:
     post:
       operationId: createPost
@@ -2406,12 +2346,6 @@ components:
           type: array
           items:
             type: number
-        taglines:
-          type: array
-          items: {}
-        custom_emojis:
-          type: array
-          items: {}
         tagline:
           $ref: "#/components/schemas/Tagline"
         oauth_providers:
@@ -2433,8 +2367,6 @@ components:
         - version
         - all_languages
         - discussion_languages
-        - taglines
-        - custom_emojis
         - blocked_urls
     SiteView:
       type: object
@@ -2503,6 +2435,8 @@ components:
           type: number
         site_setup:
           type: boolean
+        enable_downvotes:
+          type: boolean
         community_creation_admin_only:
           type: boolean
         require_email_verification:
@@ -2549,19 +2483,12 @@ components:
           $ref: "#/components/schemas/CommentSortType"
         oauth_registration:
           type: boolean
-        post_upvotes:
-          $ref: "#/components/schemas/FederationMode"
-        post_downvotes:
-          $ref: "#/components/schemas/FederationMode"
-        comment_upvotes:
-          $ref: "#/components/schemas/FederationMode"
-        comment_downvotes:
-          $ref: "#/components/schemas/FederationMode"
       nullable: false
       required:
         - id
         - site_id
         - site_setup
+        - enable_downvotes
         - community_creation_admin_only
         - require_email_verification
         - private_instance
@@ -2581,10 +2508,6 @@ components:
         - default_post_sort_type
         - default_comment_sort_type
         - oauth_registration
-        - post_upvotes
-        - post_downvotes
-        - comment_upvotes
-        - comment_downvotes
     ListingType:
       type: string
       enum:
@@ -2634,12 +2557,6 @@ components:
         - Old
         - Controversial
         - Top
-    FederationMode:
-      type: string
-      enum:
-        - All
-        - Local
-        - Disable
     LocalSiteRateLimit:
       type: object
       properties:
@@ -3017,7 +2934,6 @@ components:
       enum:
         - Public
         - LocalOnly
-        - Private
     CommunityModeratorView:
       type: object
       properties:
@@ -3154,6 +3070,8 @@ components:
           type: string
         banner:
           type: string
+        enable_downvotes:
+          type: boolean
         enable_nsfw:
           type: boolean
         community_creation_admin_only:
@@ -3273,30 +3191,6 @@ components:
           type: boolean
         content_warning:
           type: string
-        post_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        post_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
       nullable: false
       required:
         - name
@@ -3305,13 +3199,9 @@ components:
       properties:
         site_view:
           $ref: "#/components/schemas/SiteView"
-        taglines:
-          type: array
-          items: {}
       nullable: false
       required:
         - site_view
-        - taglines
     EditSite:
       type: object
       properties:
@@ -3325,6 +3215,8 @@ components:
           type: string
         banner:
           type: string
+        enable_downvotes:
+          type: boolean
         enable_nsfw:
           type: boolean
         community_creation_admin_only:
@@ -3444,36 +3336,12 @@ components:
             - Closed
             - RequireApplication
             - Open
+        oauth_registration:
+          type: boolean
         reports_email_admins:
           type: boolean
         content_warning:
           type: string
-        oauth_registration:
-          type: boolean
-        post_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        post_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_upvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
-        comment_downvotes:
-          type: string
-          enum:
-            - All
-            - Local
-            - Disable
       nullable: false
     GenerateTotpSecretResponse:
       type: object
@@ -4681,7 +4549,6 @@ components:
           enum:
             - Public
             - LocalOnly
-            - Private
       nullable: false
       required:
         - name
@@ -4753,7 +4620,6 @@ components:
           enum:
             - Public
             - LocalOnly
-            - Private
       nullable: false
       required:
         - community_id
@@ -4942,17 +4808,6 @@ components:
       nullable: false
       required:
         - moderators
-    GetRandomCommunity:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - All
-            - Local
-            - Subscribed
-            - ModeratorView
-      nullable: false
     CreatePost:
       type: object
       properties:

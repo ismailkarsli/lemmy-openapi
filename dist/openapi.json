@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.1"
+    "version": "0.20.0-alpha.17"
   },
   "servers": [
     {
@@ -45,9 +45,6 @@
     },
     {
       "name": "Community"
-    },
-    {
-      "name": "Community/PendingFollows"
     },
     {
       "name": "Post"
@@ -806,75 +803,6 @@
         }
       }
     },
-    "/community/pending_follows/count": {
-      "get": {
-        "operationId": "getCommunityPendingFollowsCount",
-        "tags": [
-          "Community/PendingFollows"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetCommunityPendingFollowsCountResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/pending_follows/list": {
-      "get": {
-        "operationId": "listCommunityPendingFollows",
-        "tags": [
-          "Community/PendingFollows"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListCommunityPendingFollowsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/pending_follows/approve": {
-      "post": {
-        "operationId": "approveCommunityPendingFollow",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ApproveCommunityPendingFollows"
-              }
-            }
-          }
-        },
-        "tags": [
-          "Community/PendingFollows"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/community/block": {
       "post": {
         "operationId": "blockCommunity",
@@ -1078,36 +1006,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AddModToCommunityResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/random": {
-      "get": {
-        "operationId": "getRandomCommunity",
-        "description": "Get a random community.",
-        "parameters": [
-          {
-            "name": "type_",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetRandomCommunity/properties/type_"
-            }
-          }
-        ],
-        "tags": [
-          "Community"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommunityResponse"
                 }
               }
             }
@@ -4035,14 +3933,6 @@
               "type": "number"
             }
           },
-          "taglines": {
-            "type": "array",
-            "items": {}
-          },
-          "custom_emojis": {
-            "type": "array",
-            "items": {}
-          },
           "tagline": {
             "$ref": "#/components/schemas/Tagline"
           },
@@ -4072,8 +3962,6 @@
           "version",
           "all_languages",
           "discussion_languages",
-          "taglines",
-          "custom_emojis",
           "blocked_urls"
         ]
       },
@@ -4171,6 +4059,9 @@
           "site_setup": {
             "type": "boolean"
           },
+          "enable_downvotes": {
+            "type": "boolean"
+          },
           "community_creation_admin_only": {
             "type": "boolean"
           },
@@ -4239,18 +4130,6 @@
           },
           "oauth_registration": {
             "type": "boolean"
-          },
-          "post_upvotes": {
-            "$ref": "#/components/schemas/FederationMode"
-          },
-          "post_downvotes": {
-            "$ref": "#/components/schemas/FederationMode"
-          },
-          "comment_upvotes": {
-            "$ref": "#/components/schemas/FederationMode"
-          },
-          "comment_downvotes": {
-            "$ref": "#/components/schemas/FederationMode"
           }
         },
         "nullable": false,
@@ -4258,6 +4137,7 @@
           "id",
           "site_id",
           "site_setup",
+          "enable_downvotes",
           "community_creation_admin_only",
           "require_email_verification",
           "private_instance",
@@ -4276,11 +4156,7 @@
           "default_post_listing_mode",
           "default_post_sort_type",
           "default_comment_sort_type",
-          "oauth_registration",
-          "post_upvotes",
-          "post_downvotes",
-          "comment_upvotes",
-          "comment_downvotes"
+          "oauth_registration"
         ]
       },
       "ListingType": {
@@ -4340,14 +4216,6 @@
           "Old",
           "Controversial",
           "Top"
-        ]
-      },
-      "FederationMode": {
-        "type": "string",
-        "enum": [
-          "All",
-          "Local",
-          "Disable"
         ]
       },
       "LocalSiteRateLimit": {
@@ -4871,8 +4739,7 @@
         "type": "string",
         "enum": [
           "Public",
-          "LocalOnly",
-          "Private"
+          "LocalOnly"
         ]
       },
       "CommunityModeratorView": {
@@ -5067,6 +4934,9 @@
           "banner": {
             "type": "string"
           },
+          "enable_downvotes": {
+            "type": "boolean"
+          },
           "enable_nsfw": {
             "type": "boolean"
           },
@@ -5230,38 +5100,6 @@
           },
           "content_warning": {
             "type": "string"
-          },
-          "post_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "post_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
           }
         },
         "nullable": false,
@@ -5274,16 +5112,11 @@
         "properties": {
           "site_view": {
             "$ref": "#/components/schemas/SiteView"
-          },
-          "taglines": {
-            "type": "array",
-            "items": {}
           }
         },
         "nullable": false,
         "required": [
-          "site_view",
-          "taglines"
+          "site_view"
         ]
       },
       "EditSite": {
@@ -5303,6 +5136,9 @@
           },
           "banner": {
             "type": "string"
+          },
+          "enable_downvotes": {
+            "type": "boolean"
           },
           "enable_nsfw": {
             "type": "boolean"
@@ -5468,46 +5304,14 @@
               "Open"
             ]
           },
+          "oauth_registration": {
+            "type": "boolean"
+          },
           "reports_email_admins": {
             "type": "boolean"
           },
           "content_warning": {
             "type": "string"
-          },
-          "oauth_registration": {
-            "type": "boolean"
-          },
-          "post_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "post_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_upvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
-          },
-          "comment_downvotes": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Disable"
-            ]
           }
         },
         "nullable": false
@@ -7205,8 +7009,7 @@
             "type": "string",
             "enum": [
               "Public",
-              "LocalOnly",
-              "Private"
+              "LocalOnly"
             ]
           }
         },
@@ -7310,8 +7113,7 @@
             "type": "string",
             "enum": [
               "Public",
-              "LocalOnly",
-              "Private"
+              "LocalOnly"
             ]
           }
         },
@@ -7580,21 +7382,6 @@
         "required": [
           "moderators"
         ]
-      },
-      "GetRandomCommunity": {
-        "type": "object",
-        "properties": {
-          "type_": {
-            "type": "string",
-            "enum": [
-              "All",
-              "Local",
-              "Subscribed",
-              "ModeratorView"
-            ]
-          }
-        },
-        "nullable": false
       },
       "CreatePost": {
         "type": "object",
