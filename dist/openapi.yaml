@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-private-community.3
+  version: 0.20.0-private-community.2
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -4509,7 +4509,6 @@ components:
         - Subscribed
         - NotSubscribed
         - Pending
-        - ApprovalRequired
     PostView:
       type: object
       properties:
@@ -4894,13 +4893,10 @@ components:
           type: number
         follower_id:
           type: number
-        approve:
-          type: boolean
       nullable: false
       required:
         - community_id
         - follower_id
-        - approve
     BlockCommunity:
       type: object
       properties:

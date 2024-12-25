@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-private-community.3"
+    "version": "0.20.0-private-community.2"
   },
   "servers": [
     {
@@ -6971,8 +6971,7 @@
         "enum": [
           "Subscribed",
           "NotSubscribed",
-          "Pending",
-          "ApprovalRequired"
+          "Pending"
         ]
       },
       "PostView": {
@@ -7513,16 +7512,12 @@
           },
           "follower_id": {
             "type": "number"
-          },
-          "approve": {
-            "type": "boolean"
           }
         },
         "nullable": false,
         "required": [
           "community_id",
-          "follower_id",
-          "approve"
+          "follower_id"
         ]
       },
       "BlockCommunity": {
