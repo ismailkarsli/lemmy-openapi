@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.9"
+    "version": "0.20.0-alpha.8"
   },
   "servers": [
     {
@@ -3611,7 +3611,7 @@
         "description": "Upload an image to the server.",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/UploadImage"
               }
@@ -3659,6 +3659,20 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DeleteImage/properties/token"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/DeleteImage/properties/filename"
             }
           }
         ],
@@ -3712,8 +3726,17 @@
               "type": "number"
             }
           },
-          "tagline": {
-            "$ref": "#/components/schemas/Tagline"
+          "taglines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tagline"
+            }
+          },
+          "custom_emojis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomEmojiView"
+            }
           },
           "oauth_providers": {
             "type": "array",
@@ -3741,6 +3764,8 @@
           "version",
           "all_languages",
           "discussion_languages",
+          "taglines",
+          "custom_emojis",
           "blocked_urls"
         ]
       },
@@ -3901,9 +3926,8 @@
           "default_post_listing_mode": {
             "$ref": "#/components/schemas/PostListingMode"
           },
-          "default_post_sort_type": {},
-          "default_comment_sort_type": {
-            "$ref": "#/components/schemas/CommentSortType"
+          "default_sort_type": {
+            "$ref": "#/components/schemas/SortType"
           },
           "oauth_registration": {
             "type": "boolean"
@@ -3931,8 +3955,7 @@
           "reports_email_admins",
           "federation_signed_fetch",
           "default_post_listing_mode",
-          "default_post_sort_type",
-          "default_comment_sort_type",
+          "default_sort_type",
           "oauth_registration"
         ]
       },
@@ -3961,14 +3984,28 @@
           "SmallCard"
         ]
       },
-      "CommentSortType": {
+      "SortType": {
         "type": "string",
         "enum": [
+          "Active",
           "Hot",
-          "Top",
           "New",
           "Old",
-          "Controversial"
+          "TopDay",
+          "TopWeek",
+          "TopMonth",
+          "TopYear",
+          "TopAll",
+          "MostComments",
+          "NewComments",
+          "TopHour",
+          "TopSixHour",
+          "TopTwelveHour",
+          "TopThreeMonths",
+          "TopSixMonths",
+          "TopNineMonths",
+          "Controversial",
+          "Scaled"
         ]
       },
       "LocalSiteRateLimit": {
@@ -4291,7 +4328,9 @@
           "theme": {
             "type": "string"
           },
-          "default_post_sort_type": {},
+          "default_sort_type": {
+            "$ref": "#/components/schemas/SortType"
+          },
           "default_listing_type": {
             "$ref": "#/components/schemas/ListingType"
           },
@@ -4345,9 +4384,6 @@
           },
           "collapse_bot_comments": {
             "type": "boolean"
-          },
-          "default_comment_sort_type": {
-            "$ref": "#/components/schemas/CommentSortType"
           }
         },
         "nullable": false,
@@ -4356,7 +4392,7 @@
           "person_id",
           "show_nsfw",
           "theme",
-          "default_post_sort_type",
+          "default_sort_type",
           "default_listing_type",
           "interface_language",
           "show_avatars",
@@ -4374,8 +4410,7 @@
           "totp_2fa_enabled",
           "enable_keyboard_navigation",
           "enable_animated_images",
-          "collapse_bot_comments",
-          "default_comment_sort_type"
+          "collapse_bot_comments"
         ]
       },
       "LocalUserVoteDisplayMode": {
@@ -4568,6 +4603,9 @@
           "id": {
             "type": "number"
           },
+          "local_site_id": {
+            "type": "number"
+          },
           "content": {
             "type": "string"
           },
@@ -4581,8 +4619,83 @@
         "nullable": false,
         "required": [
           "id",
+          "local_site_id",
           "content",
           "published"
+        ]
+      },
+      "CustomEmojiView": {
+        "type": "object",
+        "properties": {
+          "custom_emoji": {
+            "$ref": "#/components/schemas/CustomEmoji"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomEmojiKeyword"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "custom_emoji",
+          "keywords"
+        ]
+      },
+      "CustomEmoji": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "local_site_id": {
+            "type": "number"
+          },
+          "shortcode": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "alt_text": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "local_site_id",
+          "shortcode",
+          "image_url",
+          "alt_text",
+          "category",
+          "published"
+        ]
+      },
+      "CustomEmojiKeyword": {
+        "type": "object",
+        "properties": {
+          "custom_emoji_id": {
+            "type": "number"
+          },
+          "keyword": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "custom_emoji_id",
+          "keyword"
         ]
       },
       "OAuthProvider": {
@@ -4719,23 +4832,28 @@
               "ModeratorView"
             ]
           },
-          "default_post_listing_mode": {
+          "default_sort_type": {
             "type": "string",
             "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
-          },
-          "default_post_sort_type": {},
-          "default_comment_sort_type": {
-            "type": "string",
-            "enum": [
-              "Hot",
-              "Top",
-              "New",
+              "NewComments",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
               "Old",
-              "Controversial"
+              "New",
+              "Hot"
             ]
           },
           "legal_information": {
@@ -4819,6 +4937,12 @@
               "type": "string"
             }
           },
+          "taglines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "registration_mode": {
             "type": "string",
             "enum": [
@@ -4832,6 +4956,14 @@
           },
           "content_warning": {
             "type": "string"
+          },
+          "default_post_listing_mode": {
+            "type": "string",
+            "enum": [
+              "List",
+              "Card",
+              "SmallCard"
+            ]
           }
         },
         "nullable": false,
@@ -4844,11 +4976,18 @@
         "properties": {
           "site_view": {
             "$ref": "#/components/schemas/SiteView"
+          },
+          "taglines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tagline"
+            }
           }
         },
         "nullable": false,
         "required": [
-          "site_view"
+          "site_view",
+          "taglines"
         ]
       },
       "EditSite": {
@@ -4899,23 +5038,28 @@
               "ModeratorView"
             ]
           },
-          "default_post_listing_mode": {
+          "default_sort_type": {
             "type": "string",
             "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
-          },
-          "default_post_sort_type": {},
-          "default_comment_sort_type": {
-            "type": "string",
-            "enum": [
-              "Hot",
-              "Top",
-              "New",
+              "Active",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
               "Old",
-              "Controversial"
+              "New",
+              "Hot"
             ]
           },
           "legal_information": {
@@ -5005,6 +5149,12 @@
               "type": "string"
             }
           },
+          "taglines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "registration_mode": {
             "type": "string",
             "enum": [
@@ -5021,6 +5171,14 @@
           },
           "content_warning": {
             "type": "string"
+          },
+          "default_post_listing_mode": {
+            "type": "string",
+            "enum": [
+              "List",
+              "Card",
+              "SmallCard"
+            ]
           }
         },
         "nullable": false
@@ -6237,7 +6395,30 @@
               "Url"
             ]
           },
-          "sort": {},
+          "sort": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Hot",
+              "New",
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
+            ]
+          },
           "listing_type": {
             "type": "string",
             "enum": [
@@ -6807,7 +6988,30 @@
               "ModeratorView"
             ]
           },
-          "sort": {},
+          "sort": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
+            ]
+          },
           "show_nsfw": {
             "type": "boolean"
           },
@@ -7285,7 +7489,30 @@
               "ModeratorView"
             ]
           },
-          "sort": {},
+          "sort": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
+            ]
+          },
           "page": {
             "type": "number"
           },
@@ -7986,10 +8213,10 @@
             "type": "string",
             "enum": [
               "Hot",
-              "Top",
               "New",
               "Old",
-              "Controversial"
+              "Controversial",
+              "Top"
             ]
           },
           "max_depth": {
@@ -8644,7 +8871,30 @@
           "username": {
             "type": "string"
           },
-          "sort": {},
+          "sort": {
+            "type": "string",
+            "enum": [
+              "Active",
+              "Scaled",
+              "Controversial",
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
+            ]
+          },
           "page": {
             "type": "number"
           },
@@ -8703,10 +8953,10 @@
             "type": "string",
             "enum": [
               "Hot",
-              "Top",
               "New",
               "Old",
-              "Controversial"
+              "Controversial",
+              "Top"
             ]
           },
           "page": {
@@ -8866,10 +9116,10 @@
             "type": "string",
             "enum": [
               "Hot",
-              "Top",
               "New",
               "Old",
-              "Controversial"
+              "Controversial",
+              "Top"
             ]
           },
           "page": {
@@ -9079,6 +9329,30 @@
           "theme": {
             "type": "string"
           },
+          "default_sort_type": {
+            "type": "string",
+            "enum": [
+              "MostComments",
+              "Hot",
+              "New",
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "NewComments",
+              "Active",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
+            ]
+          },
           "default_listing_type": {
             "type": "string",
             "enum": [
@@ -9086,25 +9360,6 @@
               "Local",
               "Subscribed",
               "ModeratorView"
-            ]
-          },
-          "post_listing_mode": {
-            "type": "string",
-            "enum": [
-              "List",
-              "Card",
-              "SmallCard"
-            ]
-          },
-          "default_post_sort_type": {},
-          "default_comment_sort_type": {
-            "type": "string",
-            "enum": [
-              "Hot",
-              "Top",
-              "New",
-              "Old",
-              "Controversial"
             ]
           },
           "interface_language": {
@@ -9154,6 +9409,14 @@
           },
           "infinite_scroll_enabled": {
             "type": "boolean"
+          },
+          "post_listing_mode": {
+            "type": "string",
+            "enum": [
+              "List",
+              "Card",
+              "SmallCard"
+            ]
           },
           "enable_keyboard_navigation": {
             "type": "boolean"
@@ -9534,76 +9797,6 @@
           "custom_emoji"
         ]
       },
-      "CustomEmojiView": {
-        "type": "object",
-        "properties": {
-          "custom_emoji": {
-            "$ref": "#/components/schemas/CustomEmoji"
-          },
-          "keywords": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CustomEmojiKeyword"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "custom_emoji",
-          "keywords"
-        ]
-      },
-      "CustomEmoji": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "shortcode": {
-            "type": "string"
-          },
-          "image_url": {
-            "type": "string"
-          },
-          "alt_text": {
-            "type": "string"
-          },
-          "category": {
-            "type": "string"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "shortcode",
-          "image_url",
-          "alt_text",
-          "category",
-          "published"
-        ]
-      },
-      "CustomEmojiKeyword": {
-        "type": "object",
-        "properties": {
-          "custom_emoji_id": {
-            "type": "number"
-          },
-          "keyword": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "custom_emoji_id",
-          "keyword"
-        ]
-      },
       "EditCustomEmoji": {
         "type": "object",
         "properties": {
@@ -9945,6 +10138,64 @@
           }
         },
         "nullable": false
+      },
+      "UploadImageResponse": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string",
+            "title": "Is \"ok\" if the upload was successful; is something else otherwise",
+            "description": "Is \"ok\" if the upload was successful; is something else otherwise."
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageFile"
+            }
+          },
+          "url": {
+            "type": "string"
+          },
+          "delete_url": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "msg"
+        ]
+      },
+      "ImageFile": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "delete_token": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "file",
+          "delete_token"
+        ]
+      },
+      "DeleteImage": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "token",
+          "filename"
+        ]
       }
     },
     "securitySchemes": {
