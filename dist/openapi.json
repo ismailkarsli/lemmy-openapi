@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-image-api-rework.6"
+    "version": "0.20.0-image-api-rework.5"
   },
   "servers": [
     {
@@ -4254,9 +4254,6 @@
             "items": {
               "$ref": "#/components/schemas/LocalSiteUrlBlocklist"
             }
-          },
-          "image_upload_disabled": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -4268,8 +4265,7 @@
           "discussion_languages",
           "taglines",
           "custom_emojis",
-          "blocked_urls",
-          "image_upload_disabled"
+          "blocked_urls"
         ],
         "description": "An expanded response for a site."
       },
@@ -5032,6 +5028,12 @@
           "description": {
             "type": "string"
           },
+          "icon": {
+            "type": "string"
+          },
+          "banner": {
+            "type": "string"
+          },
           "enable_nsfw": {
             "type": "boolean"
           },
@@ -5232,7 +5234,7 @@
           "taglines": {
             "type": "array",
             "items": {},
-            "description": "deprecated, use field `tagline` or /api/v4/tagline/list"
+            "description": "deprecated, use field `tagline` or /api/v3/tagline/list"
           }
         },
         "nullable": false,
@@ -5257,6 +5259,16 @@
             "type": "string",
             "title": "A shorter, one line description of your site",
             "description": "A shorter, one line description of your site."
+          },
+          "icon": {
+            "type": "string",
+            "title": "A url for your site's icon",
+            "description": "A url for your site's icon."
+          },
+          "banner": {
+            "type": "string",
+            "title": "A url for your site's banner",
+            "description": "A url for your site's banner."
           },
           "enable_nsfw": {
             "type": "boolean",
@@ -7985,6 +7997,16 @@
             "type": "string",
             "title": "A shorter, one line description of your community",
             "description": "A shorter, one line description of your community."
+          },
+          "icon": {
+            "type": "string",
+            "title": "An icon URL",
+            "description": "An icon URL."
+          },
+          "banner": {
+            "type": "string",
+            "title": "A banner URL",
+            "description": "A banner URL."
           },
           "nsfw": {
             "type": "boolean",
@@ -10752,6 +10774,11 @@
           "interface_language": {
             "type": "string",
             "description": "The language of the lemmy interface"
+          },
+          "banner": {
+            "type": "string",
+            "title": "A URL for your banner",
+            "description": "A URL for your banner."
           },
           "display_name": {
             "type": "string",
