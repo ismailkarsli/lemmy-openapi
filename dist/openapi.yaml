@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-instance-blocks.2
+  version: 0.20.0-instance-blocks.1
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -3562,6 +3562,14 @@ components:
           type: boolean
         captcha_difficulty:
           type: string
+        allowed_instances:
+          type: array
+          items:
+            type: string
+        blocked_instances:
+          type: array
+          items:
+            type: string
         registration_mode:
           type: string
           enum:
@@ -3783,6 +3791,18 @@ components:
         captcha_difficulty:
           type: string
           description: The captcha difficulty. Can be easy, medium, or hard
+        allowed_instances:
+          type: array
+          items:
+            type: string
+          title: A list of allowed instances. If none are set, federation is open
+          description: A list of allowed instances. If none are set, federation is open.
+        blocked_instances:
+          type: array
+          items:
+            type: string
+          title: A list of blocked instances
+          description: A list of blocked instances.
         blocked_urls:
           type: array
           items:
