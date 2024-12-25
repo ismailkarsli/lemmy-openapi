@@ -2,11 +2,11 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-pkce.1"
+    "version": "0.20.0-api-v4.1"
   },
   "servers": [
     {
-      "url": "https://lemy.lol/api/v3"
+      "url": "https://lemy.lol/api/v4"
     }
   ],
   "security": [
@@ -23,16 +23,19 @@
       "name": "Site"
     },
     {
+      "name": "Admin"
+    },
+    {
+      "name": "Account/Auth/Totp"
+    },
+    {
+      "name": "Account/Settings"
+    },
+    {
       "name": "User"
     },
     {
-      "name": "User/Totp"
-    },
-    {
       "name": "Account"
-    },
-    {
-      "name": "Admin"
     },
     {
       "name": "Modlog"
@@ -74,7 +77,13 @@
       "name": "PrivateMessage/Report"
     },
     {
-      "name": "User/Mention"
+      "name": "Account/Auth"
+    },
+    {
+      "name": "Person"
+    },
+    {
+      "name": "Account/Mention"
     },
     {
       "name": "Admin/RegistrationApplication"
@@ -179,12 +188,12 @@
         }
       }
     },
-    "/user/leave_admin": {
+    "/admin/leave": {
       "post": {
         "operationId": "leaveAdmin",
         "description": "Leave the Site admins.",
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -200,12 +209,12 @@
         }
       }
     },
-    "/user/totp/generate": {
+    "/account/auth/totp/generate": {
       "post": {
         "operationId": "generateTotpSecret",
         "description": "Generate a TOTP / two-factor secret.\nAfterwards you need to call `/user/totp/update` with a valid token to enable it.",
         "tags": [
-          "User/Totp"
+          "Account/Auth/Totp"
         ],
         "responses": {
           "200": {
@@ -221,12 +230,61 @@
         }
       }
     },
-    "/user/export_settings": {
+    "/account/settings": {
+      "get": {
+        "operationId": "myUser",
+        "description": "Get data of current user.",
+        "tags": [
+          "Account/Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyUserInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveUserSettings",
+        "description": "Save your user settings.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveUserSettings"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Account/Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/settings/export": {
       "get": {
         "operationId": "exportSettings",
         "description": "Export a backup of your user settings, including your saved content,\nfollowed communities, and blocks.",
         "tags": [
-          "User"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -235,12 +293,12 @@
         }
       }
     },
-    "/user/import_settings": {
+    "/account/settings/import": {
       "post": {
         "operationId": "importSettings",
         "description": "Import a backup of your user settings.",
         "tags": [
-          "User"
+          "Account/Settings"
         ],
         "responses": {
           "200": {
@@ -365,7 +423,7 @@
         }
       }
     },
-    "/user/totp/update": {
+    "/account/auth/totp/update": {
       "post": {
         "operationId": "updateTotp",
         "description": "Enable / Disable TOTP / two-factor authentication.\nTo enable, you need to first call `/user/totp/generate` and then pass a valid token to this.\nDisabling is only possible if 2FA was previously enabled. Again it is necessary to pass a valid token.",
@@ -379,7 +437,7 @@
           }
         },
         "tags": [
-          "User/Totp"
+          "Account/Auth/Totp"
         ],
         "responses": {
           "200": {
@@ -1517,13 +1575,6 @@
             }
           },
           {
-            "name": "mark_as_read",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPosts/properties/mark_as_read"
-            }
-          },
-          {
             "name": "no_comments_only",
             "in": "query",
             "schema": {
@@ -2615,7 +2666,7 @@
         }
       }
     },
-    "/user/register": {
+    "/account/auth/register": {
       "post": {
         "operationId": "register",
         "description": "Register a new user.",
@@ -2629,7 +2680,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2645,7 +2696,7 @@
         }
       }
     },
-    "/user/login": {
+    "/account/auth/login": {
       "post": {
         "operationId": "login",
         "description": "Log into lemmy.",
@@ -2659,7 +2710,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2675,12 +2726,12 @@
         }
       }
     },
-    "/user/logout": {
+    "/account/auth/logout": {
       "post": {
         "operationId": "logout",
         "description": "Invalidate the currently used auth token.",
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -2696,7 +2747,7 @@
         }
       }
     },
-    "/user": {
+    "/person": {
       "get": {
         "operationId": "getPersonDetails",
         "description": "Get the details for a person.",
@@ -2752,7 +2803,7 @@
           }
         ],
         "tags": [
-          "User"
+          "Person"
         ],
         "responses": {
           "200": {
@@ -2803,7 +2854,7 @@
           }
         ],
         "tags": [
-          "User/Mention"
+          "User"
         ],
         "responses": {
           "200": {
@@ -2819,21 +2870,12 @@
         }
       }
     },
-    "/user/mention/mark_as_read": {
+    "/account/mention/mark_as_read": {
       "post": {
-        "operationId": "markPersonMentionAsRead",
+        "operationId": "markPersonAllMentionAsRead",
         "description": "Mark a person mention as read.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MarkPersonMentionAsRead"
-              }
-            }
-          }
-        },
         "tags": [
-          "User/Mention"
+          "Account/Mention"
         ],
         "responses": {
           "200": {
@@ -2900,7 +2942,7 @@
         }
       }
     },
-    "/user/ban": {
+    "/admin/ban": {
       "post": {
         "operationId": "banPerson",
         "description": "Ban a person from your site.",
@@ -2914,7 +2956,7 @@
           }
         },
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -2930,12 +2972,12 @@
         }
       }
     },
-    "/user/banned": {
+    "/admin/banned": {
       "get": {
         "operationId": "getBannedPersons",
         "description": "Get a list of banned users",
         "tags": [
-          "User"
+          "Admin"
         ],
         "responses": {
           "200": {
@@ -2981,12 +3023,12 @@
         }
       }
     },
-    "/user/get_captcha": {
+    "/account/auth/get_captcha": {
       "get": {
         "operationId": "getCaptcha",
         "description": "Fetch a Captcha.",
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -3002,7 +3044,7 @@
         }
       }
     },
-    "/user/delete_account": {
+    "/account/delete": {
       "post": {
         "operationId": "deleteAccount",
         "description": "Delete your account.",
@@ -3016,7 +3058,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account"
         ],
         "responses": {
           "200": {
@@ -3032,7 +3074,7 @@
         }
       }
     },
-    "/user/password_reset": {
+    "/account/auth/password_reset": {
       "post": {
         "operationId": "passwordReset",
         "description": "Reset your password.",
@@ -3046,7 +3088,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -3062,7 +3104,7 @@
         }
       }
     },
-    "/user/password_change": {
+    "/account/auth/password_change": {
       "post": {
         "operationId": "passwordChangeAfterReset",
         "description": "Change your password from an email / token based reset.",
@@ -3076,7 +3118,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -3106,36 +3148,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetRepliesResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/user/save_user_settings": {
-      "put": {
-        "operationId": "saveUserSettings",
-        "description": "Save your user settings.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SaveUserSettings"
-              }
-            }
-          }
-        },
-        "tags": [
-          "User"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -3224,7 +3236,7 @@
         }
       }
     },
-    "/user/verify_email": {
+    "/account/auth/verify_email": {
       "post": {
         "operationId": "verifyEmail",
         "description": "Verify your email",
@@ -3238,7 +3250,7 @@
           }
         },
         "tags": [
-          "User"
+          "Account/Auth"
         ],
         "responses": {
           "200": {
@@ -4908,10 +4920,6 @@
             "type": "boolean",
             "description": "Whether user avatars and inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
-          "enable_private_messages": {
-            "type": "boolean",
-            "description": "Whether a user can send / receive private messages"
-          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -4919,11 +4927,6 @@
           },
           "default_comment_sort_type": {
             "$ref": "#/components/schemas/CommentSortType"
-          },
-          "auto_mark_fetched_posts_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -4949,10 +4952,8 @@
           "totp_2fa_enabled",
           "enable_keyboard_navigation",
           "enable_animated_images",
-          "enable_private_messages",
           "collapse_bot_comments",
-          "default_comment_sort_type",
-          "auto_mark_fetched_posts_as_read"
+          "default_comment_sort_type"
         ],
         "description": "A local user."
       },
@@ -5255,10 +5256,6 @@
           },
           "updated": {
             "type": "string"
-          },
-          "use_pkce": {
-            "type": "boolean",
-            "description": "switch to enable or disable PKCE"
           }
         },
         "nullable": false,
@@ -5275,8 +5272,7 @@
           "auto_verify_email",
           "account_linking_enabled",
           "enabled",
-          "published",
-          "use_pkce"
+          "published"
         ],
         "description": "oauth provider with client_secret - should never be sent to the client"
       },
@@ -5359,25 +5355,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "Active",
+              "MostComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ]
           },
           "default_comment_sort_type": {
@@ -5620,25 +5616,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "NewComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ],
             "description": "The default post sort, usually \"active\""
           },
@@ -7330,12 +7326,6 @@
             "type": "number",
             "title": "The total number of children in this comment branch",
             "description": "The total number of children in this comment branch."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7345,9 +7335,7 @@
           "upvotes",
           "downvotes",
           "published",
-          "child_count",
-          "report_count",
-          "unresolved_report_count"
+          "child_count"
         ],
         "description": "Aggregate data for a comment."
       },
@@ -7481,12 +7469,6 @@
             "type": "string",
             "title": "The time of the newest comment in the post",
             "description": "The time of the newest comment in the post."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -7497,9 +7479,7 @@
           "upvotes",
           "downvotes",
           "published",
-          "newest_comment_time",
-          "report_count",
-          "unresolved_report_count"
+          "newest_comment_time"
         ],
         "description": "Aggregate data for a post."
       },
@@ -8405,8 +8385,11 @@
       "MarkPostAsRead": {
         "type": "object",
         "properties": {
-          "post_id": {
-            "type": "number"
+          "post_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "read": {
             "type": "boolean"
@@ -8414,7 +8397,7 @@
         },
         "nullable": false,
         "required": [
-          "post_id",
+          "post_ids",
           "read"
         ],
         "description": "Mark a post as read."
@@ -8422,8 +8405,11 @@
       "HidePost": {
         "type": "object",
         "properties": {
-          "post_id": {
-            "type": "number"
+          "post_ids": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "hide": {
             "type": "boolean"
@@ -8431,7 +8417,7 @@
         },
         "nullable": false,
         "required": [
-          "post_id",
+          "post_ids",
           "hide"
         ],
         "description": "Hide a post from list views"
@@ -8550,11 +8536,6 @@
           "show_nsfw": {
             "type": "boolean",
             "description": "If true, then show the nsfw posts (even if your user setting is to hide them)"
-          },
-          "mark_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           },
           "no_comments_only": {
             "type": "boolean",
@@ -10612,10 +10593,6 @@
             "type": "boolean",
             "description": "Whether user avatars or inline images in the UI that are gifs should be allowed to play or\nshould be paused"
           },
-          "enable_private_messages": {
-            "type": "boolean",
-            "description": "Whether a user can send / receive private messages"
-          },
           "collapse_bot_comments": {
             "type": "boolean",
             "title": "Whether to auto-collapse bot comments",
@@ -10633,11 +10610,6 @@
           },
           "show_upvote_percentage": {
             "type": "boolean"
-          },
-          "auto_mark_fetched_posts_as_read": {
-            "type": "boolean",
-            "title": "Whether to automatically mark fetched posts as read",
-            "description": "Whether to automatically mark fetched posts as read."
           }
         },
         "nullable": false,
@@ -11293,9 +11265,6 @@
           "account_linking_enabled": {
             "type": "boolean"
           },
-          "use_pkce": {
-            "type": "boolean"
-          },
           "enabled": {
             "type": "boolean"
           }
@@ -11347,9 +11316,6 @@
           "account_linking_enabled": {
             "type": "boolean"
           },
-          "use_pkce": {
-            "type": "boolean"
-          },
           "enabled": {
             "type": "boolean"
           }
@@ -11377,9 +11343,6 @@
         "type": "object",
         "properties": {
           "code": {
-            "type": "string"
-          },
-          "pkce_code_verifier": {
             "type": "string"
           },
           "oauth_provider_id": {

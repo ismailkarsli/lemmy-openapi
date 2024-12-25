@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-pkce.1
+  version: 0.20.0-api-v4.1
 servers:
-  - url: https://lemy.lol/api/v3
+  - url: https://lemy.lol/api/v4
 security:
   - bearerAuth: []
 externalDocs:
@@ -11,10 +11,11 @@ externalDocs:
   url: https://join-lemmy.org/api/index.html
 tags:
   - name: Site
-  - name: User
-  - name: User/Totp
-  - name: Account
   - name: Admin
+  - name: Account/Auth/Totp
+  - name: Account/Settings
+  - name: User
+  - name: Account
   - name: Modlog
   - name: Search
   - name: ResolveObject
@@ -28,7 +29,9 @@ tags:
   - name: Comment/Report
   - name: PrivateMessage
   - name: PrivateMessage/Report
-  - name: User/Mention
+  - name: Account/Auth
+  - name: Person
+  - name: Account/Mention
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -85,12 +88,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SiteResponse"
-  /user/leave_admin:
+  /admin/leave:
     post:
       operationId: leaveAdmin
       description: Leave the Site admins.
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -98,7 +101,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetSiteResponse"
-  /user/totp/generate:
+  /account/auth/totp/generate:
     post:
       operationId: generateTotpSecret
       description: >-
@@ -107,7 +110,7 @@ paths:
         Afterwards you need to call `/user/totp/update` with a valid token to
         enable it.
       tags:
-        - User/Totp
+        - Account/Auth/Totp
       responses:
         "200":
           description: Successful response
@@ -115,23 +118,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenerateTotpSecretResponse"
-  /user/export_settings:
+  /account/settings:
+    get:
+      operationId: myUser
+      description: Get data of current user.
+      tags:
+        - Account/Settings
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyUserInfo"
+    put:
+      operationId: saveUserSettings
+      description: Save your user settings.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveUserSettings"
+      tags:
+        - Account/Settings
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /account/settings/export:
     get:
       operationId: exportSettings
       description: |-
         Export a backup of your user settings, including your saved content,
         followed communities, and blocks.
       tags:
-        - User
+        - Account/Settings
       responses:
         "200":
           description: No content
-  /user/import_settings:
+  /account/settings/import:
     post:
       operationId: importSettings
       description: Import a backup of your user settings.
       tags:
-        - User
+        - Account/Settings
       responses:
         "200":
           description: Successful response
@@ -205,7 +238,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListMediaResponse"
-  /user/totp/update:
+  /account/auth/totp/update:
     post:
       operationId: updateTotp
       description: >-
@@ -222,7 +255,7 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateTotp"
       tags:
-        - User/Totp
+        - Account/Auth/Totp
       responses:
         "200":
           description: Successful response
@@ -899,10 +932,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/show_nsfw"
-        - name: mark_as_read
-          in: query
-          schema:
-            $ref: "#/components/schemas/GetPosts/properties/mark_as_read"
         - name: no_comments_only
           in: query
           schema:
@@ -1552,7 +1581,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPrivateMessageReportsResponse"
-  /user/register:
+  /account/auth/register:
     post:
       operationId: register
       description: Register a new user.
@@ -1562,7 +1591,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Register"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1570,7 +1599,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /user/login:
+  /account/auth/login:
     post:
       operationId: login
       description: Log into lemmy.
@@ -1580,7 +1609,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Login"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1588,12 +1617,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginResponse"
-  /user/logout:
+  /account/auth/logout:
     post:
       operationId: logout
       description: Invalidate the currently used auth token.
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1601,7 +1630,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user:
+  /person:
     get:
       operationId: getPersonDetails
       description: Get the details for a person.
@@ -1635,7 +1664,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonDetails/properties/saved_only"
       tags:
-        - User
+        - Person
       responses:
         "200":
           description: Successful response
@@ -1665,7 +1694,7 @@ paths:
           schema:
             $ref: "#/components/schemas/GetPersonMentions/properties/unread_only"
       tags:
-        - User/Mention
+        - User
       responses:
         "200":
           description: Successful response
@@ -1673,17 +1702,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetPersonMentionsResponse"
-  /user/mention/mark_as_read:
+  /account/mention/mark_as_read:
     post:
-      operationId: markPersonMentionAsRead
+      operationId: markPersonAllMentionAsRead
       description: Mark a person mention as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkPersonMentionAsRead"
       tags:
-        - User/Mention
+        - Account/Mention
       responses:
         "200":
           description: Successful response
@@ -1721,7 +1745,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /user/ban:
+  /admin/ban:
     post:
       operationId: banPerson
       description: Ban a person from your site.
@@ -1731,7 +1755,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BanPerson"
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -1739,12 +1763,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BanPersonResponse"
-  /user/banned:
+  /admin/banned:
     get:
       operationId: getBannedPersons
       description: Get a list of banned users
       tags:
-        - User
+        - Admin
       responses:
         "200":
           description: Successful response
@@ -1770,12 +1794,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BlockPersonResponse"
-  /user/get_captcha:
+  /account/auth/get_captcha:
     get:
       operationId: getCaptcha
       description: Fetch a Captcha.
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1783,7 +1807,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetCaptchaResponse"
-  /user/delete_account:
+  /account/delete:
     post:
       operationId: deleteAccount
       description: Delete your account.
@@ -1793,7 +1817,7 @@ paths:
             schema:
               $ref: "#/components/schemas/DeleteAccount"
       tags:
-        - User
+        - Account
       responses:
         "200":
           description: Successful response
@@ -1801,7 +1825,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/password_reset:
+  /account/auth/password_reset:
     post:
       operationId: passwordReset
       description: Reset your password.
@@ -1811,7 +1835,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordReset"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1819,7 +1843,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /user/password_change:
+  /account/auth/password_change:
     post:
       operationId: passwordChangeAfterReset
       description: Change your password from an email / token based reset.
@@ -1829,7 +1853,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PasswordChangeAfterReset"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -1850,24 +1874,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetRepliesResponse"
-  /user/save_user_settings:
-    put:
-      operationId: saveUserSettings
-      description: Save your user settings.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SaveUserSettings"
-      tags:
-        - User
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
   /user/change_password:
     put:
       operationId: changePassword
@@ -1917,7 +1923,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetUnreadCountResponse"
-  /user/verify_email:
+  /account/auth/verify_email:
     post:
       operationId: verifyEmail
       description: Verify your email
@@ -1927,7 +1933,7 @@ paths:
             schema:
               $ref: "#/components/schemas/VerifyEmail"
       tags:
-        - User
+        - Account/Auth
       responses:
         "200":
           description: Successful response
@@ -3087,19 +3093,12 @@ components:
             should be allowed to play or
 
             should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
           description: Whether to auto-collapse bot comments.
         default_comment_sort_type:
           $ref: "#/components/schemas/CommentSortType"
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
       nullable: false
       required:
         - id
@@ -3123,10 +3122,8 @@ components:
         - totp_2fa_enabled
         - enable_keyboard_navigation
         - enable_animated_images
-        - enable_private_messages
         - collapse_bot_comments
         - default_comment_sort_type
-        - auto_mark_fetched_posts_as_read
       description: A local user.
     LocalUserVoteDisplayMode:
       type: object
@@ -3380,9 +3377,6 @@ components:
           type: string
         updated:
           type: string
-        use_pkce:
-          type: boolean
-          description: switch to enable or disable PKCE
       nullable: false
       required:
         - id
@@ -3398,7 +3392,6 @@ components:
         - account_linking_enabled
         - enabled
         - published
-        - use_pkce
       description: oauth provider with client_secret - should never be sent to the client
     LocalSiteUrlBlocklist:
       type: object
@@ -3457,25 +3450,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - NewComments
-            - Active
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - Active
+            - MostComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
         default_comment_sort_type:
           type: string
           enum:
@@ -3654,25 +3647,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -4920,10 +4913,6 @@ components:
           type: number
           title: The total number of children in this comment branch
           description: The total number of children in this comment branch.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - comment_id
@@ -4932,8 +4921,6 @@ components:
         - downvotes
         - published
         - child_count
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a comment.
     SubscribedType:
       type: string
@@ -5031,10 +5018,6 @@ components:
           type: string
           title: The time of the newest comment in the post
           description: The time of the newest comment in the post.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - post_id
@@ -5044,8 +5027,6 @@ components:
         - downvotes
         - published
         - newest_comment_time
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a post.
     CommunityView:
       type: object
@@ -5720,25 +5701,29 @@ components:
     MarkPostAsRead:
       type: object
       properties:
-        post_id:
-          type: number
+        post_ids:
+          type: array
+          items:
+            type: number
         read:
           type: boolean
       nullable: false
       required:
-        - post_id
+        - post_ids
         - read
       description: Mark a post as read.
     HidePost:
       type: object
       properties:
-        post_id:
-          type: number
+        post_ids:
+          type: array
+          items:
+            type: number
         hide:
           type: boolean
       nullable: false
       required:
-        - post_id
+        - post_ids
         - hide
       description: Hide a post from list views
     LockPost:
@@ -5831,10 +5816,6 @@ components:
           type: boolean
           description: If true, then show the nsfw posts (even if your user setting is to
             hide them)
-        mark_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
         no_comments_only:
           type: boolean
           description: If true, then only show posts with no comments
@@ -7359,9 +7340,6 @@ components:
             be allowed to play or
 
             should be paused
-        enable_private_messages:
-          type: boolean
-          description: Whether a user can send / receive private messages
         collapse_bot_comments:
           type: boolean
           title: Whether to auto-collapse bot comments
@@ -7375,10 +7353,6 @@ components:
           type: boolean
         show_upvote_percentage:
           type: boolean
-        auto_mark_fetched_posts_as_read:
-          type: boolean
-          title: Whether to automatically mark fetched posts as read
-          description: Whether to automatically mark fetched posts as read.
       nullable: false
       description: Saves settings for your user.
     ChangePassword:
@@ -7840,8 +7814,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7879,8 +7851,6 @@ components:
           type: boolean
         account_linking_enabled:
           type: boolean
-        use_pkce:
-          type: boolean
         enabled:
           type: boolean
       nullable: false
@@ -7900,8 +7870,6 @@ components:
       type: object
       properties:
         code:
-          type: string
-        pkce_code_verifier:
           type: string
         oauth_provider_id:
           type: number
