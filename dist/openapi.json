@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.4-alpha.14"
+    "version": "0.19.4-alpha.13"
   },
   "servers": [
     {
@@ -27,6 +27,12 @@
     },
     {
       "name": "User/Totp"
+    },
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Admin"
     },
     {
       "name": "Modlog"
@@ -66,9 +72,6 @@
     },
     {
       "name": "User/Mention"
-    },
-    {
-      "name": "Admin"
     },
     {
       "name": "Admin/RegistrationApplication"
@@ -269,6 +272,80 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/list_media": {
+      "get": {
+        "operationId": "listMedia",
+        "description": "List all the media for your user",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/limit"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListMediaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/list_all_media": {
+      "get": {
+        "operationId": "listAllMedia",
+        "description": "List all the media known to your instance.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/page"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListMedia/properties/limit"
+            }
+          }
+        ],
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListMediaResponse"
                 }
               }
             }
@@ -4562,7 +4639,7 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -4571,8 +4648,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "Active",
               "MostComments",
-              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -4765,7 +4842,7 @@
           "default_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -4774,8 +4851,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
+              "MostComments",
               "NewComments",
-              "Active",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -4926,6 +5003,56 @@
         "nullable": false,
         "required": [
           "success"
+        ]
+      },
+      "ListMedia": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          }
+        },
+        "nullable": false
+      },
+      "ListMediaResponse": {
+        "type": "object",
+        "properties": {
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalImage"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "images"
+        ]
+      },
+      "LocalImage": {
+        "type": "object",
+        "properties": {
+          "local_user_id": {
+            "type": "number"
+          },
+          "pictrs_alias": {
+            "type": "string"
+          },
+          "pictrs_delete_token": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "pictrs_alias",
+          "pictrs_delete_token",
+          "published"
         ]
       },
       "UpdateTotp": {
@@ -7663,6 +7790,9 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
+          "banned_from_community": {
+            "type": "boolean"
+          },
           "creator_is_moderator": {
             "type": "boolean"
           },
@@ -7692,6 +7822,7 @@
           "recipient",
           "counts",
           "creator_banned_from_community",
+          "banned_from_community",
           "creator_is_moderator",
           "creator_is_admin",
           "subscribed",
@@ -8625,6 +8756,9 @@
           "creator_banned_from_community": {
             "type": "boolean"
           },
+          "banned_from_community": {
+            "type": "boolean"
+          },
           "creator_is_moderator": {
             "type": "boolean"
           },
@@ -8654,6 +8788,7 @@
           "recipient",
           "counts",
           "creator_banned_from_community",
+          "banned_from_community",
           "creator_is_moderator",
           "creator_is_admin",
           "subscribed",
