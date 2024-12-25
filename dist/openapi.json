@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-alpha.10"
+    "version": "0.20.0-alpha.9"
   },
   "servers": [
     {
@@ -3901,9 +3901,7 @@
           "default_post_listing_mode": {
             "$ref": "#/components/schemas/PostListingMode"
           },
-          "default_post_sort_type": {
-            "$ref": "#/components/schemas/PostSortType"
-          },
+          "default_post_sort_type": {},
           "default_comment_sort_type": {
             "$ref": "#/components/schemas/CommentSortType"
           },
@@ -3963,38 +3961,14 @@
           "SmallCard"
         ]
       },
-      "PostSortType": {
-        "type": "string",
-        "enum": [
-          "Active",
-          "Hot",
-          "New",
-          "Old",
-          "TopDay",
-          "TopWeek",
-          "TopMonth",
-          "TopYear",
-          "TopAll",
-          "MostComments",
-          "NewComments",
-          "TopHour",
-          "TopSixHour",
-          "TopTwelveHour",
-          "TopThreeMonths",
-          "TopSixMonths",
-          "TopNineMonths",
-          "Controversial",
-          "Scaled"
-        ]
-      },
       "CommentSortType": {
         "type": "string",
         "enum": [
           "Hot",
+          "Top",
           "New",
           "Old",
-          "Controversial",
-          "Top"
+          "Controversial"
         ]
       },
       "LocalSiteRateLimit": {
@@ -4317,9 +4291,7 @@
           "theme": {
             "type": "string"
           },
-          "default_post_sort_type": {
-            "$ref": "#/components/schemas/PostSortType"
-          },
+          "default_post_sort_type": {},
           "default_listing_type": {
             "$ref": "#/components/schemas/ListingType"
           },
@@ -4755,38 +4727,15 @@
               "SmallCard"
             ]
           },
-          "default_post_sort_type": {
-            "type": "string",
-            "enum": [
-              "NewComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
+          "default_post_sort_type": {},
           "default_comment_sort_type": {
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "legal_information": {
@@ -4958,38 +4907,15 @@
               "SmallCard"
             ]
           },
-          "default_post_sort_type": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
+          "default_post_sort_type": {},
           "default_comment_sort_type": {
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "legal_information": {
@@ -6311,30 +6237,7 @@
               "Url"
             ]
           },
-          "sort": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "MostComments",
-              "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
-              "Controversial",
-              "Scaled"
-            ]
-          },
+          "sort": {},
           "listing_type": {
             "type": "string",
             "enum": [
@@ -6904,30 +6807,7 @@
               "ModeratorView"
             ]
           },
-          "sort": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
+          "sort": {},
           "show_nsfw": {
             "type": "boolean"
           },
@@ -7405,30 +7285,7 @@
               "ModeratorView"
             ]
           },
-          "sort": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
+          "sort": {},
           "page": {
             "type": "number"
           },
@@ -8129,10 +7986,10 @@
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "max_depth": {
@@ -8787,30 +8644,7 @@
           "username": {
             "type": "string"
           },
-          "sort": {
-            "type": "string",
-            "enum": [
-              "Active",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "MostComments",
-              "NewComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
+          "sort": {},
           "page": {
             "type": "number"
           },
@@ -8869,10 +8703,10 @@
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "page": {
@@ -9032,10 +8866,10 @@
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "page": {
@@ -9262,38 +9096,15 @@
               "SmallCard"
             ]
           },
-          "default_post_sort_type": {
-            "type": "string",
-            "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
-              "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
-              "Controversial",
-              "Scaled"
-            ]
-          },
+          "default_post_sort_type": {},
           "default_comment_sort_type": {
             "type": "string",
             "enum": [
               "Hot",
+              "Top",
               "New",
               "Old",
-              "Controversial",
-              "Top"
+              "Controversial"
             ]
           },
           "interface_language": {
