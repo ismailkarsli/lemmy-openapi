@@ -90,12 +90,21 @@ interface FetchStatement {
 		type: "PrivateFieldExpression";
 		field: { type: "PrivateIdentifier"; name: "fetchFunction" };
 	};
-	arguments: [PictrsUrlObject | unknown, { type: "ObjectExpression"; properties: Array<FetchMethod | unknown> }];
+	arguments: [
+		PictrsUrlObject | BuildFullUrl | unknown,
+		{ type: "ObjectExpression"; properties: Array<FetchMethod | unknown> },
+	];
 }
 
 interface PictrsUrlObject {
 	type: "PrivateFieldExpression";
 	field: { type: "PrivateIdentifier"; name: "pictrsUrl" };
+}
+
+interface BuildFullUrl {
+	type: "CallExpression";
+	callee: { type: "PrivateFieldExpression"; field: { type: "PrivateIdentifier"; name: "buildFullUrl" } };
+	arguments: [{ type: "Literal"; value: string }];
 }
 
 type FetchMethod = {
@@ -168,6 +177,8 @@ const pathStatements = lemmyMethods
 				} else {
 					throw new Error(`Could not find endpoint for ${varName} in ${methodName}`);
 				}
+			} else if (is<BuildFullUrl>(fetchStatement.arguments[0])) {
+				endpoint = fetchStatement.arguments[0].arguments[0].value;
 			} else {
 				throw new Error("Could not find fetch url");
 			}
