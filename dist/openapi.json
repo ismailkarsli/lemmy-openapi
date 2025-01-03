@@ -113,10 +113,13 @@
       "name": "FederatedInstances"
     },
     {
+      "name": "Report"
+    },
+    {
       "name": "Admin/Instance"
     },
     {
-      "name": "Pictrs/Image"
+      "name": "Image"
     }
   ],
   "paths": {
@@ -1605,6 +1608,13 @@
             "schema": {
               "$ref": "#/components/schemas/GetPosts/properties/page_cursor"
             }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/page_back"
+            }
           }
         ],
         "tags": [
@@ -1781,64 +1791,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PostReportResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/post/report/list": {
-      "get": {
-        "operationId": "listPostReports",
-        "description": "List post reports.",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/limit"
-            }
-          },
-          {
-            "name": "unresolved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/unresolved_only"
-            }
-          },
-          {
-            "name": "community_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/community_id"
-            }
-          },
-          {
-            "name": "post_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPostReports/properties/post_id"
-            }
-          }
-        ],
-        "tags": [
-          "Post/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListPostReportsResponse"
                 }
               }
             }
@@ -2353,64 +2305,6 @@
         }
       }
     },
-    "/comment/report/list": {
-      "get": {
-        "operationId": "listCommentReports",
-        "description": "List comment reports.",
-        "parameters": [
-          {
-            "name": "comment_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/comment_id"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/limit"
-            }
-          },
-          {
-            "name": "unresolved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/unresolved_only"
-            }
-          },
-          {
-            "name": "community_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListCommentReports/properties/community_id"
-            }
-          }
-        ],
-        "tags": [
-          "Comment/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListCommentReportsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/private_message/list": {
       "get": {
         "operationId": "getPrivateMessages",
@@ -2633,50 +2527,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PrivateMessageReportResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/private_message/report/list": {
-      "get": {
-        "operationId": "listPrivateMessageReports",
-        "description": "List private message reports.",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/limit"
-            }
-          },
-          {
-            "name": "unresolved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/ListPrivateMessageReports/properties/unresolved_only"
-            }
-          }
-        ],
-        "tags": [
-          "PrivateMessage/Report"
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListPrivateMessageReportsResponse"
                 }
               }
             }
@@ -3992,6 +3842,57 @@
         }
       }
     },
+    "/report/list": {
+      "get": {
+        "operationId": "listReports",
+        "description": "List user reports.",
+        "parameters": [
+          {
+            "name": "unresolved_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListReports/properties/unresolved_only"
+            }
+          },
+          {
+            "name": "community_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListReports/properties/community_id"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListReports/properties/page_cursor"
+            }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListReports/properties/page_back"
+            }
+          }
+        ],
+        "tags": [
+          "Report"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListReportsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/account/block/instance": {
       "post": {
         "operationId": "userBlockInstance",
@@ -4082,12 +3983,7 @@
         }
       }
     },
-    "/pictrs/image": {
-      "servers": [
-        {
-          "url": "https://lemy.lol"
-        }
-      ],
+    "/image": {
       "post": {
         "operationId": "uploadImage",
         "description": "Upload an image to the server.",
@@ -4101,7 +3997,7 @@
           }
         },
         "tags": [
-          "Pictrs/Image"
+          "Image"
         ],
         "responses": {
           "200": {
@@ -4115,51 +4011,21 @@
             }
           }
         }
-      }
-    },
-    "/pictrs/image/delete/{token}/{filename}": {
-      "servers": [
-        {
-          "url": "https://lemy.lol"
-        }
-      ],
-      "get": {
+      },
+      "delete": {
         "operationId": "deleteImage",
         "description": "Delete a pictrs image",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "filename",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "token",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/DeleteImage/properties/token"
-            }
-          },
-          {
-            "name": "filename",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/DeleteImage/properties/filename"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteImageParams"
+              }
             }
           }
-        ],
+        },
         "tags": [
-          "Pictrs/Image"
+          "Image"
         ],
         "responses": {
           "200": {
@@ -4167,7 +4033,58 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/avatar": {
+      "post": {
+        "operationId": "userUploadAvatar",
+        "description": "Upload new user avatar.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadImage"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Account"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image/health": {
+      "get": {
+        "operationId": "imageHealth",
+        "description": "Health check for image functionality",
+        "tags": [
+          "Image"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
                 }
               }
             }
@@ -4238,6 +4155,9 @@
             "items": {
               "$ref": "#/components/schemas/LocalSiteUrlBlocklist"
             }
+          },
+          "image_upload_disabled": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -4249,7 +4169,8 @@
           "discussion_languages",
           "taglines",
           "custom_emojis",
-          "blocked_urls"
+          "blocked_urls",
+          "image_upload_disabled"
         ],
         "description": "An expanded response for a site."
       },
@@ -5012,12 +4933,6 @@
           "description": {
             "type": "string"
           },
-          "icon": {
-            "type": "string"
-          },
-          "banner": {
-            "type": "string"
-          },
           "enable_nsfw": {
             "type": "boolean"
           },
@@ -5056,25 +4971,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "NewComments",
-              "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "default_comment_sort_type": {
@@ -5218,7 +5133,7 @@
           "taglines": {
             "type": "array",
             "items": {},
-            "description": "deprecated, use field `tagline` or /api/v3/tagline/list"
+            "description": "deprecated, use field `tagline` or /api/v4/tagline/list"
           }
         },
         "nullable": false,
@@ -5243,16 +5158,6 @@
             "type": "string",
             "title": "A shorter, one line description of your site",
             "description": "A shorter, one line description of your site."
-          },
-          "icon": {
-            "type": "string",
-            "title": "A url for your site's icon",
-            "description": "A url for your site's icon."
-          },
-          "banner": {
-            "type": "string",
-            "title": "A url for your site's banner",
-            "description": "A url for your site's banner."
           },
           "enable_nsfw": {
             "type": "boolean",
@@ -5305,25 +5210,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "Active",
-              "MostComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "MostComments",
+              "NewComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ],
             "description": "The default post sort, usually \"active\""
           },
@@ -6069,24 +5974,24 @@
           "type_": {
             "type": "string",
             "enum": [
-              "All",
-              "ModRemovePost",
-              "ModLockPost",
-              "ModFeaturePost",
-              "ModRemoveComment",
-              "ModRemoveCommunity",
-              "ModBanFromCommunity",
-              "ModAddCommunity",
-              "ModTransferCommunity",
               "ModAdd",
-              "ModBan",
-              "ModHideCommunity",
-              "AdminPurgePerson",
-              "AdminPurgeCommunity",
-              "AdminPurgePost",
-              "AdminPurgeComment",
+              "AdminAllowInstance",
               "AdminBlockInstance",
-              "AdminAllowInstance"
+              "AdminPurgeComment",
+              "AdminPurgePost",
+              "AdminPurgeCommunity",
+              "AdminPurgePerson",
+              "ModHideCommunity",
+              "ModBan",
+              "All",
+              "ModTransferCommunity",
+              "ModAddCommunity",
+              "ModBanFromCommunity",
+              "ModRemoveCommunity",
+              "ModRemoveComment",
+              "ModFeaturePost",
+              "ModLockPost",
+              "ModRemovePost"
             ]
           },
           "other_person_id": {
@@ -7256,7 +7161,7 @@
           "expires": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7266,7 +7171,7 @@
           "instance_id",
           "admin_person_id",
           "blocked",
-          "published"
+          "when_"
         ]
       },
       "AdminAllowInstanceView": {
@@ -7307,7 +7212,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7317,7 +7222,7 @@
           "instance_id",
           "admin_person_id",
           "allowed",
-          "published"
+          "when_"
         ]
       },
       "Search": {
@@ -7348,25 +7253,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "NewComments",
-              "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "Active",
+              "MostComments",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "listing_type": {
@@ -7982,16 +7887,6 @@
             "title": "A shorter, one line description of your community",
             "description": "A shorter, one line description of your community."
           },
-          "icon": {
-            "type": "string",
-            "title": "An icon URL",
-            "description": "An icon URL."
-          },
-          "banner": {
-            "type": "string",
-            "title": "A banner URL",
-            "description": "A banner URL."
-          },
           "nsfw": {
             "type": "boolean",
             "title": "Whether its an NSFW community",
@@ -8038,27 +7933,27 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
-              "NameDesc",
-              "NameAsc",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
               "TopHour",
-              "Active",
-              "MostComments",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "MostComments",
+              "Active",
+              "NewComments",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled",
+              "NameAsc",
+              "NameDesc"
             ]
           },
           "show_nsfw": {
@@ -8723,25 +8618,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "MostComments",
-              "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "NewComments",
+              "Active",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "page": {
@@ -8788,6 +8683,9 @@
           },
           "page_cursor": {
             "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -9081,46 +8979,6 @@
           "resolved"
         ],
         "description": "Resolve a post report (mods only)."
-      },
-      "ListPostReports": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          },
-          "community_id": {
-            "type": "number",
-            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
-          },
-          "post_id": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "description": "List post reports."
-      },
-      "ListPostReportsResponse": {
-        "type": "object",
-        "properties": {
-          "post_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_reports"
-        ],
-        "description": "The post reports response."
       },
       "GetSiteMetadata": {
         "type": "object",
@@ -9726,46 +9584,6 @@
         ],
         "description": "Resolve a comment report (only doable by mods)."
       },
-      "ListCommentReports": {
-        "type": "object",
-        "properties": {
-          "comment_id": {
-            "type": "number"
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          },
-          "community_id": {
-            "type": "number",
-            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
-          }
-        },
-        "nullable": false,
-        "description": "List comment reports."
-      },
-      "ListCommentReportsResponse": {
-        "type": "object",
-        "properties": {
-          "comment_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CommentReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "comment_reports"
-        ],
-        "description": "The comment report list response."
-      },
       "GetPrivateMessages": {
         "type": "object",
         "properties": {
@@ -10071,39 +9889,6 @@
         ],
         "description": "Resolve a private message report."
       },
-      "ListPrivateMessageReports": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "unresolved_only": {
-            "type": "boolean",
-            "description": "Only shows the unresolved reports"
-          }
-        },
-        "nullable": false,
-        "description": "List private message reports."
-      },
-      "ListPrivateMessageReportsResponse": {
-        "type": "object",
-        "properties": {
-          "private_message_reports": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PrivateMessageReportView"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "private_message_reports"
-        ],
-        "description": "The response for list private message reports."
-      },
       "Register": {
         "type": "object",
         "properties": {
@@ -10211,25 +9996,25 @@
           "sort": {
             "type": "string",
             "enum": [
-              "Active",
-              "Hot",
-              "New",
-              "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
               "MostComments",
-              "NewComments",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
+              "Scaled",
               "Controversial",
-              "Scaled"
+              "TopNineMonths",
+              "TopSixMonths",
+              "TopThreeMonths",
+              "TopTwelveHour",
+              "TopSixHour",
+              "TopHour",
+              "NewComments",
+              "Active",
+              "TopAll",
+              "TopYear",
+              "TopMonth",
+              "TopWeek",
+              "TopDay",
+              "Old",
+              "New",
+              "Hot"
             ]
           },
           "page": {
@@ -10722,25 +10507,25 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
               "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
+              "Hot",
               "New",
-              "Hot"
+              "Old",
+              "TopDay",
+              "TopWeek",
+              "TopMonth",
+              "TopYear",
+              "TopAll",
+              "Active",
+              "MostComments",
+              "TopHour",
+              "TopSixHour",
+              "TopTwelveHour",
+              "TopThreeMonths",
+              "TopSixMonths",
+              "TopNineMonths",
+              "Controversial",
+              "Scaled"
             ],
             "description": "The default post sort, usually \"active\""
           },
@@ -10758,16 +10543,6 @@
           "interface_language": {
             "type": "string",
             "description": "The language of the lemmy interface"
-          },
-          "avatar": {
-            "type": "string",
-            "title": "A URL for your avatar",
-            "description": "A URL for your avatar."
-          },
-          "banner": {
-            "type": "string",
-            "title": "A URL for your banner",
-            "description": "A URL for your banner."
           },
           "display_name": {
             "type": "string",
@@ -10903,23 +10678,13 @@
       "GetReportCountResponse": {
         "type": "object",
         "properties": {
-          "community_id": {
-            "type": "number"
-          },
-          "comment_reports": {
-            "type": "number"
-          },
-          "post_reports": {
-            "type": "number"
-          },
-          "private_message_reports": {
+          "count": {
             "type": "number"
           }
         },
         "nullable": false,
         "required": [
-          "comment_reports",
-          "post_reports"
+          "count"
         ],
         "description": "A response for the number of reports."
       },
@@ -11605,9 +11370,6 @@
           "code": {
             "type": "string"
           },
-          "pkce_code_verifier": {
-            "type": "string"
-          },
           "oauth_provider_id": {
             "type": "number"
           },
@@ -11624,6 +11386,9 @@
           "answer": {
             "type": "string",
             "description": "An answer is mandatory if require application is enabled on the server"
+          },
+          "pkce_code_verifier": {
+            "type": "string"
           }
         },
         "nullable": false,
@@ -11741,6 +11506,252 @@
           "fail_count"
         ]
       },
+      "ListReports": {
+        "type": "object",
+        "properties": {
+          "unresolved_only": {
+            "type": "boolean",
+            "description": "Only shows the unresolved reports"
+          },
+          "community_id": {
+            "type": "number",
+            "description": "if no community is given, it returns reports for all communities moderated by the auth user"
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "description": "List reports."
+      },
+      "ListReportsResponse": {
+        "type": "object",
+        "properties": {
+          "reports": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReportCombinedView"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "reports"
+        ],
+        "description": "The post reports response."
+      },
+      "ReportCombinedView": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/type_PostPostReportView"
+          },
+          {
+            "$ref": "#/components/schemas/type_CommentCommentReportView"
+          },
+          {
+            "$ref": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type_",
+          "mapping": {
+            "Post": "#/components/schemas/type_PostPostReportView",
+            "Comment": "#/components/schemas/type_CommentCommentReportView",
+            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
+          }
+        }
+      },
+      "type_PostPostReportView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Post"
+            ]
+          },
+          "post_report": {
+            "$ref": "#/components/schemas/PostReport"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "post_creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          },
+          "unread_comments": {
+            "type": "number"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/PostAggregates"
+          },
+          "resolver": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "post_report",
+          "post",
+          "community",
+          "creator",
+          "post_creator",
+          "creator_banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "subscribed",
+          "saved",
+          "read",
+          "hidden",
+          "creator_blocked",
+          "unread_comments",
+          "counts"
+        ]
+      },
+      "type_CommentCommentReportView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Comment"
+            ]
+          },
+          "comment_report": {
+            "$ref": "#/components/schemas/CommentReport"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/Comment"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "comment_creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/CommentAggregates"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          },
+          "resolver": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "comment_report",
+          "comment",
+          "post",
+          "community",
+          "creator",
+          "comment_creator",
+          "counts",
+          "creator_banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "creator_blocked",
+          "subscribed",
+          "saved"
+        ]
+      },
+      "type_PrivateMessagePrivateMessageReportView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "PrivateMessage"
+            ]
+          },
+          "private_message_report": {
+            "$ref": "#/components/schemas/PrivateMessageReport"
+          },
+          "private_message": {
+            "$ref": "#/components/schemas/PrivateMessage"
+          },
+          "private_message_creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "resolver": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "private_message_report",
+          "private_message",
+          "private_message_creator",
+          "creator"
+        ]
+      },
       "UserBlockInstanceParams": {
         "type": "object",
         "properties": {
@@ -11816,33 +11827,10 @@
       "UploadImageResponse": {
         "type": "object",
         "properties": {
-          "msg": {
-            "type": "string",
-            "title": "Is \"ok\" if the upload was successful; is something else otherwise",
-            "description": "Is \"ok\" if the upload was successful; is something else otherwise."
-          },
-          "files": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ImageFile"
-            }
-          },
-          "url": {
+          "image_url": {
             "type": "string"
           },
-          "delete_url": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "msg"
-        ]
-      },
-      "ImageFile": {
-        "type": "object",
-        "properties": {
-          "file": {
+          "filename": {
             "type": "string"
           },
           "delete_token": {
@@ -11851,24 +11839,25 @@
         },
         "nullable": false,
         "required": [
-          "file",
+          "image_url",
+          "filename",
           "delete_token"
         ]
       },
-      "DeleteImage": {
+      "DeleteImageParams": {
         "type": "object",
         "properties": {
-          "token": {
+          "filename": {
             "type": "string"
           },
-          "filename": {
+          "token": {
             "type": "string"
           }
         },
         "nullable": false,
         "required": [
-          "token",
-          "filename"
+          "filename",
+          "token"
         ]
       }
     },
