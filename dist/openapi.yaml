@@ -4037,14 +4037,11 @@ components:
           type: number
         pictrs_alias:
           type: string
-        pictrs_delete_token:
-          type: string
         published:
           type: string
       nullable: false
       required:
         - pictrs_alias
-        - pictrs_delete_token
         - published
     UpdateTotp:
       type: object
@@ -8380,24 +8377,18 @@ components:
           type: string
         filename:
           type: string
-        delete_token:
-          type: string
       nullable: false
       required:
         - image_url
         - filename
-        - delete_token
     DeleteImageParams:
       type: object
       properties:
         filename:
           type: string
-        token:
-          type: string
       nullable: false
       required:
         - filename
-        - token
   securitySchemes:
     bearerAuth:
       type: http

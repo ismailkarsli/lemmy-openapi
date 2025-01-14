@@ -6178,9 +6178,6 @@
           "pictrs_alias": {
             "type": "string"
           },
-          "pictrs_delete_token": {
-            "type": "string"
-          },
           "published": {
             "type": "string"
           }
@@ -6188,7 +6185,6 @@
         "nullable": false,
         "required": [
           "pictrs_alias",
-          "pictrs_delete_token",
           "published"
         ]
       },
@@ -12096,16 +12092,12 @@
           },
           "filename": {
             "type": "string"
-          },
-          "delete_token": {
-            "type": "string"
           }
         },
         "nullable": false,
         "required": [
           "image_url",
-          "filename",
-          "delete_token"
+          "filename"
         ]
       },
       "DeleteImageParams": {
@@ -12113,15 +12105,11 @@
         "properties": {
           "filename": {
             "type": "string"
-          },
-          "token": {
-            "type": "string"
           }
         },
         "nullable": false,
         "required": [
-          "filename",
-          "token"
+          "filename"
         ]
       }
     },
