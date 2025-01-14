@@ -97,6 +97,15 @@ interface FetchStatement {
 	];
 }
 
+interface UploadStatement {
+	type: "CallExpression";
+	callee: {
+		type: "PrivateFieldExpression";
+		field: { type: "PrivateIdentifier"; name: "upload" };
+	};
+	arguments: [{ type: "Literal"; value: string }, { type: "Identifier"; name: string }, ...unknown[]];
+}
+
 interface PictrsUrlObject {
 	type: "PrivateFieldExpression";
 	field: { type: "PrivateIdentifier"; name: "pictrsUrl" };
@@ -149,41 +158,52 @@ const pathStatements = lemmyMethods
 					: undefined;
 		} else {
 			const fetchStatement = recursiveFind(lemmyMethod.value.body.statements, createIs<FetchStatement>())?.at(-1);
-			if (!fetchStatement) throw new Error("Could not find fetch calls or return statements");
-
-			const methodProperty = fetchStatement.arguments[1].properties.find(createIs<FetchMethod>());
-			if (!methodProperty) throw new Error("Could not find method property");
-			method = methodProperty.value.property.name.toUpperCase();
-
-			if (is<StringLiteral>(fetchStatement.arguments[0])) {
-				endpoint = fetchStatement.arguments[0].value;
-			} else if (is<PictrsUrlObject>(fetchStatement.arguments[0])) {
-				endpoint = "/pictrs/image";
-			} else if (is<IdentifierName>(fetchStatement.arguments[0])) {
-				const varName = fetchStatement.arguments[0].name;
-				// find the variable declaration and get the value
-				const variableDeclarations = recursiveFind(lemmyMethod.value.body.statements, createIs<VariableDeclarator>());
-				if (!variableDeclarations) {
-					throw new Error(`Could not find variables for ${JSON.stringify(varName)} in ${methodName}`);
-				}
-				const variable = variableDeclarations.find((v) => v.id.type === "Identifier" && v.id.name === varName);
-				if (!variable) throw new Error(`Could not find variable ${varName} in ${methodName}`);
-				if (variable.init?.type === "Literal" && variable.init.raw) {
-					endpoint = variable.init.raw;
-				} else if (variable.init?.type === "TemplateLiteral") {
-					endpoint = templateLiteralToStaticString(variable.init).replace("{#pictrsUrl}", "/pictrs/image");
-					const urlParams = endpoint.match(/{(.+?)}/g);
-					if (urlParams) {
-						urlParameters = urlParams.map((param) => param.slice(1, -1));
-					}
-				} else {
-					throw new Error(`Could not find endpoint for ${varName} in ${methodName}`);
-				}
-			} else if (is<BuildFullUrl>(fetchStatement.arguments[0])) {
-				endpoint = fetchStatement.arguments[0].arguments[0].value;
-			} else {
-				throw new Error("Could not find fetch url");
+			const uploadStatement = recursiveFind(lemmyMethod.value.body.statements, createIs<UploadStatement>())?.at(-1);
+			if (!fetchStatement && !uploadStatement) {
+				throw new Error(`Could not find fetch, upload or return statements for "${methodName}"`);
 			}
+
+			if (fetchStatement) {
+				const methodProperty = fetchStatement.arguments[1].properties.find(createIs<FetchMethod>());
+				if (!methodProperty) throw new Error("Could not find method property");
+				method = methodProperty.value.property.name.toUpperCase();
+			} else {
+				method = "POST"; // upload is always POST
+			}
+
+			if (fetchStatement) {
+				if (is<StringLiteral>(fetchStatement.arguments[0])) {
+					endpoint = fetchStatement.arguments[0].value;
+				} else if (is<PictrsUrlObject>(fetchStatement.arguments[0])) {
+					endpoint = "/pictrs/image";
+				} else if (is<IdentifierName>(fetchStatement.arguments[0])) {
+					const varName = fetchStatement.arguments[0].name;
+					// find the variable declaration and get the value
+					const variableDeclarations = recursiveFind(lemmyMethod.value.body.statements, createIs<VariableDeclarator>());
+					if (!variableDeclarations) {
+						throw new Error(`Could not find variables for ${JSON.stringify(varName)} in ${methodName}`);
+					}
+					const variable = variableDeclarations.find((v) => v.id.type === "Identifier" && v.id.name === varName);
+					if (!variable) throw new Error(`Could not find variable ${varName} in ${methodName}`);
+					if (variable.init?.type === "Literal" && variable.init.raw) {
+						endpoint = variable.init.raw;
+					} else if (variable.init?.type === "TemplateLiteral") {
+						endpoint = templateLiteralToStaticString(variable.init).replace("{#pictrsUrl}", "/pictrs/image");
+						const urlParams = endpoint.match(/{(.+?)}/g);
+						if (urlParams) {
+							urlParameters = urlParams.map((param) => param.slice(1, -1));
+						}
+					} else {
+						throw new Error(`Could not find endpoint for ${varName} in ${methodName}`);
+					}
+				} else if (is<BuildFullUrl>(fetchStatement.arguments[0])) {
+					endpoint = fetchStatement.arguments[0].arguments[0].value;
+				} else {
+					throw new Error("Could not find fetch url");
+				}
+			} else if (uploadStatement) {
+				endpoint = uploadStatement.arguments[0].value;
+			} else throw new Error("no upload statement");
 
 			const firstParameter = (lemmyMethod.value.params as FormalParameters)?.items.at(0);
 			if (!is<Parameter>(firstParameter)) throw new Error(`Could not find first parameter for ${methodName}`);
