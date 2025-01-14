@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-no-delete-token.1"
+    "version": "0.20.0-modlog-combined.1"
   },
   "servers": [
     {
@@ -457,20 +457,6 @@
             }
           },
           {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetModlog/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetModlog/properties/limit"
-            }
-          },
-          {
             "name": "type_",
             "in": "query",
             "schema": {
@@ -496,6 +482,20 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetModlog/properties/comment_id"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/page_cursor"
+            }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetModlog/properties/page_back"
             }
           }
         ],
@@ -596,13 +596,6 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/Search/properties/post_url_only"
-            }
-          },
-          {
-            "name": "saved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Search/properties/saved_only"
             }
           },
           {
@@ -1554,6 +1547,13 @@
             }
           },
           {
+            "name": "read_only",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/read_only"
+            }
+          },
+          {
             "name": "liked_only",
             "in": "query",
             "schema": {
@@ -2207,13 +2207,6 @@
             }
           },
           {
-            "name": "saved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetComments/properties/saved_only"
-            }
-          },
-          {
             "name": "liked_only",
             "in": "query",
             "schema": {
@@ -2633,41 +2626,6 @@
             "schema": {
               "$ref": "#/components/schemas/GetPersonDetails/properties/username"
             }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPersonDetails/properties/sort"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPersonDetails/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPersonDetails/properties/limit"
-            }
-          },
-          {
-            "name": "community_id",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPersonDetails/properties/community_id"
-            }
-          },
-          {
-            "name": "saved_only",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/GetPersonDetails/properties/saved_only"
-            }
           }
         ],
         "tags": [
@@ -2680,6 +2638,64 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetPersonDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/person/content": {
+      "get": {
+        "operationId": "listPersonContent",
+        "description": "List the content for a person.",
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonContent/properties/type_"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonContent/properties/person_id"
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonContent/properties/username"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonContent/properties/page_cursor"
+            }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonContent/properties/page_back"
+            }
+          }
+        ],
+        "tags": [
+          "Person"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPersonContentResponse"
                 }
               }
             }
@@ -3157,6 +3173,36 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/auth/saved": {
+      "post": {
+        "operationId": "listPersonSaved",
+        "description": "List your saved content.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListPersonSaved"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Account/Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListPersonSavedResponse"
                 }
               }
             }
@@ -4386,16 +4432,6 @@
               "type": "number"
             }
           },
-          "taglines": {
-            "type": "array",
-            "items": {},
-            "description": "deprecated, use field `tagline` or /api/v3/tagline/list"
-          },
-          "custom_emojis": {
-            "type": "array",
-            "items": {},
-            "description": "deprecated, use /api/v3/custom_emoji/list"
-          },
           "tagline": {
             "$ref": "#/components/schemas/Tagline",
             "description": "If the site has any taglines, a random one is included here for displaying"
@@ -4431,8 +4467,6 @@
           "version",
           "all_languages",
           "discussion_languages",
-          "taglines",
-          "custom_emojis",
           "blocked_urls",
           "image_upload_disabled"
         ],
@@ -5197,9 +5231,6 @@
           "description": {
             "type": "string"
           },
-          "enable_nsfw": {
-            "type": "boolean"
-          },
           "community_creation_admin_only": {
             "type": "boolean"
           },
@@ -5235,7 +5266,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -5244,8 +5275,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -5324,9 +5355,6 @@
             "type": "number"
           },
           "federation_enabled": {
-            "type": "boolean"
-          },
-          "federation_debug": {
             "type": "boolean"
           },
           "captcha_enabled": {
@@ -5423,11 +5451,6 @@
             "title": "A shorter, one line description of your site",
             "description": "A shorter, one line description of your site."
           },
-          "enable_nsfw": {
-            "type": "boolean",
-            "title": "Whether to enable NSFW",
-            "description": "Whether to enable NSFW."
-          },
           "community_creation_admin_only": {
             "type": "boolean",
             "title": "Limits community creation to admins only",
@@ -5474,7 +5497,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "Active",
+              "MostComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -5483,8 +5506,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "MostComments",
               "NewComments",
+              "Active",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -5591,11 +5614,6 @@
             "type": "boolean",
             "title": "Whether to enable federation",
             "description": "Whether to enable federation."
-          },
-          "federation_debug": {
-            "type": "boolean",
-            "title": "Enables federation debugging",
-            "description": "Enables federation debugging."
           },
           "captcha_enabled": {
             "type": "boolean",
@@ -6178,6 +6196,9 @@
           "pictrs_alias": {
             "type": "string"
           },
+          "pictrs_delete_token": {
+            "type": "string"
+          },
           "published": {
             "type": "string"
           }
@@ -6185,6 +6206,7 @@
         "nullable": false,
         "required": [
           "pictrs_alias",
+          "pictrs_delete_token",
           "published"
         ]
       },
@@ -6225,12 +6247,6 @@
           "community_id": {
             "type": "number"
           },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
           "type_": {
             "type": "string",
             "enum": [
@@ -6262,6 +6278,12 @@
           },
           "comment_id": {
             "type": "number"
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -6270,162 +6292,246 @@
       "GetModlogResponse": {
         "type": "object",
         "properties": {
-          "removed_posts": {
+          "modlog": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ModRemovePostView"
-            }
-          },
-          "locked_posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModLockPostView"
-            }
-          },
-          "featured_posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModFeaturePostView"
-            }
-          },
-          "removed_comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModRemoveCommentView"
-            }
-          },
-          "removed_communities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModRemoveCommunityView"
-            }
-          },
-          "banned_from_community": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModBanFromCommunityView"
-            }
-          },
-          "banned": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModBanView"
-            }
-          },
-          "added_to_community": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModAddCommunityView"
-            }
-          },
-          "transferred_to_community": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModTransferCommunityView"
-            }
-          },
-          "added": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModAddView"
-            }
-          },
-          "admin_purged_persons": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminPurgePersonView"
-            }
-          },
-          "admin_purged_communities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminPurgeCommunityView"
-            }
-          },
-          "admin_purged_posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminPurgePostView"
-            }
-          },
-          "admin_purged_comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminPurgeCommentView"
-            }
-          },
-          "hidden_communities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ModHideCommunityView"
-            }
-          },
-          "admin_block_instance": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminBlockInstanceView"
-            }
-          },
-          "admin_allow_instance": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AdminAllowInstanceView"
+              "$ref": "#/components/schemas/ModlogCombinedView"
             }
           }
         },
         "nullable": false,
         "required": [
-          "removed_posts",
-          "locked_posts",
-          "featured_posts",
-          "removed_comments",
-          "removed_communities",
-          "banned_from_community",
-          "banned",
-          "added_to_community",
-          "transferred_to_community",
-          "added",
-          "admin_purged_persons",
-          "admin_purged_communities",
-          "admin_purged_posts",
-          "admin_purged_comments",
-          "hidden_communities",
-          "admin_block_instance",
-          "admin_allow_instance"
+          "modlog"
         ],
         "description": "The modlog fetch response."
       },
-      "ModRemovePostView": {
+      "ModlogCombinedView": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/type_AdminAllowInstanceAdminAllowInstanceView"
+          },
+          {
+            "$ref": "#/components/schemas/type_AdminBlockInstanceAdminBlockInstanceView"
+          },
+          {
+            "$ref": "#/components/schemas/type_AdminPurgeCommentAdminPurgeCommentView"
+          },
+          {
+            "$ref": "#/components/schemas/type_AdminPurgeCommunityAdminPurgeCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_AdminPurgePersonAdminPurgePersonView"
+          },
+          {
+            "$ref": "#/components/schemas/type_AdminPurgePostAdminPurgePostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModAddModAddView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModAddCommunityModAddCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModBanModBanView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModBanFromCommunityModBanFromCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModFeaturePostModFeaturePostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModHideCommunityModHideCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModLockPostModLockPostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModRemoveCommentModRemoveCommentView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModRemoveCommunityModRemoveCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModRemovePostModRemovePostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_ModTransferCommunityModTransferCommunityView"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type_",
+          "mapping": {
+            "AdminAllowInstance": "#/components/schemas/type_AdminAllowInstanceAdminAllowInstanceView",
+            "AdminBlockInstance": "#/components/schemas/type_AdminBlockInstanceAdminBlockInstanceView",
+            "AdminPurgeComment": "#/components/schemas/type_AdminPurgeCommentAdminPurgeCommentView",
+            "AdminPurgeCommunity": "#/components/schemas/type_AdminPurgeCommunityAdminPurgeCommunityView",
+            "AdminPurgePerson": "#/components/schemas/type_AdminPurgePersonAdminPurgePersonView",
+            "AdminPurgePost": "#/components/schemas/type_AdminPurgePostAdminPurgePostView",
+            "ModAdd": "#/components/schemas/type_ModAddModAddView",
+            "ModAddCommunity": "#/components/schemas/type_ModAddCommunityModAddCommunityView",
+            "ModBan": "#/components/schemas/type_ModBanModBanView",
+            "ModBanFromCommunity": "#/components/schemas/type_ModBanFromCommunityModBanFromCommunityView",
+            "ModFeaturePost": "#/components/schemas/type_ModFeaturePostModFeaturePostView",
+            "ModHideCommunity": "#/components/schemas/type_ModHideCommunityModHideCommunityView",
+            "ModLockPost": "#/components/schemas/type_ModLockPostModLockPostView",
+            "ModRemoveComment": "#/components/schemas/type_ModRemoveCommentModRemoveCommentView",
+            "ModRemoveCommunity": "#/components/schemas/type_ModRemoveCommunityModRemoveCommunityView",
+            "ModRemovePost": "#/components/schemas/type_ModRemovePostModRemovePostView",
+            "ModTransferCommunity": "#/components/schemas/type_ModTransferCommunityModTransferCommunityView"
+          }
+        }
+      },
+      "type_AdminAllowInstanceAdminAllowInstanceView": {
         "type": "object",
         "properties": {
-          "mod_remove_post": {
-            "$ref": "#/components/schemas/ModRemovePost"
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminAllowInstance"
+            ]
           },
-          "moderator": {
+          "admin_allow_instance": {
+            "$ref": "#/components/schemas/AdminAllowInstance"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/Instance"
+          },
+          "admin": {
             "$ref": "#/components/schemas/Person"
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
           }
         },
         "nullable": false,
         "required": [
-          "mod_remove_post",
-          "post",
-          "community"
-        ],
-        "description": "When a moderator removes a post."
+          "type_",
+          "admin_allow_instance",
+          "instance"
+        ]
       },
-      "ModRemovePost": {
+      "AdminAllowInstance": {
         "type": "object",
         "properties": {
           "id": {
             "type": "number"
           },
-          "mod_person_id": {
+          "instance_id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "instance_id",
+          "admin_person_id",
+          "allowed",
+          "published"
+        ]
+      },
+      "type_AdminBlockInstanceAdminBlockInstanceView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminBlockInstance"
+            ]
+          },
+          "admin_block_instance": {
+            "$ref": "#/components/schemas/AdminBlockInstance"
+          },
+          "instance": {
+            "$ref": "#/components/schemas/Instance"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "admin_block_instance",
+          "instance"
+        ]
+      },
+      "AdminBlockInstance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "instance_id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "expires": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "instance_id",
+          "admin_person_id",
+          "blocked",
+          "published"
+        ]
+      },
+      "type_AdminPurgeCommentAdminPurgeCommentView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminPurgeComment"
+            ]
+          },
+          "admin_purge_comment": {
+            "$ref": "#/components/schemas/AdminPurgeComment"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "admin_purge_comment",
+          "post"
+        ]
+      },
+      "AdminPurgeComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "admin_person_id": {
             "type": "number"
           },
           "post_id": {
@@ -6434,22 +6540,18 @@
           "reason": {
             "type": "string"
           },
-          "removed": {
-            "type": "boolean"
-          },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
         "nullable": false,
         "required": [
           "id",
-          "mod_person_id",
+          "admin_person_id",
           "post_id",
-          "removed",
-          "when_"
+          "published"
         ],
-        "description": "When a moderator removes a post."
+        "description": "When an admin purges a comment."
       },
       "Post": {
         "type": "object",
@@ -6578,17 +6680,112 @@
         ],
         "description": "A post."
       },
-      "ModLockPostView": {
+      "type_AdminPurgeCommunityAdminPurgeCommunityView": {
         "type": "object",
         "properties": {
-          "mod_lock_post": {
-            "$ref": "#/components/schemas/ModLockPost"
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminPurgeCommunity"
+            ]
           },
-          "moderator": {
+          "admin_purge_community": {
+            "$ref": "#/components/schemas/AdminPurgeCommunity"
+          },
+          "admin": {
             "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "admin_purge_community"
+        ]
+      },
+      "AdminPurgeCommunity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
           },
-          "post": {
-            "$ref": "#/components/schemas/Post"
+          "admin_person_id": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "admin_person_id",
+          "published"
+        ],
+        "description": "When an admin purges a community."
+      },
+      "type_AdminPurgePersonAdminPurgePersonView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminPurgePerson"
+            ]
+          },
+          "admin_purge_person": {
+            "$ref": "#/components/schemas/AdminPurgePerson"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "admin_purge_person"
+        ]
+      },
+      "AdminPurgePerson": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "admin_person_id",
+          "published"
+        ],
+        "description": "When an admin purges a person."
+      },
+      "type_AdminPurgePostAdminPurgePostView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "AdminPurgePost"
+            ]
+          },
+          "admin_purge_post": {
+            "$ref": "#/components/schemas/AdminPurgePost"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
           },
           "community": {
             "$ref": "#/components/schemas/Community"
@@ -6596,13 +6793,66 @@
         },
         "nullable": false,
         "required": [
-          "mod_lock_post",
-          "post",
+          "type_",
+          "admin_purge_post",
           "community"
-        ],
-        "description": "When a moderator locks a post (prevents new comments being made)."
+        ]
       },
-      "ModLockPost": {
+      "AdminPurgePost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "admin_person_id": {
+            "type": "number"
+          },
+          "community_id": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "admin_person_id",
+          "community_id",
+          "published"
+        ],
+        "description": "When an admin purges a post."
+      },
+      "type_ModAddModAddView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModAdd"
+            ]
+          },
+          "mod_add": {
+            "$ref": "#/components/schemas/ModAdd"
+          },
+          "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_add",
+          "other_person"
+        ]
+      },
+      "ModAdd": {
         "type": "object",
         "properties": {
           "id": {
@@ -6611,13 +6861,13 @@
           "mod_person_id": {
             "type": "number"
           },
-          "post_id": {
+          "other_person_id": {
             "type": "number"
           },
-          "locked": {
+          "removed": {
             "type": "boolean"
           },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
@@ -6625,19 +6875,221 @@
         "required": [
           "id",
           "mod_person_id",
-          "post_id",
-          "locked",
-          "when_"
+          "other_person_id",
+          "removed",
+          "published"
         ],
-        "description": "When a moderator locks a post (prevents new comments being made)."
+        "description": "When someone is added as a site moderator."
       },
-      "ModFeaturePostView": {
+      "type_ModAddCommunityModAddCommunityView": {
         "type": "object",
         "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModAddCommunity"
+            ]
+          },
+          "mod_add_community": {
+            "$ref": "#/components/schemas/ModAddCommunity"
+          },
+          "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_add_community",
+          "community",
+          "other_person"
+        ]
+      },
+      "ModAddCommunity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "mod_person_id": {
+            "type": "number"
+          },
+          "other_person_id": {
+            "type": "number"
+          },
+          "community_id": {
+            "type": "number"
+          },
+          "removed": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "mod_person_id",
+          "other_person_id",
+          "community_id",
+          "removed",
+          "published"
+        ],
+        "description": "When someone is added as a community moderator."
+      },
+      "type_ModBanModBanView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModBan"
+            ]
+          },
+          "mod_ban": {
+            "$ref": "#/components/schemas/ModBan"
+          },
+          "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_ban",
+          "other_person"
+        ]
+      },
+      "ModBan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "mod_person_id": {
+            "type": "number"
+          },
+          "other_person_id": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
+          },
+          "expires": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "mod_person_id",
+          "other_person_id",
+          "banned",
+          "published"
+        ],
+        "description": "When someone is banned from the site."
+      },
+      "type_ModBanFromCommunityModBanFromCommunityView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModBanFromCommunity"
+            ]
+          },
+          "mod_ban_from_community": {
+            "$ref": "#/components/schemas/ModBanFromCommunity"
+          },
+          "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_ban_from_community",
+          "community",
+          "other_person"
+        ]
+      },
+      "ModBanFromCommunity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "mod_person_id": {
+            "type": "number"
+          },
+          "other_person_id": {
+            "type": "number"
+          },
+          "community_id": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
+          },
+          "expires": {
+            "type": "string"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "mod_person_id",
+          "other_person_id",
+          "community_id",
+          "banned",
+          "published"
+        ],
+        "description": "When someone is banned from a community."
+      },
+      "type_ModFeaturePostModFeaturePostView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModFeaturePost"
+            ]
+          },
           "mod_feature_post": {
             "$ref": "#/components/schemas/ModFeaturePost"
           },
           "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "other_person": {
             "$ref": "#/components/schemas/Person"
           },
           "post": {
@@ -6649,11 +7101,12 @@
         },
         "nullable": false,
         "required": [
+          "type_",
           "mod_feature_post",
+          "other_person",
           "post",
           "community"
-        ],
-        "description": "When a moderator features a post on a community (pins it to the top)."
+        ]
       },
       "ModFeaturePost": {
         "type": "object",
@@ -6670,7 +7123,7 @@
           "featured": {
             "type": "boolean"
           },
-          "when_": {
+          "published": {
             "type": "string"
           },
           "is_featured_community": {
@@ -6683,24 +7136,85 @@
           "mod_person_id",
           "post_id",
           "featured",
-          "when_",
+          "published",
           "is_featured_community"
         ],
         "description": "When a moderator features a post on a community (pins it to the top)."
       },
-      "ModRemoveCommentView": {
+      "type_ModHideCommunityModHideCommunityView": {
         "type": "object",
         "properties": {
-          "mod_remove_comment": {
-            "$ref": "#/components/schemas/ModRemoveComment"
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModHideCommunity"
+            ]
+          },
+          "mod_hide_community": {
+            "$ref": "#/components/schemas/ModHideCommunity"
+          },
+          "admin": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_hide_community",
+          "community"
+        ]
+      },
+      "ModHideCommunity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "community_id": {
+            "type": "number"
+          },
+          "mod_person_id": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "community_id",
+          "mod_person_id",
+          "published",
+          "hidden"
+        ],
+        "description": "When a community is hidden from public view."
+      },
+      "type_ModLockPostModLockPostView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModLockPost"
+            ]
+          },
+          "mod_lock_post": {
+            "$ref": "#/components/schemas/ModLockPost"
           },
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "comment": {
-            "$ref": "#/components/schemas/Comment"
-          },
-          "commenter": {
+          "other_person": {
             "$ref": "#/components/schemas/Person"
           },
           "post": {
@@ -6712,13 +7226,79 @@
         },
         "nullable": false,
         "required": [
-          "mod_remove_comment",
-          "comment",
-          "commenter",
+          "type_",
+          "mod_lock_post",
+          "other_person",
           "post",
           "community"
+        ]
+      },
+      "ModLockPost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "mod_person_id": {
+            "type": "number"
+          },
+          "post_id": {
+            "type": "number"
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "mod_person_id",
+          "post_id",
+          "locked",
+          "published"
         ],
-        "description": "When a moderator removes a comment."
+        "description": "When a moderator locks a post (prevents new comments being made)."
+      },
+      "type_ModRemoveCommentModRemoveCommentView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModRemoveComment"
+            ]
+          },
+          "mod_remove_comment": {
+            "$ref": "#/components/schemas/ModRemoveComment"
+          },
+          "moderator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/Comment"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "mod_remove_comment",
+          "other_person",
+          "comment",
+          "post",
+          "community"
+        ]
       },
       "ModRemoveComment": {
         "type": "object",
@@ -6738,7 +7318,7 @@
           "removed": {
             "type": "boolean"
           },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
@@ -6748,7 +7328,7 @@
           "mod_person_id",
           "comment_id",
           "removed",
-          "when_"
+          "published"
         ],
         "description": "When a moderator removes a comment."
       },
@@ -6823,9 +7403,15 @@
         ],
         "description": "A comment."
       },
-      "ModRemoveCommunityView": {
+      "type_ModRemoveCommunityModRemoveCommunityView": {
         "type": "object",
         "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModRemoveCommunity"
+            ]
+          },
           "mod_remove_community": {
             "$ref": "#/components/schemas/ModRemoveCommunity"
           },
@@ -6838,10 +7424,10 @@
         },
         "nullable": false,
         "required": [
+          "type_",
           "mod_remove_community",
           "community"
-        ],
-        "description": "When a moderator removes a community."
+        ]
       },
       "ModRemoveCommunity": {
         "type": "object",
@@ -6861,7 +7447,7 @@
           "removed": {
             "type": "boolean"
           },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
@@ -6871,35 +7457,45 @@
           "mod_person_id",
           "community_id",
           "removed",
-          "when_"
+          "published"
         ],
         "description": "When a moderator removes a community."
       },
-      "ModBanFromCommunityView": {
+      "type_ModRemovePostModRemovePostView": {
         "type": "object",
         "properties": {
-          "mod_ban_from_community": {
-            "$ref": "#/components/schemas/ModBanFromCommunity"
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModRemovePost"
+            ]
+          },
+          "mod_remove_post": {
+            "$ref": "#/components/schemas/ModRemovePost"
           },
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
+          "other_person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
           "community": {
             "$ref": "#/components/schemas/Community"
-          },
-          "banned_person": {
-            "$ref": "#/components/schemas/Person"
           }
         },
         "nullable": false,
         "required": [
-          "mod_ban_from_community",
-          "community",
-          "banned_person"
-        ],
-        "description": "When someone is banned from a community."
+          "type_",
+          "mod_remove_post",
+          "other_person",
+          "post",
+          "community"
+        ]
       },
-      "ModBanFromCommunity": {
+      "ModRemovePost": {
         "type": "object",
         "properties": {
           "id": {
@@ -6908,134 +7504,16 @@
           "mod_person_id": {
             "type": "number"
           },
-          "other_person_id": {
-            "type": "number"
-          },
-          "community_id": {
+          "post_id": {
             "type": "number"
           },
           "reason": {
             "type": "string"
-          },
-          "banned": {
-            "type": "boolean"
-          },
-          "expires": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "mod_person_id",
-          "other_person_id",
-          "community_id",
-          "banned",
-          "when_"
-        ],
-        "description": "When someone is banned from a community."
-      },
-      "ModBanView": {
-        "type": "object",
-        "properties": {
-          "mod_ban": {
-            "$ref": "#/components/schemas/ModBan"
-          },
-          "moderator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "banned_person": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "mod_ban",
-          "banned_person"
-        ],
-        "description": "When someone is banned from the site."
-      },
-      "ModBan": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "mod_person_id": {
-            "type": "number"
-          },
-          "other_person_id": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "banned": {
-            "type": "boolean"
-          },
-          "expires": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "mod_person_id",
-          "other_person_id",
-          "banned",
-          "when_"
-        ],
-        "description": "When someone is banned from the site."
-      },
-      "ModAddCommunityView": {
-        "type": "object",
-        "properties": {
-          "mod_add_community": {
-            "$ref": "#/components/schemas/ModAddCommunity"
-          },
-          "moderator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          },
-          "modded_person": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "mod_add_community",
-          "community",
-          "modded_person"
-        ],
-        "description": "When someone is added as a community moderator."
-      },
-      "ModAddCommunity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "mod_person_id": {
-            "type": "number"
-          },
-          "other_person_id": {
-            "type": "number"
-          },
-          "community_id": {
-            "type": "number"
           },
           "removed": {
             "type": "boolean"
           },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
@@ -7043,16 +7521,21 @@
         "required": [
           "id",
           "mod_person_id",
-          "other_person_id",
-          "community_id",
+          "post_id",
           "removed",
-          "when_"
+          "published"
         ],
-        "description": "When someone is added as a community moderator."
+        "description": "When a moderator removes a post."
       },
-      "ModTransferCommunityView": {
+      "type_ModTransferCommunityModTransferCommunityView": {
         "type": "object",
         "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "ModTransferCommunity"
+            ]
+          },
           "mod_transfer_community": {
             "$ref": "#/components/schemas/ModTransferCommunity"
           },
@@ -7062,17 +7545,17 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
-          "modded_person": {
+          "other_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
         "nullable": false,
         "required": [
+          "type_",
           "mod_transfer_community",
           "community",
-          "modded_person"
-        ],
-        "description": "When a moderator transfers a community to a new owner."
+          "other_person"
+        ]
       },
       "ModTransferCommunity": {
         "type": "object",
@@ -7089,7 +7572,7 @@
           "community_id": {
             "type": "number"
           },
-          "when_": {
+          "published": {
             "type": "string"
           }
         },
@@ -7099,391 +7582,9 @@
           "mod_person_id",
           "other_person_id",
           "community_id",
-          "when_"
+          "published"
         ],
         "description": "When a moderator transfers a community to a new owner."
-      },
-      "ModAddView": {
-        "type": "object",
-        "properties": {
-          "mod_add": {
-            "$ref": "#/components/schemas/ModAdd"
-          },
-          "moderator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "modded_person": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "mod_add",
-          "modded_person"
-        ],
-        "description": "When someone is added as a site moderator."
-      },
-      "ModAdd": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "mod_person_id": {
-            "type": "number"
-          },
-          "other_person_id": {
-            "type": "number"
-          },
-          "removed": {
-            "type": "boolean"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "mod_person_id",
-          "other_person_id",
-          "removed",
-          "when_"
-        ],
-        "description": "When someone is added as a site moderator."
-      },
-      "AdminPurgePersonView": {
-        "type": "object",
-        "properties": {
-          "admin_purge_person": {
-            "$ref": "#/components/schemas/AdminPurgePerson"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_purge_person"
-        ],
-        "description": "When an admin purges a person."
-      },
-      "AdminPurgePerson": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "admin_person_id",
-          "when_"
-        ],
-        "description": "When an admin purges a person."
-      },
-      "AdminPurgeCommunityView": {
-        "type": "object",
-        "properties": {
-          "admin_purge_community": {
-            "$ref": "#/components/schemas/AdminPurgeCommunity"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_purge_community"
-        ],
-        "description": "When an admin purges a community."
-      },
-      "AdminPurgeCommunity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "admin_person_id",
-          "when_"
-        ],
-        "description": "When an admin purges a community."
-      },
-      "AdminPurgePostView": {
-        "type": "object",
-        "properties": {
-          "admin_purge_post": {
-            "$ref": "#/components/schemas/AdminPurgePost"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_purge_post",
-          "community"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminPurgePost": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "community_id": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "admin_person_id",
-          "community_id",
-          "when_"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminPurgeCommentView": {
-        "type": "object",
-        "properties": {
-          "admin_purge_comment": {
-            "$ref": "#/components/schemas/AdminPurgeComment"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "post": {
-            "$ref": "#/components/schemas/Post"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_purge_comment",
-          "post"
-        ],
-        "description": "When an admin purges a comment."
-      },
-      "AdminPurgeComment": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "post_id": {
-            "type": "number"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "admin_person_id",
-          "post_id",
-          "when_"
-        ],
-        "description": "When an admin purges a comment."
-      },
-      "ModHideCommunityView": {
-        "type": "object",
-        "properties": {
-          "mod_hide_community": {
-            "$ref": "#/components/schemas/ModHideCommunity"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "mod_hide_community",
-          "community"
-        ],
-        "description": "When a community is hidden from public view."
-      },
-      "ModHideCommunity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "community_id": {
-            "type": "number"
-          },
-          "mod_person_id": {
-            "type": "number"
-          },
-          "when_": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "hidden": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "community_id",
-          "mod_person_id",
-          "when_",
-          "hidden"
-        ],
-        "description": "When a community is hidden from public view."
-      },
-      "AdminBlockInstanceView": {
-        "type": "object",
-        "properties": {
-          "admin_block_instance": {
-            "$ref": "#/components/schemas/AdminBlockInstance"
-          },
-          "instance": {
-            "$ref": "#/components/schemas/Instance"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_block_instance",
-          "instance"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminBlockInstance": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "instance_id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "blocked": {
-            "type": "boolean"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "expires": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "instance_id",
-          "admin_person_id",
-          "blocked",
-          "when_"
-        ]
-      },
-      "AdminAllowInstanceView": {
-        "type": "object",
-        "properties": {
-          "admin_block_instance": {
-            "$ref": "#/components/schemas/AdminAllowInstance"
-          },
-          "instance": {
-            "$ref": "#/components/schemas/Instance"
-          },
-          "admin": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "admin_block_instance",
-          "instance"
-        ],
-        "description": "When an admin purges a post."
-      },
-      "AdminAllowInstance": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "instance_id": {
-            "type": "number"
-          },
-          "admin_person_id": {
-            "type": "number"
-          },
-          "allowed": {
-            "type": "boolean"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "when_": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "instance_id",
-          "admin_person_id",
-          "allowed",
-          "when_"
-        ]
       },
       "Search": {
         "type": "object",
@@ -7513,7 +7614,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "Active",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -7522,8 +7623,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "Active",
               "MostComments",
+              "NewComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -7553,9 +7654,6 @@
             "type": "boolean"
           },
           "post_url_only": {
-            "type": "boolean"
-          },
-          "saved_only": {
             "type": "boolean"
           },
           "liked_only": {
@@ -7786,6 +7884,9 @@
           },
           "unread_comments": {
             "type": "number"
+          },
+          "tags": {
+            "$ref": "#/components/schemas/PostTags"
           }
         },
         "nullable": false,
@@ -7803,7 +7904,8 @@
           "read",
           "hidden",
           "creator_blocked",
-          "unread_comments"
+          "unread_comments",
+          "tags"
         ],
         "description": "A post view."
       },
@@ -7878,6 +7980,59 @@
         ],
         "description": "Aggregate data for a post."
       },
+      "PostTags": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "tags"
+        ],
+        "description": "we wrap this in a struct so we can implement FromSqlRow<Json> for it"
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "ap_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "community_id": {
+            "type": "number",
+            "description": "the community that owns this tag"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "ap_id",
+          "name",
+          "community_id",
+          "published",
+          "deleted"
+        ],
+        "description": "A tag that can be assigned to a post within a community.\nThe tag object is created by the community moderators.\nThe assignment happens by the post creator and can be updated by the community moderators.\n\nA tag is a federatable object that gives additional context to another object, which can be\ndisplayed and filtered on currently, we only have community post tags, which is a tag that is\ncreated by post authors as well as mods  of a community, to categorize a post. in the future we\nmay add more tag types, depending on the requirements, this will lead to either expansion of\nthis table (community_id optional, addition of tag_type enum) or split of this table / creation\nof new tables."
+      },
       "CommunityView": {
         "type": "object",
         "properties": {
@@ -7947,6 +8102,12 @@
           },
           "subscribers_local": {
             "type": "number"
+          },
+          "report_count": {
+            "type": "number"
+          },
+          "unresolved_report_count": {
+            "type": "number"
           }
         },
         "nullable": false,
@@ -7960,7 +8121,9 @@
           "users_active_week",
           "users_active_month",
           "users_active_half_year",
-          "subscribers_local"
+          "subscribers_local",
+          "report_count",
+          "unresolved_report_count"
         ],
         "description": "Aggregate data for a community."
       },
@@ -8193,7 +8356,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "TopHour",
+              "Active",
               "Hot",
               "New",
               "Old",
@@ -8203,8 +8366,8 @@
               "TopYear",
               "TopAll",
               "MostComments",
-              "Active",
               "NewComments",
+              "TopHour",
               "TopSixHour",
               "TopTwelveHour",
               "TopThreeMonths",
@@ -8614,6 +8777,12 @@
             "title": "Instead of fetching a thumbnail, use a custom one",
             "description": "Instead of fetching a thumbnail, use a custom one."
           },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
           "scheduled_publish_time": {
             "type": "number",
             "title": "Time when this post should be scheduled. Null means publish immediately",
@@ -8717,6 +8886,12 @@
             "type": "string",
             "title": "Instead of fetching a thumbnail, use a custom one",
             "description": "Instead of fetching a thumbnail, use a custom one."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           "scheduled_publish_time": {
             "type": "number",
@@ -8878,7 +9053,7 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
+              "NewComments",
               "Scaled",
               "Controversial",
               "TopNineMonths",
@@ -8887,8 +9062,8 @@
               "TopTwelveHour",
               "TopSixHour",
               "TopHour",
-              "NewComments",
               "Active",
+              "MostComments",
               "TopAll",
               "TopYear",
               "TopMonth",
@@ -8913,6 +9088,9 @@
             "type": "string"
           },
           "saved_only": {
+            "type": "boolean"
+          },
+          "read_only": {
             "type": "boolean"
           },
           "liked_only": {
@@ -9645,9 +9823,6 @@
           "parent_id": {
             "type": "number"
           },
-          "saved_only": {
-            "type": "boolean"
-          },
           "liked_only": {
             "type": "boolean"
           },
@@ -10252,42 +10427,6 @@
           "username": {
             "type": "string",
             "description": "Example: dessalines , or dessalines@xyz.tld"
-          },
-          "sort": {
-            "type": "string",
-            "enum": [
-              "MostComments",
-              "Scaled",
-              "Controversial",
-              "TopNineMonths",
-              "TopSixMonths",
-              "TopThreeMonths",
-              "TopTwelveHour",
-              "TopSixHour",
-              "TopHour",
-              "NewComments",
-              "Active",
-              "TopAll",
-              "TopYear",
-              "TopMonth",
-              "TopWeek",
-              "TopDay",
-              "Old",
-              "New",
-              "Hot"
-            ]
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
-          },
-          "community_id": {
-            "type": "number"
-          },
-          "saved_only": {
-            "type": "boolean"
           }
         },
         "nullable": false,
@@ -10302,18 +10441,6 @@
           "site": {
             "$ref": "#/components/schemas/Site"
           },
-          "comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CommentView"
-            }
-          },
-          "posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostView"
-            }
-          },
           "moderates": {
             "type": "array",
             "items": {
@@ -10324,11 +10451,217 @@
         "nullable": false,
         "required": [
           "person_view",
-          "comments",
-          "posts",
           "moderates"
         ],
         "description": "A person's details response."
+      },
+      "ListPersonContent": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Comments",
+              "Posts"
+            ]
+          },
+          "person_id": {
+            "type": "number"
+          },
+          "username": {
+            "type": "string",
+            "description": "Example: dessalines , or dessalines@xyz.tld"
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "description": "Gets a person's content (posts and comments)\n\nEither person_id, or username are required."
+      },
+      "ListPersonContentResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonContentCombinedView"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "content"
+        ],
+        "description": "A person's content response."
+      },
+      "PersonContentCombinedView": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/type_PostPostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_CommentCommentView"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type_",
+          "mapping": {
+            "Post": "#/components/schemas/type_PostPostView",
+            "Comment": "#/components/schemas/type_CommentCommentView"
+          }
+        }
+      },
+      "type_PostPostView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Post"
+            ]
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "image_details": {
+            "$ref": "#/components/schemas/ImageDetails"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/PostAggregates"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          },
+          "unread_comments": {
+            "type": "number"
+          },
+          "tags": {
+            "$ref": "#/components/schemas/PostTags"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "post",
+          "creator",
+          "community",
+          "creator_banned_from_community",
+          "banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "counts",
+          "subscribed",
+          "saved",
+          "read",
+          "hidden",
+          "creator_blocked",
+          "unread_comments",
+          "tags"
+        ]
+      },
+      "type_CommentCommentView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Comment"
+            ]
+          },
+          "comment": {
+            "$ref": "#/components/schemas/Comment"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/CommentAggregates"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "comment",
+          "creator",
+          "post",
+          "community",
+          "counts",
+          "creator_banned_from_community",
+          "banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "subscribed",
+          "saved",
+          "creator_blocked"
+        ]
       },
       "GetPersonMentions": {
         "type": "object",
@@ -10767,7 +11100,7 @@
           "default_post_sort_type": {
             "type": "string",
             "enum": [
-              "NewComments",
+              "MostComments",
               "Hot",
               "New",
               "Old",
@@ -10776,8 +11109,8 @@
               "TopMonth",
               "TopYear",
               "TopAll",
+              "NewComments",
               "Active",
-              "MostComments",
               "TopHour",
               "TopSixHour",
               "TopTwelveHour",
@@ -10981,6 +11314,43 @@
           "token"
         ],
         "description": "Verify your email."
+      },
+      "ListPersonSaved": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "All",
+              "Comments",
+              "Posts"
+            ]
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "description": "Gets your saved posts and comments"
+      },
+      "ListPersonSavedResponse": {
+        "type": "object",
+        "properties": {
+          "saved": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PersonContentCombinedView"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "saved"
+        ],
+        "description": "A person's saved content response."
       },
       "AddAdmin": {
         "type": "object",
@@ -11813,6 +12183,9 @@
           },
           {
             "$ref": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
+          },
+          {
+            "$ref": "#/components/schemas/type_CommunityCommunityReportView"
           }
         ],
         "discriminator": {
@@ -11820,7 +12193,8 @@
           "mapping": {
             "Post": "#/components/schemas/type_PostPostReportView",
             "Comment": "#/components/schemas/type_CommentCommentReportView",
-            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
+            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView",
+            "Community": "#/components/schemas/type_CommunityCommunityReportView"
           }
         }
       },
@@ -12012,6 +12386,103 @@
           "creator"
         ]
       },
+      "type_CommunityCommunityReportView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Community"
+            ]
+          },
+          "community_report": {
+            "$ref": "#/components/schemas/CommunityReport"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/CommunityAggregates"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "resolver": {
+            "$ref": "#/components/schemas/Person"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "community_report",
+          "community",
+          "creator",
+          "counts",
+          "subscribed"
+        ]
+      },
+      "CommunityReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "creator_id": {
+            "type": "number"
+          },
+          "community_id": {
+            "type": "number"
+          },
+          "original_community_name": {
+            "type": "string"
+          },
+          "original_community_title": {
+            "type": "string"
+          },
+          "original_community_description": {
+            "type": "string"
+          },
+          "original_community_sidebar": {
+            "type": "string"
+          },
+          "original_community_icon": {
+            "type": "string"
+          },
+          "original_community_banner": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "resolved": {
+            "type": "boolean"
+          },
+          "resolver_id": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "creator_id",
+          "community_id",
+          "original_community_name",
+          "original_community_title",
+          "reason",
+          "resolved",
+          "published"
+        ],
+        "description": "A comment report."
+      },
       "UserBlockInstanceParams": {
         "type": "object",
         "properties": {
@@ -12092,12 +12563,16 @@
           },
           "filename": {
             "type": "string"
+          },
+          "delete_token": {
+            "type": "string"
           }
         },
         "nullable": false,
         "required": [
           "image_url",
-          "filename"
+          "filename",
+          "delete_token"
         ]
       },
       "DeleteImageParams": {
@@ -12105,11 +12580,15 @@
         "properties": {
           "filename": {
             "type": "string"
+          },
+          "token": {
+            "type": "string"
           }
         },
         "nullable": false,
         "required": [
-          "filename"
+          "filename",
+          "token"
         ]
       }
     },
