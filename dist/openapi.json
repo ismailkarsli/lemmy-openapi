@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.20.0-modlog-combined.1"
+    "version": "0.20.0-modlog-combined.0"
   },
   "servers": [
     {
@@ -464,10 +464,10 @@
             }
           },
           {
-            "name": "other_person_id",
+            "name": "modded_person_id",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/GetModlog/properties/other_person_id"
+              "$ref": "#/components/schemas/GetModlog/properties/modded_person_id"
             }
           },
           {
@@ -5231,6 +5231,9 @@
           "description": {
             "type": "string"
           },
+          "enable_nsfw": {
+            "type": "boolean"
+          },
           "community_creation_admin_only": {
             "type": "boolean"
           },
@@ -5357,6 +5360,9 @@
           "federation_enabled": {
             "type": "boolean"
           },
+          "federation_debug": {
+            "type": "boolean"
+          },
           "captcha_enabled": {
             "type": "boolean"
           },
@@ -5450,6 +5456,11 @@
             "type": "string",
             "title": "A shorter, one line description of your site",
             "description": "A shorter, one line description of your site."
+          },
+          "enable_nsfw": {
+            "type": "boolean",
+            "title": "Whether to enable NSFW",
+            "description": "Whether to enable NSFW."
           },
           "community_creation_admin_only": {
             "type": "boolean",
@@ -5614,6 +5625,11 @@
             "type": "boolean",
             "title": "Whether to enable federation",
             "description": "Whether to enable federation."
+          },
+          "federation_debug": {
+            "type": "boolean",
+            "title": "Enables federation debugging",
+            "description": "Enables federation debugging."
           },
           "captcha_enabled": {
             "type": "boolean",
@@ -6270,7 +6286,7 @@
               "ModRemovePost"
             ]
           },
-          "other_person_id": {
+          "modded_person_id": {
             "type": "number"
           },
           "post_id": {
@@ -6426,7 +6442,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6436,7 +6452,7 @@
           "instance_id",
           "admin_person_id",
           "allowed",
-          "published"
+          "when_"
         ]
       },
       "type_AdminBlockInstanceAdminBlockInstanceView": {
@@ -6486,7 +6502,7 @@
           "expires": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6496,7 +6512,7 @@
           "instance_id",
           "admin_person_id",
           "blocked",
-          "published"
+          "when_"
         ]
       },
       "type_AdminPurgeCommentAdminPurgeCommentView": {
@@ -6540,7 +6556,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6549,7 +6565,7 @@
           "id",
           "admin_person_id",
           "post_id",
-          "published"
+          "when_"
         ],
         "description": "When an admin purges a comment."
       },
@@ -6714,7 +6730,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6722,7 +6738,7 @@
         "required": [
           "id",
           "admin_person_id",
-          "published"
+          "when_"
         ],
         "description": "When an admin purges a community."
       },
@@ -6760,7 +6776,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6768,7 +6784,7 @@
         "required": [
           "id",
           "admin_person_id",
-          "published"
+          "when_"
         ],
         "description": "When an admin purges a person."
       },
@@ -6813,7 +6829,7 @@
           "reason": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6822,7 +6838,7 @@
           "id",
           "admin_person_id",
           "community_id",
-          "published"
+          "when_"
         ],
         "description": "When an admin purges a post."
       },
@@ -6841,7 +6857,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
@@ -6849,7 +6865,7 @@
         "required": [
           "type_",
           "mod_add",
-          "other_person"
+          "modded_person"
         ]
       },
       "ModAdd": {
@@ -6867,7 +6883,7 @@
           "removed": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6877,7 +6893,7 @@
           "mod_person_id",
           "other_person_id",
           "removed",
-          "published"
+          "when_"
         ],
         "description": "When someone is added as a site moderator."
       },
@@ -6899,7 +6915,7 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
@@ -6908,7 +6924,7 @@
           "type_",
           "mod_add_community",
           "community",
-          "other_person"
+          "modded_person"
         ]
       },
       "ModAddCommunity": {
@@ -6929,7 +6945,7 @@
           "removed": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -6940,7 +6956,7 @@
           "other_person_id",
           "community_id",
           "removed",
-          "published"
+          "when_"
         ],
         "description": "When someone is added as a community moderator."
       },
@@ -6959,7 +6975,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
@@ -6967,7 +6983,7 @@
         "required": [
           "type_",
           "mod_ban",
-          "other_person"
+          "modded_person"
         ]
       },
       "ModBan": {
@@ -6991,7 +7007,7 @@
           "expires": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7001,7 +7017,7 @@
           "mod_person_id",
           "other_person_id",
           "banned",
-          "published"
+          "when_"
         ],
         "description": "When someone is banned from the site."
       },
@@ -7023,7 +7039,7 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
@@ -7032,7 +7048,7 @@
           "type_",
           "mod_ban_from_community",
           "community",
-          "other_person"
+          "modded_person"
         ]
       },
       "ModBanFromCommunity": {
@@ -7059,7 +7075,7 @@
           "expires": {
             "type": "string"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7070,7 +7086,7 @@
           "other_person_id",
           "community_id",
           "banned",
-          "published"
+          "when_"
         ],
         "description": "When someone is banned from a community."
       },
@@ -7089,7 +7105,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           },
           "post": {
@@ -7103,7 +7119,7 @@
         "required": [
           "type_",
           "mod_feature_post",
-          "other_person",
+          "modded_person",
           "post",
           "community"
         ]
@@ -7123,7 +7139,7 @@
           "featured": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           },
           "is_featured_community": {
@@ -7136,7 +7152,7 @@
           "mod_person_id",
           "post_id",
           "featured",
-          "published",
+          "when_",
           "is_featured_community"
         ],
         "description": "When a moderator features a post on a community (pins it to the top)."
@@ -7179,7 +7195,7 @@
           "mod_person_id": {
             "type": "number"
           },
-          "published": {
+          "when_": {
             "type": "string"
           },
           "reason": {
@@ -7194,7 +7210,7 @@
           "id",
           "community_id",
           "mod_person_id",
-          "published",
+          "when_",
           "hidden"
         ],
         "description": "When a community is hidden from public view."
@@ -7214,7 +7230,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           },
           "post": {
@@ -7228,7 +7244,7 @@
         "required": [
           "type_",
           "mod_lock_post",
-          "other_person",
+          "modded_person",
           "post",
           "community"
         ]
@@ -7248,7 +7264,7 @@
           "locked": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7258,7 +7274,7 @@
           "mod_person_id",
           "post_id",
           "locked",
-          "published"
+          "when_"
         ],
         "description": "When a moderator locks a post (prevents new comments being made)."
       },
@@ -7277,7 +7293,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           },
           "comment": {
@@ -7294,7 +7310,7 @@
         "required": [
           "type_",
           "mod_remove_comment",
-          "other_person",
+          "modded_person",
           "comment",
           "post",
           "community"
@@ -7318,7 +7334,7 @@
           "removed": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7328,7 +7344,7 @@
           "mod_person_id",
           "comment_id",
           "removed",
-          "published"
+          "when_"
         ],
         "description": "When a moderator removes a comment."
       },
@@ -7447,7 +7463,7 @@
           "removed": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7457,7 +7473,7 @@
           "mod_person_id",
           "community_id",
           "removed",
-          "published"
+          "when_"
         ],
         "description": "When a moderator removes a community."
       },
@@ -7476,7 +7492,7 @@
           "moderator": {
             "$ref": "#/components/schemas/Person"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           },
           "post": {
@@ -7490,7 +7506,7 @@
         "required": [
           "type_",
           "mod_remove_post",
-          "other_person",
+          "modded_person",
           "post",
           "community"
         ]
@@ -7513,7 +7529,7 @@
           "removed": {
             "type": "boolean"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7523,7 +7539,7 @@
           "mod_person_id",
           "post_id",
           "removed",
-          "published"
+          "when_"
         ],
         "description": "When a moderator removes a post."
       },
@@ -7545,7 +7561,7 @@
           "community": {
             "$ref": "#/components/schemas/Community"
           },
-          "other_person": {
+          "modded_person": {
             "$ref": "#/components/schemas/Person"
           }
         },
@@ -7554,7 +7570,7 @@
           "type_",
           "mod_transfer_community",
           "community",
-          "other_person"
+          "modded_person"
         ]
       },
       "ModTransferCommunity": {
@@ -7572,7 +7588,7 @@
           "community_id": {
             "type": "number"
           },
-          "published": {
+          "when_": {
             "type": "string"
           }
         },
@@ -7582,7 +7598,7 @@
           "mod_person_id",
           "other_person_id",
           "community_id",
-          "published"
+          "when_"
         ],
         "description": "When a moderator transfers a community to a new owner."
       },
@@ -8102,12 +8118,6 @@
           },
           "subscribers_local": {
             "type": "number"
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
           }
         },
         "nullable": false,
@@ -8121,9 +8131,7 @@
           "users_active_week",
           "users_active_month",
           "users_active_half_year",
-          "subscribers_local",
-          "report_count",
-          "unresolved_report_count"
+          "subscribers_local"
         ],
         "description": "Aggregate data for a community."
       },
@@ -12183,9 +12191,6 @@
           },
           {
             "$ref": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
-          },
-          {
-            "$ref": "#/components/schemas/type_CommunityCommunityReportView"
           }
         ],
         "discriminator": {
@@ -12193,8 +12198,7 @@
           "mapping": {
             "Post": "#/components/schemas/type_PostPostReportView",
             "Comment": "#/components/schemas/type_CommentCommentReportView",
-            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView",
-            "Community": "#/components/schemas/type_CommunityCommunityReportView"
+            "PrivateMessage": "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
           }
         }
       },
@@ -12385,103 +12389,6 @@
           "private_message_creator",
           "creator"
         ]
-      },
-      "type_CommunityCommunityReportView": {
-        "type": "object",
-        "properties": {
-          "type_": {
-            "type": "string",
-            "enum": [
-              "Community"
-            ]
-          },
-          "community_report": {
-            "$ref": "#/components/schemas/CommunityReport"
-          },
-          "community": {
-            "$ref": "#/components/schemas/Community"
-          },
-          "creator": {
-            "$ref": "#/components/schemas/Person"
-          },
-          "counts": {
-            "$ref": "#/components/schemas/CommunityAggregates"
-          },
-          "subscribed": {
-            "$ref": "#/components/schemas/SubscribedType"
-          },
-          "resolver": {
-            "$ref": "#/components/schemas/Person"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "type_",
-          "community_report",
-          "community",
-          "creator",
-          "counts",
-          "subscribed"
-        ]
-      },
-      "CommunityReport": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "creator_id": {
-            "type": "number"
-          },
-          "community_id": {
-            "type": "number"
-          },
-          "original_community_name": {
-            "type": "string"
-          },
-          "original_community_title": {
-            "type": "string"
-          },
-          "original_community_description": {
-            "type": "string"
-          },
-          "original_community_sidebar": {
-            "type": "string"
-          },
-          "original_community_icon": {
-            "type": "string"
-          },
-          "original_community_banner": {
-            "type": "string"
-          },
-          "reason": {
-            "type": "string"
-          },
-          "resolved": {
-            "type": "boolean"
-          },
-          "resolver_id": {
-            "type": "number"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "creator_id",
-          "community_id",
-          "original_community_name",
-          "original_community_title",
-          "reason",
-          "resolved",
-          "published"
-        ],
-        "description": "A comment report."
       },
       "UserBlockInstanceParams": {
         "type": "object",

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-modlog-combined.1
+  version: 0.20.0-modlog-combined.0
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -267,10 +267,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetModlog/properties/type_"
-        - name: other_person_id
+        - name: modded_person_id
           in: query
           schema:
-            $ref: "#/components/schemas/GetModlog/properties/other_person_id"
+            $ref: "#/components/schemas/GetModlog/properties/modded_person_id"
         - name: post_id
           in: query
           schema:
@@ -3299,6 +3299,8 @@ components:
           type: string
         description:
           type: string
+        enable_nsfw:
+          type: boolean
         community_creation_admin_only:
           type: boolean
         require_email_verification:
@@ -3392,6 +3394,8 @@ components:
           type: number
         federation_enabled:
           type: boolean
+        federation_debug:
+          type: boolean
         captcha_enabled:
           type: boolean
         captcha_difficulty:
@@ -3461,6 +3465,10 @@ components:
           type: string
           title: A shorter, one line description of your site
           description: A shorter, one line description of your site.
+        enable_nsfw:
+          type: boolean
+          title: Whether to enable NSFW
+          description: Whether to enable NSFW.
         community_creation_admin_only:
           type: boolean
           title: Limits community creation to admins only
@@ -3594,6 +3602,10 @@ components:
           type: boolean
           title: Whether to enable federation
           description: Whether to enable federation.
+        federation_debug:
+          type: boolean
+          title: Enables federation debugging
+          description: Enables federation debugging.
         captcha_enabled:
           type: boolean
           title: Whether to enable captchas for signups
@@ -4099,7 +4111,7 @@ components:
             - ModFeaturePost
             - ModLockPost
             - ModRemovePost
-        other_person_id:
+        modded_person_id:
           type: number
         post_id:
           type: number
@@ -4195,7 +4207,7 @@ components:
           type: boolean
         reason:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4203,7 +4215,7 @@ components:
         - instance_id
         - admin_person_id
         - allowed
-        - published
+        - when_
     type_AdminBlockInstanceAdminBlockInstanceView:
       type: object
       properties:
@@ -4237,7 +4249,7 @@ components:
           type: string
         expires:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4245,7 +4257,7 @@ components:
         - instance_id
         - admin_person_id
         - blocked
-        - published
+        - when_
     type_AdminPurgeCommentAdminPurgeCommentView:
       type: object
       properties:
@@ -4275,14 +4287,14 @@ components:
           type: number
         reason:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
         - id
         - admin_person_id
         - post_id
-        - published
+        - when_
       description: When an admin purges a comment.
     Post:
       type: object
@@ -4409,13 +4421,13 @@ components:
           type: number
         reason:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
         - id
         - admin_person_id
-        - published
+        - when_
       description: When an admin purges a community.
     type_AdminPurgePersonAdminPurgePersonView:
       type: object
@@ -4441,13 +4453,13 @@ components:
           type: number
         reason:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
         - id
         - admin_person_id
-        - published
+        - when_
       description: When an admin purges a person.
     type_AdminPurgePostAdminPurgePostView:
       type: object
@@ -4478,14 +4490,14 @@ components:
           type: number
         reason:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
         - id
         - admin_person_id
         - community_id
-        - published
+        - when_
       description: When an admin purges a post.
     type_ModAddModAddView:
       type: object
@@ -4498,13 +4510,13 @@ components:
           $ref: "#/components/schemas/ModAdd"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - type_
         - mod_add
-        - other_person
+        - modded_person
     ModAdd:
       type: object
       properties:
@@ -4516,7 +4528,7 @@ components:
           type: number
         removed:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4524,7 +4536,7 @@ components:
         - mod_person_id
         - other_person_id
         - removed
-        - published
+        - when_
       description: When someone is added as a site moderator.
     type_ModAddCommunityModAddCommunityView:
       type: object
@@ -4539,14 +4551,14 @@ components:
           $ref: "#/components/schemas/Person"
         community:
           $ref: "#/components/schemas/Community"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - type_
         - mod_add_community
         - community
-        - other_person
+        - modded_person
     ModAddCommunity:
       type: object
       properties:
@@ -4560,7 +4572,7 @@ components:
           type: number
         removed:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4569,7 +4581,7 @@ components:
         - other_person_id
         - community_id
         - removed
-        - published
+        - when_
       description: When someone is added as a community moderator.
     type_ModBanModBanView:
       type: object
@@ -4582,13 +4594,13 @@ components:
           $ref: "#/components/schemas/ModBan"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - type_
         - mod_ban
-        - other_person
+        - modded_person
     ModBan:
       type: object
       properties:
@@ -4604,7 +4616,7 @@ components:
           type: boolean
         expires:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4612,7 +4624,7 @@ components:
         - mod_person_id
         - other_person_id
         - banned
-        - published
+        - when_
       description: When someone is banned from the site.
     type_ModBanFromCommunityModBanFromCommunityView:
       type: object
@@ -4627,14 +4639,14 @@ components:
           $ref: "#/components/schemas/Person"
         community:
           $ref: "#/components/schemas/Community"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - type_
         - mod_ban_from_community
         - community
-        - other_person
+        - modded_person
     ModBanFromCommunity:
       type: object
       properties:
@@ -4652,7 +4664,7 @@ components:
           type: boolean
         expires:
           type: string
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4661,7 +4673,7 @@ components:
         - other_person_id
         - community_id
         - banned
-        - published
+        - when_
       description: When someone is banned from a community.
     type_ModFeaturePostModFeaturePostView:
       type: object
@@ -4674,7 +4686,7 @@ components:
           $ref: "#/components/schemas/ModFeaturePost"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
         post:
           $ref: "#/components/schemas/Post"
@@ -4684,7 +4696,7 @@ components:
       required:
         - type_
         - mod_feature_post
-        - other_person
+        - modded_person
         - post
         - community
     ModFeaturePost:
@@ -4698,7 +4710,7 @@ components:
           type: number
         featured:
           type: boolean
-        published:
+        when_:
           type: string
         is_featured_community:
           type: boolean
@@ -4708,7 +4720,7 @@ components:
         - mod_person_id
         - post_id
         - featured
-        - published
+        - when_
         - is_featured_community
       description: When a moderator features a post on a community (pins it to the top).
     type_ModHideCommunityModHideCommunityView:
@@ -4738,7 +4750,7 @@ components:
           type: number
         mod_person_id:
           type: number
-        published:
+        when_:
           type: string
         reason:
           type: string
@@ -4749,7 +4761,7 @@ components:
         - id
         - community_id
         - mod_person_id
-        - published
+        - when_
         - hidden
       description: When a community is hidden from public view.
     type_ModLockPostModLockPostView:
@@ -4763,7 +4775,7 @@ components:
           $ref: "#/components/schemas/ModLockPost"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
         post:
           $ref: "#/components/schemas/Post"
@@ -4773,7 +4785,7 @@ components:
       required:
         - type_
         - mod_lock_post
-        - other_person
+        - modded_person
         - post
         - community
     ModLockPost:
@@ -4787,7 +4799,7 @@ components:
           type: number
         locked:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4795,7 +4807,7 @@ components:
         - mod_person_id
         - post_id
         - locked
-        - published
+        - when_
       description: When a moderator locks a post (prevents new comments being made).
     type_ModRemoveCommentModRemoveCommentView:
       type: object
@@ -4808,7 +4820,7 @@ components:
           $ref: "#/components/schemas/ModRemoveComment"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
         comment:
           $ref: "#/components/schemas/Comment"
@@ -4820,7 +4832,7 @@ components:
       required:
         - type_
         - mod_remove_comment
-        - other_person
+        - modded_person
         - comment
         - post
         - community
@@ -4837,7 +4849,7 @@ components:
           type: string
         removed:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4845,7 +4857,7 @@ components:
         - mod_person_id
         - comment_id
         - removed
-        - published
+        - when_
       description: When a moderator removes a comment.
     Comment:
       type: object
@@ -4938,7 +4950,7 @@ components:
           type: string
         removed:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4946,7 +4958,7 @@ components:
         - mod_person_id
         - community_id
         - removed
-        - published
+        - when_
       description: When a moderator removes a community.
     type_ModRemovePostModRemovePostView:
       type: object
@@ -4959,7 +4971,7 @@ components:
           $ref: "#/components/schemas/ModRemovePost"
         moderator:
           $ref: "#/components/schemas/Person"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
         post:
           $ref: "#/components/schemas/Post"
@@ -4969,7 +4981,7 @@ components:
       required:
         - type_
         - mod_remove_post
-        - other_person
+        - modded_person
         - post
         - community
     ModRemovePost:
@@ -4985,7 +4997,7 @@ components:
           type: string
         removed:
           type: boolean
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -4993,7 +5005,7 @@ components:
         - mod_person_id
         - post_id
         - removed
-        - published
+        - when_
       description: When a moderator removes a post.
     type_ModTransferCommunityModTransferCommunityView:
       type: object
@@ -5008,14 +5020,14 @@ components:
           $ref: "#/components/schemas/Person"
         community:
           $ref: "#/components/schemas/Community"
-        other_person:
+        modded_person:
           $ref: "#/components/schemas/Person"
       nullable: false
       required:
         - type_
         - mod_transfer_community
         - community
-        - other_person
+        - modded_person
     ModTransferCommunity:
       type: object
       properties:
@@ -5027,7 +5039,7 @@ components:
           type: number
         community_id:
           type: number
-        published:
+        when_:
           type: string
       nullable: false
       required:
@@ -5035,7 +5047,7 @@ components:
         - mod_person_id
         - other_person_id
         - community_id
-        - published
+        - when_
       description: When a moderator transfers a community to a new owner.
     Search:
       type: object
@@ -5444,10 +5456,6 @@ components:
           description: The number of users with any activity in the last year.
         subscribers_local:
           type: number
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
       nullable: false
       required:
         - community_id
@@ -5460,8 +5468,6 @@ components:
         - users_active_month
         - users_active_half_year
         - subscribers_local
-        - report_count
-        - unresolved_report_count
       description: Aggregate data for a community.
     ResolveObject:
       type: object
@@ -8439,14 +8445,12 @@ components:
         - $ref: "#/components/schemas/type_PostPostReportView"
         - $ref: "#/components/schemas/type_CommentCommentReportView"
         - $ref: "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
-        - $ref: "#/components/schemas/type_CommunityCommunityReportView"
       discriminator:
         propertyName: type_
         mapping:
           Post: "#/components/schemas/type_PostPostReportView"
           Comment: "#/components/schemas/type_CommentCommentReportView"
           PrivateMessage: "#/components/schemas/type_PrivateMessagePrivateMessageReportView"
-          Community: "#/components/schemas/type_CommunityCommunityReportView"
     type_PostPostReportView:
       type: object
       properties:
@@ -8583,75 +8587,6 @@ components:
         - private_message
         - private_message_creator
         - creator
-    type_CommunityCommunityReportView:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - Community
-        community_report:
-          $ref: "#/components/schemas/CommunityReport"
-        community:
-          $ref: "#/components/schemas/Community"
-        creator:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/CommunityAggregates"
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        resolver:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - type_
-        - community_report
-        - community
-        - creator
-        - counts
-        - subscribed
-    CommunityReport:
-      type: object
-      properties:
-        id:
-          type: number
-        creator_id:
-          type: number
-        community_id:
-          type: number
-        original_community_name:
-          type: string
-        original_community_title:
-          type: string
-        original_community_description:
-          type: string
-        original_community_sidebar:
-          type: string
-        original_community_icon:
-          type: string
-        original_community_banner:
-          type: string
-        reason:
-          type: string
-        resolved:
-          type: boolean
-        resolver_id:
-          type: number
-        published:
-          type: string
-        updated:
-          type: string
-      nullable: false
-      required:
-        - id
-        - creator_id
-        - community_id
-        - original_community_name
-        - original_community_title
-        - reason
-        - resolved
-        - published
-      description: A comment report.
     UserBlockInstanceParams:
       type: object
       properties:
