@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-inbox-combined.1
+  version: 0.20.0-no-delete-token.2
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -32,9 +32,8 @@ tags:
   - name: PrivateMessage/Report
   - name: Account/Auth
   - name: Person
-  - name: Account/Mention/Comment
-  - name: Account/Mention/Post
-  - name: Account/MarkAsRead
+  - name: Account/Mention
+  - name: Account/Mention/MarkAsRead
   - name: Admin/RegistrationApplication
   - name: Admin/Purge
   - name: CustomEmoji
@@ -1184,7 +1183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                $ref: "#/components/schemas/CommentReplyResponse"
   /comment/like:
     post:
       operationId: likeComment
@@ -1359,6 +1358,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommentReportResponse"
+  /private_message/list:
+    get:
+      operationId: getPrivateMessages
+      description: Get / fetch private messages.
+      parameters:
+        - name: unread_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPrivateMessages/properties/unread_only"
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPrivateMessages/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPrivateMessages/properties/limit"
+        - name: creator_id
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPrivateMessages/properties/creator_id"
+      tags:
+        - PrivateMessage
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateMessagesResponse"
   /private_message:
     post:
       operationId: createPrivateMessage
@@ -1571,42 +1600,79 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListPersonContentResponse"
-  /account/mention/comment/mark_as_read:
+  /account/mention:
+    get:
+      operationId: getPersonMentions
+      description: Get mentions for your user.
+      parameters:
+        - name: sort
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPersonMentions/properties/sort"
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPersonMentions/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPersonMentions/properties/limit"
+        - name: unread_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPersonMentions/properties/unread_only"
+      tags:
+        - Account/Mention
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPersonMentionsResponse"
+  /account/mention/mark_as_read:
     post:
-      operationId: markCommentMentionAsRead
+      operationId: markPersonAllMentionAsRead
       description: Mark a person mention as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkPersonCommentMentionAsRead"
       tags:
-        - Account/Mention/Comment
+        - Account/Mention/MarkAsRead
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
-  /account/mention/post/mark_as_read:
-    post:
-      operationId: markPostMentionAsRead
-      description: Mark a person post body mention as read.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarkPersonPostMentionAsRead"
+                $ref: "#/components/schemas/PersonMentionResponse"
+  /account/replies:
+    get:
+      operationId: getReplies
+      description: Get comment replies.
+      parameters:
+        - name: sort
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetReplies/properties/sort"
+        - name: page
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetReplies/properties/page"
+        - name: limit
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetReplies/properties/limit"
+        - name: unread_only
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetReplies/properties/unread_only"
       tags:
-        - Account/Mention/Post
+        - Account
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                $ref: "#/components/schemas/GetRepliesResponse"
   /admin/ban:
     post:
       operationId: banPerson
@@ -1723,19 +1789,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
-  /account/mark_as_read/all:
+  /account/mention/mark_as_read/all:
     post:
-      operationId: markAllNotificationsAsRead
+      operationId: markAllAsRead
       description: Mark all replies as read.
       tags:
-        - Account/MarkAsRead
+        - Account/Mention/MarkAsRead
       responses:
         "200":
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessResponse"
+                $ref: "#/components/schemas/GetRepliesResponse"
   /account/settings/save:
     put:
       operationId: saveUserSettings
@@ -1803,36 +1869,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetUnreadCountResponse"
-  /account/inbox:
-    get:
-      operationId: listInbox
-      description: Get your inbox (replies, comment mentions, post mentions, and messages)
-      parameters:
-        - name: type_
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListInbox/properties/type_"
-        - name: unread_only
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListInbox/properties/unread_only"
-        - name: page_cursor
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListInbox/properties/page_cursor"
-        - name: page_back
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListInbox/properties/page_back"
-      tags:
-        - Account
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListInboxResponse"
   /account/auth/verify_email:
     post:
       operationId: verifyEmail
@@ -3289,25 +3325,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         default_comment_sort_type:
           type: string
           enum:
@@ -3464,25 +3500,25 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - NewComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - Active
             - MostComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - NewComments
+            - Active
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
           description: The default post sort, usually "active"
         default_comment_sort_type:
           type: string
@@ -4042,24 +4078,24 @@ components:
         type_:
           type: string
           enum:
-            - All
-            - ModRemovePost
-            - ModLockPost
-            - ModFeaturePost
-            - ModRemoveComment
-            - ModRemoveCommunity
-            - ModBanFromCommunity
-            - ModAddCommunity
-            - ModTransferCommunity
             - ModAdd
-            - ModBan
-            - ModHideCommunity
-            - AdminPurgePerson
-            - AdminPurgeCommunity
-            - AdminPurgePost
-            - AdminPurgeComment
-            - AdminBlockInstance
             - AdminAllowInstance
+            - AdminBlockInstance
+            - AdminPurgeComment
+            - AdminPurgePost
+            - AdminPurgeCommunity
+            - AdminPurgePerson
+            - ModHideCommunity
+            - ModBan
+            - All
+            - ModTransferCommunity
+            - ModAddCommunity
+            - ModBanFromCommunity
+            - ModRemoveCommunity
+            - ModRemoveComment
+            - ModFeaturePost
+            - ModLockPost
+            - ModRemovePost
         other_person_id:
           type: number
         post_id:
@@ -5020,25 +5056,25 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
             - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - MostComments
+            - NewComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         listing_type:
           type: string
           enum:
@@ -5595,27 +5631,27 @@ components:
         sort:
           type: string
           enum:
-            - NewComments
-            - NameDesc
-            - NameAsc
-            - Scaled
-            - Controversial
-            - TopNineMonths
-            - TopSixMonths
-            - TopThreeMonths
-            - TopTwelveHour
-            - TopSixHour
-            - TopHour
             - Active
-            - MostComments
-            - TopAll
-            - TopYear
-            - TopMonth
-            - TopWeek
-            - TopDay
-            - Old
-            - New
             - Hot
+            - New
+            - Old
+            - TopDay
+            - TopWeek
+            - TopMonth
+            - TopYear
+            - TopAll
+            - MostComments
+            - NewComments
+            - TopHour
+            - TopSixHour
+            - TopTwelveHour
+            - TopThreeMonths
+            - TopSixMonths
+            - TopNineMonths
+            - Controversial
+            - Scaled
+            - NameAsc
+            - NameDesc
         show_nsfw:
           type: boolean
         page:
@@ -6110,25 +6146,25 @@ components:
         sort:
           type: string
           enum:
-            - Active
-            - Hot
-            - New
-            - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - MostComments
             - NewComments
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
             - Scaled
+            - Controversial
+            - TopNineMonths
+            - TopSixMonths
+            - TopThreeMonths
+            - TopTwelveHour
+            - TopSixHour
+            - TopHour
+            - Active
+            - MostComments
+            - TopAll
+            - TopYear
+            - TopMonth
+            - TopWeek
+            - TopDay
+            - Old
+            - New
+            - Hot
         page:
           type: number
           description: DEPRECATED, use page_cursor
@@ -6491,6 +6527,86 @@ components:
         - comment_reply_id
         - read
       description: Mark a comment reply as read.
+    CommentReplyResponse:
+      type: object
+      properties:
+        comment_reply_view:
+          $ref: "#/components/schemas/CommentReplyView"
+      nullable: false
+      required:
+        - comment_reply_view
+      description: The response for a comment reply action.
+    CommentReplyView:
+      type: object
+      properties:
+        comment_reply:
+          $ref: "#/components/schemas/CommentReply"
+        comment:
+          $ref: "#/components/schemas/Comment"
+        creator:
+          $ref: "#/components/schemas/Person"
+        post:
+          $ref: "#/components/schemas/Post"
+        community:
+          $ref: "#/components/schemas/Community"
+        recipient:
+          $ref: "#/components/schemas/Person"
+        counts:
+          $ref: "#/components/schemas/CommentAggregates"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+      nullable: false
+      required:
+        - comment_reply
+        - comment
+        - creator
+        - post
+        - community
+        - recipient
+        - counts
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - subscribed
+        - saved
+        - creator_blocked
+      description: A comment reply view.
+    CommentReply:
+      type: object
+      properties:
+        id:
+          type: number
+        recipient_id:
+          type: number
+        comment_id:
+          type: number
+        read:
+          type: boolean
+        published:
+          type: string
+      nullable: false
+      required:
+        - id
+        - recipient_id
+        - comment_id
+        - read
+        - published
+      description: A comment reply.
     CreateCommentLike:
       type: object
       properties:
@@ -6724,27 +6840,30 @@ components:
         - report_id
         - resolved
       description: Resolve a comment report (only doable by mods).
-    CreatePrivateMessage:
+    GetPrivateMessages:
       type: object
       properties:
-        content:
-          type: string
-        recipient_id:
+        unread_only:
+          type: boolean
+        page:
+          type: number
+        limit:
+          type: number
+        creator_id:
           type: number
       nullable: false
-      required:
-        - content
-        - recipient_id
-      description: Create a private message.
-    PrivateMessageResponse:
+      description: Get your private messages.
+    PrivateMessagesResponse:
       type: object
       properties:
-        private_message_view:
-          $ref: "#/components/schemas/PrivateMessageView"
+        private_messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrivateMessageView"
       nullable: false
       required:
-        - private_message_view
-      description: A single private message response.
+        - private_messages
+      description: The private messages response.
     PrivateMessageView:
       type: object
       properties:
@@ -6795,6 +6914,27 @@ components:
         - ap_id
         - local
       description: A private message.
+    CreatePrivateMessage:
+      type: object
+      properties:
+        content:
+          type: string
+        recipient_id:
+          type: number
+      nullable: false
+      required:
+        - content
+        - recipient_id
+      description: Create a private message.
+    PrivateMessageResponse:
+      type: object
+      properties:
+        private_message_view:
+          $ref: "#/components/schemas/PrivateMessageView"
+      nullable: false
+      required:
+        - private_message_view
+      description: A single private message response.
     EditPrivateMessage:
       type: object
       properties:
@@ -7175,30 +7315,158 @@ components:
         - subscribed
         - saved
         - creator_blocked
-    MarkPersonCommentMentionAsRead:
+    GetPersonMentions:
       type: object
       properties:
-        person_comment_mention_id:
+        sort:
+          type: string
+          enum:
+            - Hot
+            - New
+            - Old
+            - Controversial
+            - Top
+        page:
+          type: number
+        limit:
+          type: number
+        unread_only:
+          type: boolean
+      nullable: false
+      description: Get mentions for your user.
+    GetPersonMentionsResponse:
+      type: object
+      properties:
+        mentions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PersonMentionView"
+      nullable: false
+      required:
+        - mentions
+      description: The response of mentions for your user.
+    PersonMentionView:
+      type: object
+      properties:
+        person_mention:
+          $ref: "#/components/schemas/PersonMention"
+        comment:
+          $ref: "#/components/schemas/Comment"
+        creator:
+          $ref: "#/components/schemas/Person"
+        post:
+          $ref: "#/components/schemas/Post"
+        community:
+          $ref: "#/components/schemas/Community"
+        recipient:
+          $ref: "#/components/schemas/Person"
+        counts:
+          $ref: "#/components/schemas/CommentAggregates"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+      nullable: false
+      required:
+        - person_mention
+        - comment
+        - creator
+        - post
+        - community
+        - recipient
+        - counts
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - subscribed
+        - saved
+        - creator_blocked
+      description: A person mention view.
+    PersonMention:
+      type: object
+      properties:
+        id:
+          type: number
+        recipient_id:
+          type: number
+        comment_id:
+          type: number
+        read:
+          type: boolean
+        published:
+          type: string
+      nullable: false
+      required:
+        - id
+        - recipient_id
+        - comment_id
+        - read
+        - published
+      description: A person mention.
+    MarkPersonMentionAsRead:
+      type: object
+      properties:
+        person_mention_id:
           type: number
         read:
           type: boolean
       nullable: false
       required:
-        - person_comment_mention_id
+        - person_mention_id
         - read
       description: Mark a person mention as read.
-    MarkPersonPostMentionAsRead:
+    PersonMentionResponse:
       type: object
       properties:
-        person_post_mention_id:
-          type: number
-        read:
-          type: boolean
+        person_mention_view:
+          $ref: "#/components/schemas/PersonMentionView"
       nullable: false
       required:
-        - person_post_mention_id
-        - read
-      description: Mark a person mention as read.
+        - person_mention_view
+      description: The response for a person mention action.
+    GetReplies:
+      type: object
+      properties:
+        sort:
+          type: string
+          enum:
+            - Hot
+            - New
+            - Old
+            - Controversial
+            - Top
+        page:
+          type: number
+        limit:
+          type: number
+        unread_only:
+          type: boolean
+      nullable: false
+      description: Get comment replies.
+    GetRepliesResponse:
+      type: object
+      properties:
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentReplyView"
+      nullable: false
+      required:
+        - replies
+      description: Fetches your replies.
     BanPerson:
       type: object
       properties:
@@ -7377,7 +7645,7 @@ components:
         default_post_sort_type:
           type: string
           enum:
-            - Active
+            - MostComments
             - Hot
             - New
             - Old
@@ -7386,8 +7654,8 @@ components:
             - TopMonth
             - TopYear
             - TopAll
-            - MostComments
             - NewComments
+            - Active
             - TopHour
             - TopSixHour
             - TopTwelveHour
@@ -7529,307 +7797,18 @@ components:
     GetUnreadCountResponse:
       type: object
       properties:
-        count:
+        replies:
+          type: number
+        mentions:
+          type: number
+        private_messages:
           type: number
       nullable: false
       required:
-        - count
-      description: A response containing a count of unread notifications.
-    ListInbox:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - All
-            - CommentReply
-            - CommentMention
-            - PostMention
-            - PrivateMessage
-        unread_only:
-          type: boolean
-        page_cursor:
-          type: string
-        page_back:
-          type: boolean
-      nullable: false
-      description: Get your inbox (replies, comment mentions, post mentions, and messages)
-    ListInboxResponse:
-      type: object
-      properties:
-        inbox:
-          type: array
-          items:
-            $ref: "#/components/schemas/InboxCombinedView"
-      nullable: false
-      required:
-        - inbox
-      description: Get your inbox (replies, comment mentions, post mentions, and messages)
-    InboxCombinedView:
-      oneOf:
-        - $ref: "#/components/schemas/type_CommentReplyCommentReplyView"
-        - $ref: "#/components/schemas/type_CommentMentionPersonCommentMentionView"
-        - $ref: "#/components/schemas/type_PostMentionPersonPostMentionView"
-        - $ref: "#/components/schemas/type_PrivateMessagePrivateMessageView"
-      discriminator:
-        propertyName: type_
-        mapping:
-          CommentReply: "#/components/schemas/type_CommentReplyCommentReplyView"
-          CommentMention: "#/components/schemas/type_CommentMentionPersonCommentMentionView"
-          PostMention: "#/components/schemas/type_PostMentionPersonPostMentionView"
-          PrivateMessage: "#/components/schemas/type_PrivateMessagePrivateMessageView"
-    type_CommentReplyCommentReplyView:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - CommentReply
-        comment_reply:
-          $ref: "#/components/schemas/CommentReply"
-        comment:
-          $ref: "#/components/schemas/Comment"
-        creator:
-          $ref: "#/components/schemas/Person"
-        post:
-          $ref: "#/components/schemas/Post"
-        community:
-          $ref: "#/components/schemas/Community"
-        recipient:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/CommentAggregates"
-        creator_banned_from_community:
-          type: boolean
-        banned_from_community:
-          type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        my_vote:
-          type: number
-      nullable: false
-      required:
-        - type_
-        - comment_reply
-        - comment
-        - creator
-        - post
-        - community
-        - recipient
-        - counts
-        - creator_banned_from_community
-        - banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - subscribed
-        - saved
-        - creator_blocked
-    CommentReply:
-      type: object
-      properties:
-        id:
-          type: number
-        recipient_id:
-          type: number
-        comment_id:
-          type: number
-        read:
-          type: boolean
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - recipient_id
-        - comment_id
-        - read
-        - published
-      description: A comment reply.
-    type_CommentMentionPersonCommentMentionView:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - CommentMention
-        person_comment_mention:
-          $ref: "#/components/schemas/PersonCommentMention"
-        comment:
-          $ref: "#/components/schemas/Comment"
-        creator:
-          $ref: "#/components/schemas/Person"
-        post:
-          $ref: "#/components/schemas/Post"
-        community:
-          $ref: "#/components/schemas/Community"
-        recipient:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/CommentAggregates"
-        creator_banned_from_community:
-          type: boolean
-        banned_from_community:
-          type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        my_vote:
-          type: number
-      nullable: false
-      required:
-        - type_
-        - person_comment_mention
-        - comment
-        - creator
-        - post
-        - community
-        - recipient
-        - counts
-        - creator_banned_from_community
-        - banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - subscribed
-        - saved
-        - creator_blocked
-    PersonCommentMention:
-      type: object
-      properties:
-        id:
-          type: number
-        recipient_id:
-          type: number
-        comment_id:
-          type: number
-        read:
-          type: boolean
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - recipient_id
-        - comment_id
-        - read
-        - published
-      description: A person mention.
-    type_PostMentionPersonPostMentionView:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - PostMention
-        person_post_mention:
-          $ref: "#/components/schemas/PersonPostMention"
-        post:
-          $ref: "#/components/schemas/Post"
-        creator:
-          $ref: "#/components/schemas/Person"
-        community:
-          $ref: "#/components/schemas/Community"
-        image_details:
-          $ref: "#/components/schemas/ImageDetails"
-        recipient:
-          $ref: "#/components/schemas/Person"
-        counts:
-          $ref: "#/components/schemas/PostAggregates"
-        creator_banned_from_community:
-          type: boolean
-        banned_from_community:
-          type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        read:
-          type: boolean
-        hidden:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        my_vote:
-          type: number
-        unread_comments:
-          type: number
-      nullable: false
-      required:
-        - type_
-        - person_post_mention
-        - post
-        - creator
-        - community
-        - recipient
-        - counts
-        - creator_banned_from_community
-        - banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - subscribed
-        - saved
-        - read
-        - hidden
-        - creator_blocked
-        - unread_comments
-    PersonPostMention:
-      type: object
-      properties:
-        id:
-          type: number
-        recipient_id:
-          type: number
-        post_id:
-          type: number
-        read:
-          type: boolean
-        published:
-          type: string
-      nullable: false
-      required:
-        - id
-        - recipient_id
-        - post_id
-        - read
-        - published
-      description: A person mention.
-    type_PrivateMessagePrivateMessageView:
-      type: object
-      properties:
-        type_:
-          type: string
-          enum:
-            - PrivateMessage
-        private_message:
-          $ref: "#/components/schemas/PrivateMessage"
-        creator:
-          $ref: "#/components/schemas/Person"
-        recipient:
-          $ref: "#/components/schemas/Person"
-      nullable: false
-      required:
-        - type_
-        - private_message
-        - creator
-        - recipient
+        - replies
+        - mentions
+        - private_messages
+      description: A response containing counts for your notifications.
     VerifyEmail:
       type: object
       properties:
