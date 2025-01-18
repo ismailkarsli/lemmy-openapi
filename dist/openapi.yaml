@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.0-rc.16
+  version: 0.19.0-rc.15
 servers:
   - url: https://lemy.lol/api/v3
 security:
