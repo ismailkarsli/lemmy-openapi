@@ -13,7 +13,7 @@ import { stringify as YAMLStringify } from "yaml";
 import { isPrimitiveType, recursiveFind, templateLiteralToStaticString, toPascalCase } from "./utils.ts";
 
 // @ts-ignore: it will be available when we clone the repo
-const { VERSION: API_VERSION } = (await import("../lemmy-js-client/src/other_types.ts")) || { VERSION: "v3" };
+const { VERSION: API_VERSION } = await import("../lemmy-js-client/src/other_types.ts").catch(() => ({ VERSION: "v3" }));
 
 const sourceText = await Bun.file(`${import.meta.dir}/../lemmy-js-client/src/http.ts`).text();
 const parsed = await oxc.parseAsync("http.ts", sourceText, { sourceType: "module" });
