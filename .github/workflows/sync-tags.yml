@@ -31,7 +31,7 @@ jobs:
           git push
 
           # generate tags
-          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=10)
+          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=500)
           for tag in $TAGS; do
             if [ $(git tag -l $tag) ]; then
               echo "Tag $tag already exists"
