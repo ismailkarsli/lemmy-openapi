@@ -31,14 +31,14 @@ jobs:
           git push
 
           # generate tags
-          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=500)
+          TAGS=$(git -C ./lemmy-js-client for-each-ref refs/tags --sort=-committerdate --format='%(refname:short)' --count=10)
           for tag in $TAGS; do
             if [ $(git tag -l $tag) ]; then
               echo "Tag $tag already exists"
               continue
             fi
             git -C ./lemmy-js-client checkout -b $tag tags/$tag
-            LEMMY_VERSION=$tag ./src/generate-spec.sh || true
+            LEMMY_VERSION=$tag ./src/generate-spec.sh
             git add .
             git commit -m "Release $tag"
             git tag $tag
