@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.19.0-rc.15
+  version: 0.19.0-alpha.18
 servers:
   - url: https://lemy.lol/api/v3
 security:
@@ -2237,13 +2237,10 @@ components:
           $ref: "#/components/schemas/Person"
         counts:
           $ref: "#/components/schemas/PersonAggregates"
-        is_admin:
-          type: boolean
       nullable: false
       required:
         - person
         - counts
-        - is_admin
     Person:
       type: object
       properties:
@@ -3782,8 +3779,6 @@ components:
           type: boolean
         creator_is_moderator:
           type: boolean
-        creator_is_admin:
-          type: boolean
         subscribed:
           $ref: "#/components/schemas/SubscribedType"
         saved:
@@ -3801,7 +3796,6 @@ components:
         - counts
         - creator_banned_from_community
         - creator_is_moderator
-        - creator_is_admin
         - subscribed
         - saved
         - creator_blocked
@@ -3847,8 +3841,6 @@ components:
           type: boolean
         creator_is_moderator:
           type: boolean
-        creator_is_admin:
-          type: boolean
         counts:
           $ref: "#/components/schemas/PostAggregates"
         subscribed:
@@ -3870,7 +3862,6 @@ components:
         - community
         - creator_banned_from_community
         - creator_is_moderator
-        - creator_is_admin
         - counts
         - subscribed
         - saved
@@ -4719,8 +4710,6 @@ components:
           type: boolean
         creator_is_moderator:
           type: boolean
-        creator_is_admin:
-          type: boolean
         subscribed:
           $ref: "#/components/schemas/SubscribedType"
         saved:
@@ -4740,7 +4729,6 @@ components:
         - counts
         - creator_banned_from_community
         - creator_is_moderator
-        - creator_is_admin
         - subscribed
         - saved
         - creator_blocked
@@ -5353,8 +5341,6 @@ components:
           type: boolean
         creator_is_moderator:
           type: boolean
-        creator_is_admin:
-          type: boolean
         subscribed:
           $ref: "#/components/schemas/SubscribedType"
         saved:
@@ -5374,7 +5360,6 @@ components:
         - counts
         - creator_banned_from_community
         - creator_is_moderator
-        - creator_is_admin
         - subscribed
         - saved
         - creator_blocked
@@ -5623,6 +5608,8 @@ components:
         show_bot_accounts:
           type: boolean
         show_read_posts:
+          type: boolean
+        show_new_post_notifs:
           type: boolean
         discussion_languages:
           type: array

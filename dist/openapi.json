@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Lemmy API",
-    "version": "0.19.0-rc.15"
+    "version": "0.19.0-alpha.18"
   },
   "servers": [
     {
@@ -3664,16 +3664,12 @@
           },
           "counts": {
             "$ref": "#/components/schemas/PersonAggregates"
-          },
-          "is_admin": {
-            "type": "boolean"
           }
         },
         "nullable": false,
         "required": [
           "person",
-          "counts",
-          "is_admin"
+          "counts"
         ]
       },
       "Person": {
@@ -5846,9 +5842,6 @@
           "creator_is_moderator": {
             "type": "boolean"
           },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
           "subscribed": {
             "$ref": "#/components/schemas/SubscribedType"
           },
@@ -5871,7 +5864,6 @@
           "counts",
           "creator_banned_from_community",
           "creator_is_moderator",
-          "creator_is_admin",
           "subscribed",
           "saved",
           "creator_blocked"
@@ -5935,9 +5927,6 @@
           "creator_is_moderator": {
             "type": "boolean"
           },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
           "counts": {
             "$ref": "#/components/schemas/PostAggregates"
           },
@@ -5967,7 +5956,6 @@
           "community",
           "creator_banned_from_community",
           "creator_is_moderator",
-          "creator_is_admin",
           "counts",
           "subscribed",
           "saved",
@@ -7185,9 +7173,6 @@
           "creator_is_moderator": {
             "type": "boolean"
           },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
           "subscribed": {
             "$ref": "#/components/schemas/SubscribedType"
           },
@@ -7212,7 +7197,6 @@
           "counts",
           "creator_banned_from_community",
           "creator_is_moderator",
-          "creator_is_admin",
           "subscribed",
           "saved",
           "creator_blocked"
@@ -8088,9 +8072,6 @@
           "creator_is_moderator": {
             "type": "boolean"
           },
-          "creator_is_admin": {
-            "type": "boolean"
-          },
           "subscribed": {
             "$ref": "#/components/schemas/SubscribedType"
           },
@@ -8115,7 +8096,6 @@
           "counts",
           "creator_banned_from_community",
           "creator_is_moderator",
-          "creator_is_admin",
           "subscribed",
           "saved",
           "creator_blocked"
@@ -8467,6 +8447,9 @@
             "type": "boolean"
           },
           "show_read_posts": {
+            "type": "boolean"
+          },
+          "show_new_post_notifs": {
             "type": "boolean"
           },
           "discussion_languages": {
