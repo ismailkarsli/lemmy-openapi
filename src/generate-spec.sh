@@ -9,4 +9,4 @@ else
   git -C ./lemmy-js-client checkout main
 fi
 
-LEMMY_VERSION=${LEMMY_VERSION:-$LATEST_LEMMY_VERSION} bun run generate
+LEMMY_VERSION=${LEMMY_VERSION:-$LATEST_LEMMY_VERSION} bun run generate || true

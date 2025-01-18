@@ -38,7 +38,7 @@ jobs:
               continue
             fi
             git -C ./lemmy-js-client checkout -b $tag tags/$tag
-            LEMMY_VERSION=$tag ./src/generate-spec.sh || true
+            LEMMY_VERSION=$tag ./src/generate-spec.sh
             git add .
             git commit -m "Release $tag"
             git tag $tag
