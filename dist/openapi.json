@@ -525,10 +525,10 @@
         "description": "Search lemmy.",
         "parameters": [
           {
-            "name": "q",
+            "name": "search_term",
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Search/properties/q"
+              "$ref": "#/components/schemas/Search/properties/search_term"
             }
           },
           {
@@ -574,20 +574,6 @@
             }
           },
           {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Search/properties/page"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Search/properties/limit"
-            }
-          },
-          {
             "name": "title_only",
             "in": "query",
             "schema": {
@@ -613,6 +599,20 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/Search/properties/disliked_only"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/page_cursor"
+            }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Search/properties/page_back"
             }
           }
         ],
@@ -1173,6 +1173,13 @@
             "schema": {
               "$ref": "#/components/schemas/GetRandomCommunity/properties/type_"
             }
+          },
+          {
+            "name": "show_nsfw",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetRandomCommunity/properties/show_nsfw"
+            }
           }
         ],
         "tags": [
@@ -1589,6 +1596,13 @@
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/GetPosts/properties/show_nsfw"
+            }
+          },
+          {
+            "name": "hide_media",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/GetPosts/properties/hide_media"
             }
           },
           {
@@ -4646,6 +4660,10 @@
             "$ref": "#/components/schemas/FederationMode",
             "title": "What kind of comment downvotes your site allows",
             "description": "What kind of comment downvotes your site allows."
+          },
+          "disable_donation_dialog": {
+            "type": "boolean",
+            "description": "If this is true, users will never see the dialog asking to support Lemmy development with\ndonations."
           }
         },
         "nullable": false,
@@ -4675,7 +4693,8 @@
           "post_upvotes",
           "post_downvotes",
           "comment_upvotes",
-          "comment_downvotes"
+          "comment_downvotes",
+          "disable_donation_dialog"
         ],
         "description": "The local site."
       },
@@ -5348,6 +5367,9 @@
               "Local",
               "Disable"
             ]
+          },
+          "disable_donation_dialog": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -5632,6 +5654,10 @@
             ],
             "title": "What kind of comment downvotes your site allows",
             "description": "What kind of comment downvotes your site allows."
+          },
+          "disable_donation_dialog": {
+            "type": "boolean",
+            "description": "If this is true, users will never see the dialog asking to support Lemmy development with\ndonations."
           }
         },
         "nullable": false,
@@ -5839,6 +5865,14 @@
             "type": "boolean",
             "title": "Whether to automatically mark fetched posts as read",
             "description": "Whether to automatically mark fetched posts as read."
+          },
+          "last_donation_notification": {
+            "type": "string",
+            "description": "The last time a donation request was shown to this user. If this is more than a year ago,\na new notification request should be shown."
+          },
+          "hide_media": {
+            "type": "boolean",
+            "description": "Whether to hide posts containing images/videos"
           }
         },
         "nullable": false,
@@ -5867,7 +5901,9 @@
           "enable_private_messages",
           "collapse_bot_comments",
           "default_comment_sort_type",
-          "auto_mark_fetched_posts_as_read"
+          "auto_mark_fetched_posts_as_read",
+          "last_donation_notification",
+          "hide_media"
         ],
         "description": "A local user."
       },
@@ -7525,7 +7561,7 @@
       "Search": {
         "type": "object",
         "properties": {
-          "q": {
+          "search_term": {
             "type": "string"
           },
           "community_id": {
@@ -7550,25 +7586,9 @@
           "sort": {
             "type": "string",
             "enum": [
-              "MostComments",
-              "Hot",
               "New",
               "Old",
-              "TopDay",
-              "TopWeek",
-              "TopMonth",
-              "TopYear",
-              "TopAll",
-              "NewComments",
-              "Active",
-              "TopHour",
-              "TopSixHour",
-              "TopTwelveHour",
-              "TopThreeMonths",
-              "TopSixMonths",
-              "TopNineMonths",
-              "Controversial",
-              "Scaled"
+              "Top"
             ]
           },
           "listing_type": {
@@ -7579,12 +7599,6 @@
               "Subscribed",
               "ModeratorView"
             ]
-          },
-          "page": {
-            "type": "number"
-          },
-          "limit": {
-            "type": "number"
           },
           "title_only": {
             "type": "boolean"
@@ -7597,65 +7611,541 @@
           },
           "disliked_only": {
             "type": "boolean"
+          },
+          "page_cursor": {
+            "type": "string"
+          },
+          "page_back": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "description": "Searches the site, given a search term, and some optional filters."
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchCombinedView"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "results"
+        ],
+        "description": "The search response, containing lists of the return type possibilities"
+      },
+      "SearchCombinedView": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/type_PostPostView"
+          },
+          {
+            "$ref": "#/components/schemas/type_CommentCommentView"
+          },
+          {
+            "$ref": "#/components/schemas/type_CommunityCommunityView"
+          },
+          {
+            "$ref": "#/components/schemas/type_PersonPersonView"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type_",
+          "mapping": {
+            "Post": "#/components/schemas/type_PostPostView",
+            "Comment": "#/components/schemas/type_CommentCommentView",
+            "Community": "#/components/schemas/type_CommunityCommunityView",
+            "Person": "#/components/schemas/type_PersonPersonView"
+          }
+        }
+      },
+      "type_PostPostView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Post"
+            ]
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "image_details": {
+            "$ref": "#/components/schemas/ImageDetails"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/PostAggregates"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          },
+          "unread_comments": {
+            "type": "number"
+          },
+          "tags": {
+            "$ref": "#/components/schemas/PostTags"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "post",
+          "creator",
+          "community",
+          "creator_banned_from_community",
+          "banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "counts",
+          "subscribed",
+          "saved",
+          "read",
+          "hidden",
+          "creator_blocked",
+          "unread_comments",
+          "tags"
+        ]
+      },
+      "ImageDetails": {
+        "type": "object",
+        "properties": {
+          "link": {
+            "type": "string"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          },
+          "content_type": {
+            "type": "string"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "link",
+          "width",
+          "height",
+          "content_type"
+        ]
+      },
+      "PostAggregates": {
+        "type": "object",
+        "properties": {
+          "post_id": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "number"
+          },
+          "score": {
+            "type": "number"
+          },
+          "upvotes": {
+            "type": "number"
+          },
+          "downvotes": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string"
+          },
+          "newest_comment_time": {
+            "type": "string",
+            "title": "The time of the newest comment in the post",
+            "description": "The time of the newest comment in the post."
+          },
+          "report_count": {
+            "type": "number"
+          },
+          "unresolved_report_count": {
+            "type": "number"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "post_id",
+          "comments",
+          "score",
+          "upvotes",
+          "downvotes",
+          "published",
+          "newest_comment_time",
+          "report_count",
+          "unresolved_report_count"
+        ],
+        "description": "Aggregate data for a post."
+      },
+      "SubscribedType": {
+        "type": "string",
+        "enum": [
+          "Subscribed",
+          "NotSubscribed",
+          "Pending",
+          "ApprovalRequired"
+        ],
+        "description": "A type / status for a community subscribe."
+      },
+      "PostTags": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        },
+        "nullable": false,
+        "required": [
+          "tags"
+        ],
+        "description": "we wrap this in a struct so we can implement FromSqlRow<Json> for it"
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "ap_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "community_id": {
+            "type": "number",
+            "description": "the community that owns this tag"
+          },
+          "published": {
+            "type": "string"
+          },
+          "updated": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "id",
+          "ap_id",
+          "name",
+          "community_id",
+          "published",
+          "deleted"
+        ],
+        "description": "A tag that can be assigned to a post within a community.\nThe tag object is created by the community moderators.\nThe assignment happens by the post creator and can be updated by the community moderators.\n\nA tag is a federatable object that gives additional context to another object, which can be\ndisplayed and filtered on currently, we only have community post tags, which is a tag that is\ncreated by post authors as well as mods  of a community, to categorize a post. in the future we\nmay add more tag types, depending on the requirements, this will lead to either expansion of\nthis table (community_id optional, addition of tag_type enum) or split of this table / creation\nof new tables."
+      },
+      "type_CommentCommentView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Comment"
+            ]
+          },
+          "comment": {
+            "$ref": "#/components/schemas/Comment"
+          },
+          "creator": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/CommentAggregates"
+          },
+          "creator_banned_from_community": {
+            "type": "boolean"
+          },
+          "banned_from_community": {
+            "type": "boolean"
+          },
+          "creator_is_moderator": {
+            "type": "boolean"
+          },
+          "creator_is_admin": {
+            "type": "boolean"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "saved": {
+            "type": "boolean"
+          },
+          "creator_blocked": {
+            "type": "boolean"
+          },
+          "my_vote": {
+            "type": "number"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "comment",
+          "creator",
+          "post",
+          "community",
+          "counts",
+          "creator_banned_from_community",
+          "banned_from_community",
+          "creator_is_moderator",
+          "creator_is_admin",
+          "subscribed",
+          "saved",
+          "creator_blocked"
+        ]
+      },
+      "CommentAggregates": {
+        "type": "object",
+        "properties": {
+          "comment_id": {
+            "type": "number"
+          },
+          "score": {
+            "type": "number"
+          },
+          "upvotes": {
+            "type": "number"
+          },
+          "downvotes": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string"
+          },
+          "child_count": {
+            "type": "number",
+            "title": "The total number of children in this comment branch",
+            "description": "The total number of children in this comment branch."
+          },
+          "report_count": {
+            "type": "number"
+          },
+          "unresolved_report_count": {
+            "type": "number"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "comment_id",
+          "score",
+          "upvotes",
+          "downvotes",
+          "published",
+          "child_count",
+          "report_count",
+          "unresolved_report_count"
+        ],
+        "description": "Aggregate data for a comment."
+      },
+      "type_CommunityCommunityView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Community"
+            ]
+          },
+          "community": {
+            "$ref": "#/components/schemas/Community"
+          },
+          "subscribed": {
+            "$ref": "#/components/schemas/SubscribedType"
+          },
+          "blocked": {
+            "type": "boolean"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/CommunityAggregates"
+          },
+          "banned_from_community": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "community",
+          "subscribed",
+          "blocked",
+          "counts",
+          "banned_from_community"
+        ]
+      },
+      "CommunityAggregates": {
+        "type": "object",
+        "properties": {
+          "community_id": {
+            "type": "number"
+          },
+          "subscribers": {
+            "type": "number"
+          },
+          "posts": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "number"
+          },
+          "published": {
+            "type": "string"
+          },
+          "users_active_day": {
+            "type": "number",
+            "title": "The number of users with any activity in the last day",
+            "description": "The number of users with any activity in the last day."
+          },
+          "users_active_week": {
+            "type": "number",
+            "title": "The number of users with any activity in the last week",
+            "description": "The number of users with any activity in the last week."
+          },
+          "users_active_month": {
+            "type": "number",
+            "title": "The number of users with any activity in the last month",
+            "description": "The number of users with any activity in the last month."
+          },
+          "users_active_half_year": {
+            "type": "number",
+            "title": "The number of users with any activity in the last year",
+            "description": "The number of users with any activity in the last year."
+          },
+          "subscribers_local": {
+            "type": "number"
+          },
+          "report_count": {
+            "type": "number"
+          },
+          "unresolved_report_count": {
+            "type": "number"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "community_id",
+          "subscribers",
+          "posts",
+          "comments",
+          "published",
+          "users_active_day",
+          "users_active_week",
+          "users_active_month",
+          "users_active_half_year",
+          "subscribers_local",
+          "report_count",
+          "unresolved_report_count"
+        ],
+        "description": "Aggregate data for a community."
+      },
+      "type_PersonPersonView": {
+        "type": "object",
+        "properties": {
+          "type_": {
+            "type": "string",
+            "enum": [
+              "Person"
+            ]
+          },
+          "person": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/PersonAggregates"
+          },
+          "is_admin": {
+            "type": "boolean"
+          }
+        },
+        "nullable": false,
+        "required": [
+          "type_",
+          "person",
+          "counts",
+          "is_admin"
+        ]
+      },
+      "ResolveObject": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "description": "Can be the full url, or a shortened version like: !fediverse@lemmy.ml"
           }
         },
         "nullable": false,
         "required": [
           "q"
         ],
-        "description": "Searches the site, given a query string, and some optional filters."
+        "description": "Does an apub fetch for an object."
       },
-      "SearchResponse": {
+      "ResolveObjectResponse": {
         "type": "object",
         "properties": {
-          "type_": {
-            "$ref": "#/components/schemas/SearchType"
+          "comment": {
+            "$ref": "#/components/schemas/CommentView"
           },
-          "comments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CommentView"
-            }
+          "post": {
+            "$ref": "#/components/schemas/PostView"
           },
-          "posts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostView"
-            }
+          "community": {
+            "$ref": "#/components/schemas/CommunityView"
           },
-          "communities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CommunityView"
-            }
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PersonView"
-            }
+          "person": {
+            "$ref": "#/components/schemas/PersonView"
           }
         },
         "nullable": false,
-        "required": [
-          "type_",
-          "comments",
-          "posts",
-          "communities",
-          "users"
-        ],
-        "description": "The search response, containing lists of the return type possibilities"
-      },
-      "SearchType": {
-        "type": "string",
-        "enum": [
-          "All",
-          "Comments",
-          "Posts",
-          "Communities",
-          "Users"
-        ],
-        "description": "The type of content returned from a search."
+        "description": "The response of an apub object fetch."
       },
       "CommentView": {
         "type": "object",
@@ -7716,59 +8206,6 @@
           "creator_blocked"
         ],
         "description": "A comment view."
-      },
-      "CommentAggregates": {
-        "type": "object",
-        "properties": {
-          "comment_id": {
-            "type": "number"
-          },
-          "score": {
-            "type": "number"
-          },
-          "upvotes": {
-            "type": "number"
-          },
-          "downvotes": {
-            "type": "number"
-          },
-          "published": {
-            "type": "string"
-          },
-          "child_count": {
-            "type": "number",
-            "title": "The total number of children in this comment branch",
-            "description": "The total number of children in this comment branch."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "comment_id",
-          "score",
-          "upvotes",
-          "downvotes",
-          "published",
-          "child_count",
-          "report_count",
-          "unresolved_report_count"
-        ],
-        "description": "Aggregate data for a comment."
-      },
-      "SubscribedType": {
-        "type": "string",
-        "enum": [
-          "Subscribed",
-          "NotSubscribed",
-          "Pending",
-          "ApprovalRequired"
-        ],
-        "description": "A type / status for a community subscribe."
       },
       "PostView": {
         "type": "object",
@@ -7845,130 +8282,6 @@
         ],
         "description": "A post view."
       },
-      "ImageDetails": {
-        "type": "object",
-        "properties": {
-          "link": {
-            "type": "string"
-          },
-          "width": {
-            "type": "number"
-          },
-          "height": {
-            "type": "number"
-          },
-          "content_type": {
-            "type": "string"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "link",
-          "width",
-          "height",
-          "content_type"
-        ]
-      },
-      "PostAggregates": {
-        "type": "object",
-        "properties": {
-          "post_id": {
-            "type": "number"
-          },
-          "comments": {
-            "type": "number"
-          },
-          "score": {
-            "type": "number"
-          },
-          "upvotes": {
-            "type": "number"
-          },
-          "downvotes": {
-            "type": "number"
-          },
-          "published": {
-            "type": "string"
-          },
-          "newest_comment_time": {
-            "type": "string",
-            "title": "The time of the newest comment in the post",
-            "description": "The time of the newest comment in the post."
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "post_id",
-          "comments",
-          "score",
-          "upvotes",
-          "downvotes",
-          "published",
-          "newest_comment_time",
-          "report_count",
-          "unresolved_report_count"
-        ],
-        "description": "Aggregate data for a post."
-      },
-      "PostTags": {
-        "type": "object",
-        "properties": {
-          "tags": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Tag"
-            }
-          }
-        },
-        "nullable": false,
-        "required": [
-          "tags"
-        ],
-        "description": "we wrap this in a struct so we can implement FromSqlRow<Json> for it"
-      },
-      "Tag": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "ap_id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "community_id": {
-            "type": "number",
-            "description": "the community that owns this tag"
-          },
-          "published": {
-            "type": "string"
-          },
-          "updated": {
-            "type": "string"
-          },
-          "deleted": {
-            "type": "boolean"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "id",
-          "ap_id",
-          "name",
-          "community_id",
-          "published",
-          "deleted"
-        ],
-        "description": "A tag that can be assigned to a post within a community.\nThe tag object is created by the community moderators.\nThe assignment happens by the post creator and can be updated by the community moderators.\n\nA tag is a federatable object that gives additional context to another object, which can be\ndisplayed and filtered on currently, we only have community post tags, which is a tag that is\ncreated by post authors as well as mods  of a community, to categorize a post. in the future we\nmay add more tag types, depending on the requirements, this will lead to either expansion of\nthis table (community_id optional, addition of tag_type enum) or split of this table / creation\nof new tables."
-      },
       "CommunityView": {
         "type": "object",
         "properties": {
@@ -7997,104 +8310,6 @@
           "banned_from_community"
         ],
         "description": "A community view."
-      },
-      "CommunityAggregates": {
-        "type": "object",
-        "properties": {
-          "community_id": {
-            "type": "number"
-          },
-          "subscribers": {
-            "type": "number"
-          },
-          "posts": {
-            "type": "number"
-          },
-          "comments": {
-            "type": "number"
-          },
-          "published": {
-            "type": "string"
-          },
-          "users_active_day": {
-            "type": "number",
-            "title": "The number of users with any activity in the last day",
-            "description": "The number of users with any activity in the last day."
-          },
-          "users_active_week": {
-            "type": "number",
-            "title": "The number of users with any activity in the last week",
-            "description": "The number of users with any activity in the last week."
-          },
-          "users_active_month": {
-            "type": "number",
-            "title": "The number of users with any activity in the last month",
-            "description": "The number of users with any activity in the last month."
-          },
-          "users_active_half_year": {
-            "type": "number",
-            "title": "The number of users with any activity in the last year",
-            "description": "The number of users with any activity in the last year."
-          },
-          "subscribers_local": {
-            "type": "number"
-          },
-          "report_count": {
-            "type": "number"
-          },
-          "unresolved_report_count": {
-            "type": "number"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "community_id",
-          "subscribers",
-          "posts",
-          "comments",
-          "published",
-          "users_active_day",
-          "users_active_week",
-          "users_active_month",
-          "users_active_half_year",
-          "subscribers_local",
-          "report_count",
-          "unresolved_report_count"
-        ],
-        "description": "Aggregate data for a community."
-      },
-      "ResolveObject": {
-        "type": "object",
-        "properties": {
-          "q": {
-            "type": "string",
-            "description": "Can be the full url, or a shortened version like: !fediverse@lemmy.ml"
-          }
-        },
-        "nullable": false,
-        "required": [
-          "q"
-        ],
-        "description": "Does an apub fetch for an object."
-      },
-      "ResolveObjectResponse": {
-        "type": "object",
-        "properties": {
-          "comment": {
-            "$ref": "#/components/schemas/CommentView"
-          },
-          "post": {
-            "$ref": "#/components/schemas/PostView"
-          },
-          "community": {
-            "$ref": "#/components/schemas/CommunityView"
-          },
-          "person": {
-            "$ref": "#/components/schemas/PersonView"
-          }
-        },
-        "nullable": false,
-        "description": "The response of an apub object fetch."
       },
       "CreateCommunity": {
         "type": "object",
@@ -8670,6 +8885,9 @@
               "Subscribed",
               "ModeratorView"
             ]
+          },
+          "show_nsfw": {
+            "type": "boolean"
           }
         },
         "nullable": false,
@@ -9045,6 +9263,10 @@
           "show_nsfw": {
             "type": "boolean",
             "description": "If true, then show the nsfw posts (even if your user setting is to hide them)"
+          },
+          "hide_media": {
+            "type": "boolean",
+            "description": "If false, then show posts with media attached (even if your user setting is to hide them)"
           },
           "mark_as_read": {
             "type": "boolean",
@@ -10293,21 +10515,21 @@
       "PersonContentCombinedView": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/type_PostPostView"
+            "$ref": "#/components/schemas/type_PostPostView.o1"
           },
           {
-            "$ref": "#/components/schemas/type_CommentCommentView"
+            "$ref": "#/components/schemas/type_CommentCommentView.o1"
           }
         ],
         "discriminator": {
           "propertyName": "type_",
           "mapping": {
-            "Post": "#/components/schemas/type_PostPostView",
-            "Comment": "#/components/schemas/type_CommentCommentView"
+            "Post": "#/components/schemas/type_PostPostView.o1",
+            "Comment": "#/components/schemas/type_CommentCommentView.o1"
           }
         }
       },
-      "type_PostPostView": {
+      "type_PostPostView.o1": {
         "type": "object",
         "properties": {
           "type_": {
@@ -10388,7 +10610,7 @@
           "tags"
         ]
       },
-      "type_CommentCommentView": {
+      "type_CommentCommentView.o1": {
         "type": "object",
         "properties": {
           "type_": {
@@ -10846,6 +11068,11 @@
             "type": "boolean",
             "title": "Whether to automatically mark fetched posts as read",
             "description": "Whether to automatically mark fetched posts as read."
+          },
+          "hide_media": {
+            "type": "boolean",
+            "title": "Whether to hide posts containing images/videos",
+            "description": "Whether to hide posts containing images/videos."
           }
         },
         "nullable": false,
@@ -11243,6 +11470,9 @@
           },
           "unread_comments": {
             "type": "number"
+          },
+          "post_tags": {
+            "$ref": "#/components/schemas/PostTags"
           }
         },
         "nullable": false,
@@ -11263,7 +11493,8 @@
           "read",
           "hidden",
           "creator_blocked",
-          "unread_comments"
+          "unread_comments",
+          "post_tags"
         ]
       },
       "PersonPostMention": {

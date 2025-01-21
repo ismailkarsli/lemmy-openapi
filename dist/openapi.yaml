@@ -302,10 +302,10 @@ paths:
       operationId: search
       description: Search lemmy.
       parameters:
-        - name: q
+        - name: search_term
           in: query
           schema:
-            $ref: "#/components/schemas/Search/properties/q"
+            $ref: "#/components/schemas/Search/properties/search_term"
         - name: community_id
           in: query
           schema:
@@ -330,14 +330,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/Search/properties/listing_type"
-        - name: page
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/page"
-        - name: limit
-          in: query
-          schema:
-            $ref: "#/components/schemas/Search/properties/limit"
         - name: title_only
           in: query
           schema:
@@ -354,6 +346,14 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/Search/properties/disliked_only"
+        - name: page_cursor
+          in: query
+          schema:
+            $ref: "#/components/schemas/Search/properties/page_cursor"
+        - name: page_back
+          in: query
+          schema:
+            $ref: "#/components/schemas/Search/properties/page_back"
       tags:
         - Search
       responses:
@@ -689,6 +689,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetRandomCommunity/properties/type_"
+        - name: show_nsfw
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetRandomCommunity/properties/show_nsfw"
       tags:
         - Community
       responses:
@@ -938,6 +942,10 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/GetPosts/properties/show_nsfw"
+        - name: hide_media
+          in: query
+          schema:
+            $ref: "#/components/schemas/GetPosts/properties/hide_media"
         - name: mark_as_read
           in: query
           schema:
@@ -2829,6 +2837,13 @@ components:
           $ref: "#/components/schemas/FederationMode"
           title: What kind of comment downvotes your site allows
           description: What kind of comment downvotes your site allows.
+        disable_donation_dialog:
+          type: boolean
+          description: >-
+            If this is true, users will never see the dialog asking to support
+            Lemmy development with
+
+            donations.
       nullable: false
       required:
         - id
@@ -2857,6 +2872,7 @@ components:
         - post_downvotes
         - comment_upvotes
         - comment_downvotes
+        - disable_donation_dialog
       description: The local site.
     ListingType:
       type: string
@@ -3394,6 +3410,8 @@ components:
             - All
             - Local
             - Disable
+        disable_donation_dialog:
+          type: boolean
       nullable: false
       required:
         - name
@@ -3623,6 +3641,13 @@ components:
             - Disable
           title: What kind of comment downvotes your site allows
           description: What kind of comment downvotes your site allows.
+        disable_donation_dialog:
+          type: boolean
+          description: >-
+            If this is true, users will never see the dialog asking to support
+            Lemmy development with
+
+            donations.
       nullable: false
       description: Edits a site.
     GenerateTotpSecretResponse:
@@ -3781,6 +3806,16 @@ components:
           type: boolean
           title: Whether to automatically mark fetched posts as read
           description: Whether to automatically mark fetched posts as read.
+        last_donation_notification:
+          type: string
+          description: >-
+            The last time a donation request was shown to this user. If this is
+            more than a year ago,
+
+            a new notification request should be shown.
+        hide_media:
+          type: boolean
+          description: Whether to hide posts containing images/videos
       nullable: false
       required:
         - id
@@ -3808,6 +3843,8 @@ components:
         - collapse_bot_comments
         - default_comment_sort_type
         - auto_mark_fetched_posts_as_read
+        - last_donation_notification
+        - hide_media
       description: A local user.
     LocalUserVoteDisplayMode:
       type: object
@@ -5001,7 +5038,7 @@ components:
     Search:
       type: object
       properties:
-        q:
+        search_term:
           type: string
         community_id:
           type: number
@@ -5020,25 +5057,9 @@ components:
         sort:
           type: string
           enum:
-            - MostComments
-            - Hot
             - New
             - Old
-            - TopDay
-            - TopWeek
-            - TopMonth
-            - TopYear
-            - TopAll
-            - NewComments
-            - Active
-            - TopHour
-            - TopSixHour
-            - TopTwelveHour
-            - TopThreeMonths
-            - TopSixMonths
-            - TopNineMonths
-            - Controversial
-            - Scaled
+            - Top
         listing_type:
           type: string
           enum:
@@ -5046,10 +5067,6 @@ components:
             - Local
             - Subscribed
             - ModeratorView
-        page:
-          type: number
-        limit:
-          type: number
         title_only:
           type: boolean
         post_url_only:
@@ -5058,135 +5075,43 @@ components:
           type: boolean
         disliked_only:
           type: boolean
+        page_cursor:
+          type: string
+        page_back:
+          type: boolean
       nullable: false
-      required:
-        - q
-      description: Searches the site, given a query string, and some optional filters.
+      description: Searches the site, given a search term, and some optional filters.
     SearchResponse:
       type: object
       properties:
-        type_:
-          $ref: "#/components/schemas/SearchType"
-        comments:
+        results:
           type: array
           items:
-            $ref: "#/components/schemas/CommentView"
-        posts:
-          type: array
-          items:
-            $ref: "#/components/schemas/PostView"
-        communities:
-          type: array
-          items:
-            $ref: "#/components/schemas/CommunityView"
-        users:
-          type: array
-          items:
-            $ref: "#/components/schemas/PersonView"
+            $ref: "#/components/schemas/SearchCombinedView"
       nullable: false
       required:
-        - type_
-        - comments
-        - posts
-        - communities
-        - users
+        - results
       description: The search response, containing lists of the return type possibilities
-    SearchType:
-      type: string
-      enum:
-        - All
-        - Comments
-        - Posts
-        - Communities
-        - Users
-      description: The type of content returned from a search.
-    CommentView:
+    SearchCombinedView:
+      oneOf:
+        - $ref: "#/components/schemas/type_PostPostView"
+        - $ref: "#/components/schemas/type_CommentCommentView"
+        - $ref: "#/components/schemas/type_CommunityCommunityView"
+        - $ref: "#/components/schemas/type_PersonPersonView"
+      discriminator:
+        propertyName: type_
+        mapping:
+          Post: "#/components/schemas/type_PostPostView"
+          Comment: "#/components/schemas/type_CommentCommentView"
+          Community: "#/components/schemas/type_CommunityCommunityView"
+          Person: "#/components/schemas/type_PersonPersonView"
+    type_PostPostView:
       type: object
       properties:
-        comment:
-          $ref: "#/components/schemas/Comment"
-        creator:
-          $ref: "#/components/schemas/Person"
-        post:
-          $ref: "#/components/schemas/Post"
-        community:
-          $ref: "#/components/schemas/Community"
-        counts:
-          $ref: "#/components/schemas/CommentAggregates"
-        creator_banned_from_community:
-          type: boolean
-        banned_from_community:
-          type: boolean
-        creator_is_moderator:
-          type: boolean
-        creator_is_admin:
-          type: boolean
-        subscribed:
-          $ref: "#/components/schemas/SubscribedType"
-        saved:
-          type: boolean
-        creator_blocked:
-          type: boolean
-        my_vote:
-          type: number
-      nullable: false
-      required:
-        - comment
-        - creator
-        - post
-        - community
-        - counts
-        - creator_banned_from_community
-        - banned_from_community
-        - creator_is_moderator
-        - creator_is_admin
-        - subscribed
-        - saved
-        - creator_blocked
-      description: A comment view.
-    CommentAggregates:
-      type: object
-      properties:
-        comment_id:
-          type: number
-        score:
-          type: number
-        upvotes:
-          type: number
-        downvotes:
-          type: number
-        published:
+        type_:
           type: string
-        child_count:
-          type: number
-          title: The total number of children in this comment branch
-          description: The total number of children in this comment branch.
-        report_count:
-          type: number
-        unresolved_report_count:
-          type: number
-      nullable: false
-      required:
-        - comment_id
-        - score
-        - upvotes
-        - downvotes
-        - published
-        - child_count
-        - report_count
-        - unresolved_report_count
-      description: Aggregate data for a comment.
-    SubscribedType:
-      type: string
-      enum:
-        - Subscribed
-        - NotSubscribed
-        - Pending
-        - ApprovalRequired
-      description: A type / status for a community subscribe.
-    PostView:
-      type: object
-      properties:
+          enum:
+            - Post
         post:
           $ref: "#/components/schemas/Post"
         creator:
@@ -5223,6 +5148,7 @@ components:
           $ref: "#/components/schemas/PostTags"
       nullable: false
       required:
+        - type_
         - post
         - creator
         - community
@@ -5238,7 +5164,6 @@ components:
         - creator_blocked
         - unread_comments
         - tags
-      description: A post view.
     ImageDetails:
       type: object
       properties:
@@ -5291,6 +5216,14 @@ components:
         - report_count
         - unresolved_report_count
       description: Aggregate data for a post.
+    SubscribedType:
+      type: string
+      enum:
+        - Subscribed
+        - NotSubscribed
+        - Pending
+        - ApprovalRequired
+      description: A type / status for a community subscribe.
     PostTags:
       type: object
       properties:
@@ -5353,9 +5286,93 @@ components:
         of this table / creation
 
         of new tables.
-    CommunityView:
+    type_CommentCommentView:
       type: object
       properties:
+        type_:
+          type: string
+          enum:
+            - Comment
+        comment:
+          $ref: "#/components/schemas/Comment"
+        creator:
+          $ref: "#/components/schemas/Person"
+        post:
+          $ref: "#/components/schemas/Post"
+        community:
+          $ref: "#/components/schemas/Community"
+        counts:
+          $ref: "#/components/schemas/CommentAggregates"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+      nullable: false
+      required:
+        - type_
+        - comment
+        - creator
+        - post
+        - community
+        - counts
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - subscribed
+        - saved
+        - creator_blocked
+    CommentAggregates:
+      type: object
+      properties:
+        comment_id:
+          type: number
+        score:
+          type: number
+        upvotes:
+          type: number
+        downvotes:
+          type: number
+        published:
+          type: string
+        child_count:
+          type: number
+          title: The total number of children in this comment branch
+          description: The total number of children in this comment branch.
+        report_count:
+          type: number
+        unresolved_report_count:
+          type: number
+      nullable: false
+      required:
+        - comment_id
+        - score
+        - upvotes
+        - downvotes
+        - published
+        - child_count
+        - report_count
+        - unresolved_report_count
+      description: Aggregate data for a comment.
+    type_CommunityCommunityView:
+      type: object
+      properties:
+        type_:
+          type: string
+          enum:
+            - Community
         community:
           $ref: "#/components/schemas/Community"
         subscribed:
@@ -5368,12 +5385,12 @@ components:
           type: boolean
       nullable: false
       required:
+        - type_
         - community
         - subscribed
         - blocked
         - counts
         - banned_from_community
-      description: A community view.
     CommunityAggregates:
       type: object
       properties:
@@ -5424,6 +5441,25 @@ components:
         - report_count
         - unresolved_report_count
       description: Aggregate data for a community.
+    type_PersonPersonView:
+      type: object
+      properties:
+        type_:
+          type: string
+          enum:
+            - Person
+        person:
+          $ref: "#/components/schemas/Person"
+        counts:
+          $ref: "#/components/schemas/PersonAggregates"
+        is_admin:
+          type: boolean
+      nullable: false
+      required:
+        - type_
+        - person
+        - counts
+        - is_admin
     ResolveObject:
       type: object
       properties:
@@ -5448,6 +5484,126 @@ components:
           $ref: "#/components/schemas/PersonView"
       nullable: false
       description: The response of an apub object fetch.
+    CommentView:
+      type: object
+      properties:
+        comment:
+          $ref: "#/components/schemas/Comment"
+        creator:
+          $ref: "#/components/schemas/Person"
+        post:
+          $ref: "#/components/schemas/Post"
+        community:
+          $ref: "#/components/schemas/Community"
+        counts:
+          $ref: "#/components/schemas/CommentAggregates"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+      nullable: false
+      required:
+        - comment
+        - creator
+        - post
+        - community
+        - counts
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - subscribed
+        - saved
+        - creator_blocked
+      description: A comment view.
+    PostView:
+      type: object
+      properties:
+        post:
+          $ref: "#/components/schemas/Post"
+        creator:
+          $ref: "#/components/schemas/Person"
+        community:
+          $ref: "#/components/schemas/Community"
+        image_details:
+          $ref: "#/components/schemas/ImageDetails"
+        creator_banned_from_community:
+          type: boolean
+        banned_from_community:
+          type: boolean
+        creator_is_moderator:
+          type: boolean
+        creator_is_admin:
+          type: boolean
+        counts:
+          $ref: "#/components/schemas/PostAggregates"
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        saved:
+          type: boolean
+        read:
+          type: boolean
+        hidden:
+          type: boolean
+        creator_blocked:
+          type: boolean
+        my_vote:
+          type: number
+        unread_comments:
+          type: number
+        tags:
+          $ref: "#/components/schemas/PostTags"
+      nullable: false
+      required:
+        - post
+        - creator
+        - community
+        - creator_banned_from_community
+        - banned_from_community
+        - creator_is_moderator
+        - creator_is_admin
+        - counts
+        - subscribed
+        - saved
+        - read
+        - hidden
+        - creator_blocked
+        - unread_comments
+        - tags
+      description: A post view.
+    CommunityView:
+      type: object
+      properties:
+        community:
+          $ref: "#/components/schemas/Community"
+        subscribed:
+          $ref: "#/components/schemas/SubscribedType"
+        blocked:
+          type: boolean
+        counts:
+          $ref: "#/components/schemas/CommunityAggregates"
+        banned_from_community:
+          type: boolean
+      nullable: false
+      required:
+        - community
+        - subscribed
+        - blocked
+        - counts
+        - banned_from_community
+      description: A community view.
     CreateCommunity:
       type: object
       properties:
@@ -5877,6 +6033,8 @@ components:
             - Local
             - Subscribed
             - ModeratorView
+        show_nsfw:
+          type: boolean
       nullable: false
       description: Fetches a random community
     CreatePost:
@@ -6156,6 +6314,10 @@ components:
           type: boolean
           description: If true, then show the nsfw posts (even if your user setting is to
             hide them)
+        hide_media:
+          type: boolean
+          description: If false, then show posts with media attached (even if your user
+            setting is to hide them)
         mark_as_read:
           type: boolean
           title: Whether to automatically mark fetched posts as read
@@ -7061,14 +7223,14 @@ components:
       description: A person's content response.
     PersonContentCombinedView:
       oneOf:
-        - $ref: "#/components/schemas/type_PostPostView"
-        - $ref: "#/components/schemas/type_CommentCommentView"
+        - $ref: "#/components/schemas/type_PostPostView.o1"
+        - $ref: "#/components/schemas/type_CommentCommentView.o1"
       discriminator:
         propertyName: type_
         mapping:
-          Post: "#/components/schemas/type_PostPostView"
-          Comment: "#/components/schemas/type_CommentCommentView"
-    type_PostPostView:
+          Post: "#/components/schemas/type_PostPostView.o1"
+          Comment: "#/components/schemas/type_CommentCommentView.o1"
+    type_PostPostView.o1:
       type: object
       properties:
         type_:
@@ -7127,7 +7289,7 @@ components:
         - creator_blocked
         - unread_comments
         - tags
-    type_CommentCommentView:
+    type_CommentCommentView.o1:
       type: object
       properties:
         type_:
@@ -7493,6 +7655,10 @@ components:
           type: boolean
           title: Whether to automatically mark fetched posts as read
           description: Whether to automatically mark fetched posts as read.
+        hide_media:
+          type: boolean
+          title: Whether to hide posts containing images/videos
+          description: Whether to hide posts containing images/videos.
       nullable: false
       description: Saves settings for your user.
     ChangePassword:
@@ -7771,6 +7937,8 @@ components:
           type: number
         unread_comments:
           type: number
+        post_tags:
+          $ref: "#/components/schemas/PostTags"
       nullable: false
       required:
         - type_
@@ -7790,6 +7958,7 @@ components:
         - hidden
         - creator_blocked
         - unread_comments
+        - post_tags
     PersonPostMention:
       type: object
       properties:
