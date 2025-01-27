@@ -847,6 +847,7 @@
     "/community/pending_follows/count": {
       "get": {
         "operationId": "getCommunityPendingFollowsCount",
+        "description": "Get a community's pending follows count.",
         "parameters": [
           {
             "name": "community_id",
@@ -876,6 +877,7 @@
     "/community/pending_follows/list": {
       "get": {
         "operationId": "listCommunityPendingFollows",
+        "description": "Get a community's pending followers.",
         "parameters": [
           {
             "name": "pending_only",
@@ -926,6 +928,7 @@
     "/community/pending_follows/approve": {
       "post": {
         "operationId": "approveCommunityPendingFollow",
+        "description": "Approve a community pending follow request.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2748,7 +2751,7 @@
     "/admin/banned": {
       "get": {
         "operationId": "getBannedPersons",
-        "description": "Get a list of banned users",
+        "description": "Get a list of banned users.",
         "tags": [
           "Admin"
         ],
@@ -2991,7 +2994,7 @@
     "/account/report_count": {
       "get": {
         "operationId": "getReportCount",
-        "description": "Get counts for your reports",
+        "description": "Get counts for your reports.",
         "parameters": [
           {
             "name": "community_id",
@@ -3021,7 +3024,7 @@
     "/account/unread_count": {
       "get": {
         "operationId": "getUnreadCount",
-        "description": "Get your unread counts",
+        "description": "Get your unread counts.",
         "tags": [
           "Account"
         ],
@@ -3121,18 +3124,32 @@
       }
     },
     "/account/auth/saved": {
-      "post": {
+      "get": {
         "operationId": "listPersonSaved",
         "description": "List your saved content.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ListPersonSaved"
-              }
+        "parameters": [
+          {
+            "name": "type_",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonSaved/properties/type_"
+            }
+          },
+          {
+            "name": "page_cursor",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonSaved/properties/page_cursor"
+            }
+          },
+          {
+            "name": "page_back",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListPersonSaved/properties/page_back"
             }
           }
-        },
+        ],
         "tags": [
           "Account/Auth"
         ],
@@ -3428,7 +3445,7 @@
     "/custom_emoji": {
       "post": {
         "operationId": "createCustomEmoji",
-        "description": "Create a new custom emoji",
+        "description": "Create a new custom emoji.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3456,7 +3473,7 @@
       },
       "put": {
         "operationId": "editCustomEmoji",
-        "description": "Edit an existing custom emoji",
+        "description": "Edit an existing custom emoji.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3486,7 +3503,7 @@
     "/custom_emoji/delete": {
       "post": {
         "operationId": "deleteCustomEmoji",
-        "description": "Delete a custom emoji",
+        "description": "Delete a custom emoji.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3655,7 +3672,7 @@
     "/admin/tagline/list": {
       "get": {
         "operationId": "listTaglines",
-        "description": "List taglines",
+        "description": "List taglines.",
         "parameters": [
           {
             "name": "page",
