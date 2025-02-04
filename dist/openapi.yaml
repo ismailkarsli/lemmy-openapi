@@ -50,7 +50,7 @@ paths:
   /site:
     get:
       operationId: getSite
-      description: Gets the site, and your user data.
+      description: "@summary Gets the site, and your user data."
       tags:
         - Site
       responses:
@@ -62,7 +62,7 @@ paths:
                 $ref: "#/components/schemas/GetSiteResponse"
     post:
       operationId: createSite
-      description: Create your site.
+      description: "@summary Create your site."
       requestBody:
         content:
           application/json:
@@ -79,7 +79,7 @@ paths:
                 $ref: "#/components/schemas/SiteResponse"
     put:
       operationId: editSite
-      description: Edit your site.
+      description: "@summary Edit your site."
       requestBody:
         content:
           application/json:
@@ -97,7 +97,7 @@ paths:
   /admin/leave:
     post:
       operationId: leaveAdmin
-      description: Leave the Site admins.
+      description: "@summary Leave the Site admins."
       tags:
         - Admin
       responses:
@@ -111,6 +111,8 @@ paths:
     post:
       operationId: generateTotpSecret
       description: >-
+        @summary Generate a TOTP / two-factor secret.
+
         Generate a TOTP / two-factor secret.
 
         Afterwards you need to call `/account/auth/totp/update` with a valid
@@ -127,7 +129,7 @@ paths:
   /account:
     get:
       operationId: getMyUser
-      description: Get data of current user.
+      description: "@summary Get data of current user."
       tags:
         - Account
       responses:
@@ -141,6 +143,7 @@ paths:
     get:
       operationId: exportSettings
       description: |-
+        @summary Export a backup of your user settings.
         Export a backup of your user settings, including your saved content,
         followed communities, and blocks.
       tags:
@@ -151,7 +154,7 @@ paths:
   /account/settings/import:
     post:
       operationId: importSettings
-      description: Import a backup of your user settings.
+      description: "@summary Import a backup of your user settings."
       tags:
         - Account/Settings
       responses:
@@ -164,7 +167,7 @@ paths:
   /account/list_logins:
     get:
       operationId: listLogins
-      description: List login tokens for your user
+      description: "@summary List login tokens for your user"
       tags:
         - Account
       responses:
@@ -173,7 +176,7 @@ paths:
   /account/validate_auth:
     get:
       operationId: validateAuth
-      description: Returns an error message if your auth token is invalid
+      description: "@summary Returns an error message if your auth token is invalid"
       tags:
         - Account
       responses:
@@ -186,7 +189,7 @@ paths:
   /account/list_media:
     get:
       operationId: listMedia
-      description: List all the media for your user
+      description: "@summary List all the media for your user"
       parameters:
         - name: page
           in: query
@@ -208,7 +211,7 @@ paths:
   /admin/list_all_media:
     get:
       operationId: listAllMedia
-      description: List all the media known to your instance.
+      description: "@summary List all the media known to your instance."
       parameters:
         - name: page
           in: query
@@ -231,7 +234,7 @@ paths:
     post:
       operationId: updateTotp
       description: >-
-        Enable / Disable TOTP / two-factor authentication.
+        @summary Enable / Disable TOTP / two-factor authentication.
 
         To enable, you need to first call `/account/auth/totp/generate` and then
         pass a valid token to this.
@@ -255,7 +258,7 @@ paths:
   /modlog:
     get:
       operationId: getModlog
-      description: Get the modlog.
+      description: "@summary Get the modlog."
       parameters:
         - name: mod_person_id
           in: query
@@ -301,7 +304,7 @@ paths:
   /search:
     get:
       operationId: search
-      description: Search lemmy.
+      description: "@summary Search lemmy."
       parameters:
         - name: search_term
           in: query
@@ -367,7 +370,7 @@ paths:
   /resolve_object:
     get:
       operationId: resolveObject
-      description: Fetch a non-local / federated object.
+      description: "@summary Fetch a non-local / federated object."
       parameters:
         - name: q
           in: query
@@ -385,7 +388,7 @@ paths:
   /community:
     post:
       operationId: createCommunity
-      description: Create a new community.
+      description: "@summary Create a new community."
       requestBody:
         content:
           application/json:
@@ -402,7 +405,7 @@ paths:
                 $ref: "#/components/schemas/CommunityResponse"
     get:
       operationId: getCommunity
-      description: Get / fetch a community.
+      description: "@summary Get / fetch a community."
       parameters:
         - name: id
           in: query
@@ -423,7 +426,7 @@ paths:
                 $ref: "#/components/schemas/GetCommunityResponse"
     put:
       operationId: editCommunity
-      description: Edit a community.
+      description: "@summary Edit a community."
       requestBody:
         content:
           application/json:
@@ -441,7 +444,7 @@ paths:
   /community/list:
     get:
       operationId: listCommunities
-      description: List communities, with various filters.
+      description: "@summary List communities, with various filters."
       parameters:
         - name: type_
           in: query
@@ -475,7 +478,7 @@ paths:
   /community/follow:
     post:
       operationId: followCommunity
-      description: Follow / subscribe to a community.
+      description: "@summary Follow / subscribe to a community."
       requestBody:
         content:
           application/json:
@@ -493,7 +496,7 @@ paths:
   /community/pending_follows/count:
     get:
       operationId: getCommunityPendingFollowsCount
-      description: Get a community's pending follows count.
+      description: "@summary Get a community's pending follows count."
       parameters:
         - name: community_id
           in: query
@@ -512,7 +515,7 @@ paths:
   /community/pending_follows/list:
     get:
       operationId: listCommunityPendingFollows
-      description: Get a community's pending followers.
+      description: "@summary Get a community's pending followers."
       parameters:
         - name: pending_only
           in: query
@@ -543,7 +546,7 @@ paths:
   /community/pending_follows/approve:
     post:
       operationId: approveCommunityPendingFollow
-      description: Approve a community pending follow request.
+      description: "@summary Approve a community pending follow request."
       requestBody:
         content:
           application/json:
@@ -561,7 +564,7 @@ paths:
   /account/block/community:
     post:
       operationId: blockCommunity
-      description: Block a community.
+      description: "@summary Block a community."
       requestBody:
         content:
           application/json:
@@ -579,7 +582,7 @@ paths:
   /community/delete:
     post:
       operationId: deleteCommunity
-      description: Delete a community.
+      description: "@summary Delete a community."
       requestBody:
         content:
           application/json:
@@ -597,7 +600,7 @@ paths:
   /community/hide:
     put:
       operationId: hideCommunity
-      description: Hide a community from public / "All" view. Admins only.
+      description: '@summary Hide a community from public / "All" view. Admins only.'
       requestBody:
         content:
           application/json:
@@ -615,7 +618,7 @@ paths:
   /community/remove:
     post:
       operationId: removeCommunity
-      description: A moderator remove for a community.
+      description: "@summary A moderator remove for a community."
       requestBody:
         content:
           application/json:
@@ -633,7 +636,7 @@ paths:
   /community/transfer:
     post:
       operationId: transferCommunity
-      description: Transfer your community to an existing moderator.
+      description: "@summary Transfer your community to an existing moderator."
       requestBody:
         content:
           application/json:
@@ -651,7 +654,7 @@ paths:
   /community/ban_user:
     post:
       operationId: banFromCommunity
-      description: Ban a user from a community.
+      description: "@summary Ban a user from a community."
       requestBody:
         content:
           application/json:
@@ -669,7 +672,7 @@ paths:
   /community/mod:
     post:
       operationId: addModToCommunity
-      description: Add a moderator to your community.
+      description: "@summary Add a moderator to your community."
       requestBody:
         content:
           application/json:
@@ -687,7 +690,7 @@ paths:
   /community/random:
     get:
       operationId: getRandomCommunity
-      description: Get a random community.
+      description: "@summary Get a random community."
       parameters:
         - name: type_
           in: query
@@ -709,7 +712,7 @@ paths:
   /post:
     post:
       operationId: createPost
-      description: Create a post.
+      description: "@summary Create a post."
       requestBody:
         content:
           application/json:
@@ -726,7 +729,7 @@ paths:
                 $ref: "#/components/schemas/PostResponse"
     get:
       operationId: getPost
-      description: Get / fetch a post.
+      description: "@summary Get / fetch a post."
       parameters:
         - name: id
           in: query
@@ -747,7 +750,7 @@ paths:
                 $ref: "#/components/schemas/GetPostResponse"
     put:
       operationId: editPost
-      description: Edit a post.
+      description: "@summary Edit a post."
       requestBody:
         content:
           application/json:
@@ -765,7 +768,7 @@ paths:
   /post/delete:
     post:
       operationId: deletePost
-      description: Delete a post.
+      description: "@summary Delete a post."
       requestBody:
         content:
           application/json:
@@ -783,7 +786,7 @@ paths:
   /post/remove:
     post:
       operationId: removePost
-      description: A moderator remove for a post.
+      description: "@summary A moderator remove for a post."
       requestBody:
         content:
           application/json:
@@ -801,7 +804,7 @@ paths:
   /post/mark_as_read:
     post:
       operationId: markPostAsRead
-      description: Mark a post as read.
+      description: "@summary Mark a post as read."
       requestBody:
         content:
           application/json:
@@ -819,7 +822,7 @@ paths:
   /post/mark_as_read/many:
     post:
       operationId: markManyPostAsRead
-      description: Mark multiple posts as read.
+      description: "@summary Mark multiple posts as read."
       requestBody:
         content:
           application/json:
@@ -837,7 +840,7 @@ paths:
   /post/hide:
     post:
       operationId: hidePost
-      description: Hide a post from list views.
+      description: "@summary Hide a post from list views."
       requestBody:
         content:
           application/json:
@@ -855,7 +858,7 @@ paths:
   /post/lock:
     post:
       operationId: lockPost
-      description: A moderator can lock a post ( IE disable new comments ).
+      description: "@summary A moderator can lock a post ( IE disable new comments )."
       requestBody:
         content:
           application/json:
@@ -873,8 +876,8 @@ paths:
   /post/feature:
     post:
       operationId: featurePost
-      description: A moderator can feature a community post ( IE stick it to the top
-        of a community ).
+      description: "@summary A moderator can feature a community post ( IE stick it to
+        the top of a community )."
       requestBody:
         content:
           application/json:
@@ -892,7 +895,7 @@ paths:
   /post/list:
     get:
       operationId: getPosts
-      description: Get / fetch posts, with various filters.
+      description: "@summary Get / fetch posts, with various filters."
       parameters:
         - name: type_
           in: query
@@ -978,7 +981,7 @@ paths:
   /post/like:
     post:
       operationId: likePost
-      description: Like / vote on a post.
+      description: "@summary Like / vote on a post."
       requestBody:
         content:
           application/json:
@@ -996,7 +999,7 @@ paths:
   /post/like/list:
     get:
       operationId: listPostLikes
-      description: List a post's likes. Admin-only.
+      description: "@summary List a post's likes. Admin-only."
       parameters:
         - name: post_id
           in: query
@@ -1022,7 +1025,7 @@ paths:
   /post/save:
     put:
       operationId: savePost
-      description: Save a post.
+      description: "@summary Save a post."
       requestBody:
         content:
           application/json:
@@ -1040,7 +1043,7 @@ paths:
   /post/report:
     post:
       operationId: createPostReport
-      description: Report a post.
+      description: "@summary Report a post."
       requestBody:
         content:
           application/json:
@@ -1058,7 +1061,7 @@ paths:
   /post/report/resolve:
     put:
       operationId: resolvePostReport
-      description: Resolve a post report. Only a mod can do this.
+      description: "@summary Resolve a post report. Only a mod can do this."
       requestBody:
         content:
           application/json:
@@ -1076,7 +1079,7 @@ paths:
   /post/site_metadata:
     get:
       operationId: getSiteMetadata
-      description: Fetch metadata for any given site.
+      description: "@summary Fetch metadata for any given site."
       parameters:
         - name: url
           in: query
@@ -1094,7 +1097,7 @@ paths:
   /comment:
     post:
       operationId: createComment
-      description: Create a comment.
+      description: "@summary Create a comment."
       requestBody:
         content:
           application/json:
@@ -1111,7 +1114,7 @@ paths:
                 $ref: "#/components/schemas/CommentResponse"
     put:
       operationId: editComment
-      description: Edit a comment.
+      description: "@summary Edit a comment."
       requestBody:
         content:
           application/json:
@@ -1128,7 +1131,7 @@ paths:
                 $ref: "#/components/schemas/CommentResponse"
     get:
       operationId: getComment
-      description: Get / fetch comment.
+      description: "@summary Get / fetch comment."
       parameters:
         - name: id
           in: query
@@ -1146,7 +1149,7 @@ paths:
   /comment/delete:
     post:
       operationId: deleteComment
-      description: Delete a comment.
+      description: "@summary Delete a comment."
       requestBody:
         content:
           application/json:
@@ -1164,7 +1167,7 @@ paths:
   /comment/remove:
     post:
       operationId: removeComment
-      description: A moderator remove for a comment.
+      description: "@summary A moderator remove for a comment."
       requestBody:
         content:
           application/json:
@@ -1182,7 +1185,7 @@ paths:
   /comment/mark_as_read:
     post:
       operationId: markCommentReplyAsRead
-      description: Mark a comment as read.
+      description: "@summary Mark a comment as read."
       requestBody:
         content:
           application/json:
@@ -1200,7 +1203,7 @@ paths:
   /comment/like:
     post:
       operationId: likeComment
-      description: Like / vote on a comment.
+      description: "@summary Like / vote on a comment."
       requestBody:
         content:
           application/json:
@@ -1218,7 +1221,7 @@ paths:
   /comment/like/list:
     get:
       operationId: listCommentLikes
-      description: List a comment's likes. Admin-only.
+      description: "@summary List a comment's likes. Admin-only."
       parameters:
         - name: comment_id
           in: query
@@ -1244,7 +1247,7 @@ paths:
   /comment/save:
     put:
       operationId: saveComment
-      description: Save a comment.
+      description: "@summary Save a comment."
       requestBody:
         content:
           application/json:
@@ -1262,7 +1265,7 @@ paths:
   /comment/distinguish:
     post:
       operationId: distinguishComment
-      description: Distinguishes a comment (speak as moderator)
+      description: "@summary Distinguishes a comment (speak as moderator)"
       requestBody:
         content:
           application/json:
@@ -1280,7 +1283,7 @@ paths:
   /comment/list:
     get:
       operationId: getComments
-      description: Get / fetch comments.
+      description: "@summary Get / fetch comments."
       parameters:
         - name: type_
           in: query
@@ -1338,7 +1341,7 @@ paths:
   /comment/list/slim:
     get:
       operationId: getCommentsSlim
-      description: Get / fetch comments, but without the post or community.
+      description: "@summary Get / fetch comments, but without the post or community."
       parameters:
         - name: type_
           in: query
@@ -1396,7 +1399,7 @@ paths:
   /comment/report:
     post:
       operationId: createCommentReport
-      description: Report a comment.
+      description: "@summary Report a comment."
       requestBody:
         content:
           application/json:
@@ -1414,7 +1417,7 @@ paths:
   /comment/report/resolve:
     put:
       operationId: resolveCommentReport
-      description: Resolve a comment report. Only a mod can do this.
+      description: "@summary Resolve a comment report. Only a mod can do this."
       requestBody:
         content:
           application/json:
@@ -1432,7 +1435,7 @@ paths:
   /private_message:
     post:
       operationId: createPrivateMessage
-      description: Create a private message.
+      description: "@summary Create a private message."
       requestBody:
         content:
           application/json:
@@ -1449,7 +1452,7 @@ paths:
                 $ref: "#/components/schemas/PrivateMessageResponse"
     put:
       operationId: editPrivateMessage
-      description: Edit a private message.
+      description: "@summary Edit a private message."
       requestBody:
         content:
           application/json:
@@ -1467,7 +1470,7 @@ paths:
   /private_message/delete:
     post:
       operationId: deletePrivateMessage
-      description: Delete a private message.
+      description: "@summary Delete a private message."
       requestBody:
         content:
           application/json:
@@ -1485,7 +1488,7 @@ paths:
   /private_message/mark_as_read:
     post:
       operationId: markPrivateMessageAsRead
-      description: Mark a private message as read.
+      description: "@summary Mark a private message as read."
       requestBody:
         content:
           application/json:
@@ -1503,7 +1506,7 @@ paths:
   /private_message/report:
     post:
       operationId: createPrivateMessageReport
-      description: Create a report for a private message.
+      description: "@summary Create a report for a private message."
       requestBody:
         content:
           application/json:
@@ -1521,7 +1524,7 @@ paths:
   /private_message/report/resolve:
     put:
       operationId: resolvePrivateMessageReport
-      description: Resolve a report for a private message.
+      description: "@summary Resolve a report for a private message."
       requestBody:
         content:
           application/json:
@@ -1539,7 +1542,7 @@ paths:
   /account/auth/register:
     post:
       operationId: register
-      description: Register a new user.
+      description: "@summary Register a new user."
       requestBody:
         content:
           application/json:
@@ -1557,7 +1560,7 @@ paths:
   /account/auth/login:
     post:
       operationId: login
-      description: Log into lemmy.
+      description: "@summary Log into lemmy."
       requestBody:
         content:
           application/json:
@@ -1575,7 +1578,7 @@ paths:
   /account/auth/logout:
     post:
       operationId: logout
-      description: Invalidate the currently used auth token.
+      description: "@summary Invalidate the currently used auth token."
       tags:
         - Account/Auth
       responses:
@@ -1588,7 +1591,7 @@ paths:
   /person:
     get:
       operationId: getPersonDetails
-      description: Get the details for a person.
+      description: "@summary Get the details for a person."
       parameters:
         - name: person_id
           in: query
@@ -1610,7 +1613,7 @@ paths:
   /person/content:
     get:
       operationId: listPersonContent
-      description: List the content for a person.
+      description: "@summary List the content for a person."
       parameters:
         - name: type_
           in: query
@@ -1644,7 +1647,7 @@ paths:
   /account/mention/comment/mark_as_read:
     post:
       operationId: markCommentMentionAsRead
-      description: Mark a person mention as read.
+      description: "@summary Mark a person mention as read."
       requestBody:
         content:
           application/json:
@@ -1662,7 +1665,7 @@ paths:
   /account/mention/post/mark_as_read:
     post:
       operationId: markPostMentionAsRead
-      description: Mark a person post body mention as read.
+      description: "@summary Mark a person post body mention as read."
       requestBody:
         content:
           application/json:
@@ -1680,7 +1683,7 @@ paths:
   /admin/ban:
     post:
       operationId: banPerson
-      description: Ban a person from your site.
+      description: "@summary Ban a person from your site."
       requestBody:
         content:
           application/json:
@@ -1698,7 +1701,7 @@ paths:
   /admin/banned:
     get:
       operationId: getBannedPersons
-      description: Get a list of banned users.
+      description: "@summary Get a list of banned users."
       tags:
         - Admin
       responses:
@@ -1711,7 +1714,7 @@ paths:
   /account/block/person:
     post:
       operationId: blockPerson
-      description: Block a person.
+      description: "@summary Block a person."
       requestBody:
         content:
           application/json:
@@ -1729,7 +1732,7 @@ paths:
   /account/auth/get_captcha:
     get:
       operationId: getCaptcha
-      description: Fetch a Captcha.
+      description: "@summary Fetch a Captcha."
       tags:
         - Account/Auth
       responses:
@@ -1742,7 +1745,7 @@ paths:
   /account/delete:
     post:
       operationId: deleteAccount
-      description: Delete your account.
+      description: "@summary Delete your account."
       requestBody:
         content:
           application/json:
@@ -1760,7 +1763,7 @@ paths:
   /account/auth/password_reset:
     post:
       operationId: passwordReset
-      description: Reset your password.
+      description: "@summary Reset your password."
       requestBody:
         content:
           application/json:
@@ -1778,7 +1781,7 @@ paths:
   /account/auth/password_change:
     post:
       operationId: passwordChangeAfterReset
-      description: Change your password from an email / token based reset.
+      description: "@summary Change your password from an email / token based reset."
       requestBody:
         content:
           application/json:
@@ -1796,7 +1799,7 @@ paths:
   /account/mark_as_read/all:
     post:
       operationId: markAllNotificationsAsRead
-      description: Mark all replies as read.
+      description: "@summary Mark all replies as read."
       tags:
         - Account/MarkAsRead
       responses:
@@ -1809,7 +1812,7 @@ paths:
   /account/settings/save:
     put:
       operationId: saveUserSettings
-      description: Save your user settings.
+      description: "@summary Save your user settings."
       requestBody:
         content:
           application/json:
@@ -1827,7 +1830,7 @@ paths:
   /account/auth/change_password:
     put:
       operationId: changePassword
-      description: Change your user password.
+      description: "@summary Change your user password."
       requestBody:
         content:
           application/json:
@@ -1845,7 +1848,7 @@ paths:
   /account/report_count:
     get:
       operationId: getReportCount
-      description: Get counts for your reports.
+      description: "@summary Get counts for your reports."
       parameters:
         - name: community_id
           in: query
@@ -1863,7 +1866,7 @@ paths:
   /account/unread_count:
     get:
       operationId: getUnreadCount
-      description: Get your unread counts.
+      description: "@summary Get your unread counts."
       tags:
         - Account
       responses:
@@ -1876,7 +1879,8 @@ paths:
   /account/inbox:
     get:
       operationId: listInbox
-      description: Get your inbox (replies, comment mentions, post mentions, and messages)
+      description: "@summary Get your inbox (replies, comment mentions, post mentions,
+        and messages)"
       parameters:
         - name: type_
           in: query
@@ -1906,7 +1910,7 @@ paths:
   /account/auth/verify_email:
     post:
       operationId: verifyEmail
-      description: Verify your email
+      description: "@summary Verify your email"
       requestBody:
         content:
           application/json:
@@ -1924,7 +1928,7 @@ paths:
   /account/auth/saved:
     get:
       operationId: listPersonSaved
-      description: List your saved content.
+      description: "@summary List your saved content."
       parameters:
         - name: type_
           in: query
@@ -1950,7 +1954,7 @@ paths:
   /admin/add:
     post:
       operationId: addAdmin
-      description: Add an admin to your site.
+      description: "@summary Add an admin to your site."
       requestBody:
         content:
           application/json:
@@ -1968,7 +1972,7 @@ paths:
   /admin/registration_application/count:
     get:
       operationId: getUnreadRegistrationApplicationCount
-      description: Get the unread registration applications count.
+      description: "@summary Get the unread registration applications count."
       tags:
         - Admin/RegistrationApplication
       responses:
@@ -1981,7 +1985,7 @@ paths:
   /admin/registration_application/list:
     get:
       operationId: listRegistrationApplications
-      description: List the registration applications.
+      description: "@summary List the registration applications."
       parameters:
         - name: unread_only
           in: query
@@ -2007,7 +2011,7 @@ paths:
   /admin/registration_application/approve:
     put:
       operationId: approveRegistrationApplication
-      description: Approve a registration application
+      description: "@summary Approve a registration application"
       requestBody:
         content:
           application/json:
@@ -2025,8 +2029,8 @@ paths:
   /admin/registration_application:
     get:
       operationId: getRegistrationApplication
-      description: Get the application a user submitted when they first registered
-        their account
+      description: "@summary Get the application a user submitted when they first
+        registered their account"
       parameters:
         - name: person_id
           in: query
@@ -2044,7 +2048,7 @@ paths:
   /admin/purge/person:
     post:
       operationId: purgePerson
-      description: Purge / Delete a person from the database.
+      description: "@summary Purge / Delete a person from the database."
       requestBody:
         content:
           application/json:
@@ -2062,7 +2066,7 @@ paths:
   /admin/purge/community:
     post:
       operationId: purgeCommunity
-      description: Purge / Delete a community from the database.
+      description: "@summary Purge / Delete a community from the database."
       requestBody:
         content:
           application/json:
@@ -2080,7 +2084,7 @@ paths:
   /admin/purge/post:
     post:
       operationId: purgePost
-      description: Purge / Delete a post from the database.
+      description: "@summary Purge / Delete a post from the database."
       requestBody:
         content:
           application/json:
@@ -2098,7 +2102,7 @@ paths:
   /admin/purge/comment:
     post:
       operationId: purgeComment
-      description: Purge / Delete a comment from the database.
+      description: "@summary Purge / Delete a comment from the database."
       requestBody:
         content:
           application/json:
@@ -2116,7 +2120,7 @@ paths:
   /custom_emoji:
     post:
       operationId: createCustomEmoji
-      description: Create a new custom emoji.
+      description: "@summary Create a new custom emoji."
       requestBody:
         content:
           application/json:
@@ -2133,7 +2137,7 @@ paths:
                 $ref: "#/components/schemas/CustomEmojiResponse"
     put:
       operationId: editCustomEmoji
-      description: Edit an existing custom emoji.
+      description: "@summary Edit an existing custom emoji."
       requestBody:
         content:
           application/json:
@@ -2151,7 +2155,7 @@ paths:
   /custom_emoji/delete:
     post:
       operationId: deleteCustomEmoji
-      description: Delete a custom emoji.
+      description: "@summary Delete a custom emoji."
       requestBody:
         content:
           application/json:
@@ -2169,7 +2173,7 @@ paths:
   /custom_emoji/list:
     get:
       operationId: listCustomEmojis
-      description: List custom emojis
+      description: "@summary List custom emojis"
       parameters:
         - name: page
           in: query
@@ -2199,7 +2203,7 @@ paths:
   /admin/tagline:
     post:
       operationId: createTagline
-      description: Create a new tagline
+      description: "@summary Create a new tagline"
       requestBody:
         content:
           application/json:
@@ -2216,7 +2220,7 @@ paths:
                 $ref: "#/components/schemas/TaglineResponse"
     put:
       operationId: editTagline
-      description: Edit an existing tagline
+      description: "@summary Edit an existing tagline"
       requestBody:
         content:
           application/json:
@@ -2234,7 +2238,7 @@ paths:
   /admin/tagline/delete:
     post:
       operationId: deleteTagline
-      description: Delete a tagline
+      description: "@summary Delete a tagline"
       requestBody:
         content:
           application/json:
@@ -2252,7 +2256,7 @@ paths:
   /admin/tagline/list:
     get:
       operationId: listTaglines
-      description: List taglines.
+      description: "@summary List taglines."
       parameters:
         - name: page
           in: query
@@ -2274,7 +2278,7 @@ paths:
   /oauth_provider:
     post:
       operationId: createOAuthProvider
-      description: Create a new oauth provider method
+      description: "@summary Create a new oauth provider method"
       requestBody:
         content:
           application/json:
@@ -2291,7 +2295,7 @@ paths:
                 $ref: "#/components/schemas/OAuthProvider"
     put:
       operationId: editOAuthProvider
-      description: Edit an existing oauth provider method
+      description: "@summary Edit an existing oauth provider method"
       requestBody:
         content:
           application/json:
@@ -2309,7 +2313,7 @@ paths:
   /oauth_provider/delete:
     post:
       operationId: deleteOAuthProvider
-      description: Delete an oauth provider method
+      description: "@summary Delete an oauth provider method"
       requestBody:
         content:
           application/json:
@@ -2327,7 +2331,7 @@ paths:
   /oauth/authenticate:
     post:
       operationId: authenticateWithOAuth
-      description: Authenticate with OAuth
+      description: "@summary Authenticate with OAuth"
       requestBody:
         content:
           application/json:
@@ -2345,7 +2349,7 @@ paths:
   /federated_instances:
     get:
       operationId: getFederatedInstances
-      description: Fetch federated instances.
+      description: "@summary Fetch federated instances."
       tags:
         - FederatedInstances
       responses:
@@ -2358,7 +2362,7 @@ paths:
   /report/list:
     get:
       operationId: listReports
-      description: List user reports.
+      description: "@summary List user reports."
       parameters:
         - name: unresolved_only
           in: query
@@ -2396,7 +2400,7 @@ paths:
   /account/block/instance:
     post:
       operationId: userBlockInstance
-      description: Block an instance as user.
+      description: "@summary Block an instance as user."
       requestBody:
         content:
           application/json:
@@ -2414,7 +2418,7 @@ paths:
   /admin/instance/block:
     post:
       operationId: adminBlockInstance
-      description: Globally block an instance as admin.
+      description: "@summary Globally block an instance as admin."
       requestBody:
         content:
           application/json:
@@ -2432,7 +2436,7 @@ paths:
   /admin/instance/allow:
     post:
       operationId: adminAllowInstance
-      description: Globally allow an instance as admin.
+      description: "@summary Globally allow an instance as admin."
       requestBody:
         content:
           application/json:
@@ -2450,7 +2454,7 @@ paths:
   /account/avatar:
     post:
       operationId: uploadUserAvatar
-      description: Upload new user avatar.
+      description: "@summary Upload new user avatar."
       requestBody:
         content:
           multipart/form-data:
@@ -2467,7 +2471,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteUserAvatar
-      description: Delete the user avatar.
+      description: "@summary Delete the user avatar."
       tags:
         - Account
       responses:
@@ -2480,7 +2484,7 @@ paths:
   /account/banner:
     post:
       operationId: uploadUserBanner
-      description: Upload new user banner.
+      description: "@summary Upload new user banner."
       requestBody:
         content:
           multipart/form-data:
@@ -2497,7 +2501,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteUserBanner
-      description: Delete the user banner.
+      description: "@summary Delete the user banner."
       tags:
         - Account
       responses:
@@ -2510,7 +2514,7 @@ paths:
   /community/icon:
     post:
       operationId: uploadCommunityIcon
-      description: Upload new community icon.
+      description: "@summary Upload new community icon."
       requestBody:
         content:
           multipart/form-data:
@@ -2527,7 +2531,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteCommunityIcon
-      description: Delete the community icon.
+      description: "@summary Delete the community icon."
       tags:
         - Community
       responses:
@@ -2540,7 +2544,7 @@ paths:
   /community/banner:
     post:
       operationId: uploadCommunityBanner
-      description: Upload new community banner.
+      description: "@summary Upload new community banner."
       requestBody:
         content:
           multipart/form-data:
@@ -2557,7 +2561,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteCommunityBanner
-      description: Delete the community banner.
+      description: "@summary Delete the community banner."
       tags:
         - Community
       responses:
@@ -2570,7 +2574,7 @@ paths:
   /site/icon:
     post:
       operationId: uploadSiteIcon
-      description: Upload new site icon.
+      description: "@summary Upload new site icon."
       requestBody:
         content:
           multipart/form-data:
@@ -2587,7 +2591,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteSiteIcon
-      description: Delete the site icon.
+      description: "@summary Delete the site icon."
       tags:
         - Site
       responses:
@@ -2600,7 +2604,7 @@ paths:
   /site/banner:
     post:
       operationId: uploadSiteBanner
-      description: Upload new site banner.
+      description: "@summary Upload new site banner."
       requestBody:
         content:
           multipart/form-data:
@@ -2617,7 +2621,7 @@ paths:
                 $ref: "#/components/schemas/SuccessResponse"
     delete:
       operationId: deleteSiteBanner
-      description: Delete the site banner.
+      description: "@summary Delete the site banner."
       tags:
         - Site
       responses:
@@ -2630,7 +2634,7 @@ paths:
   /image:
     post:
       operationId: uploadImage
-      description: Upload an image to the server.
+      description: "@summary Upload an image to the server."
       requestBody:
         content:
           multipart/form-data:
@@ -2647,7 +2651,7 @@ paths:
                 $ref: "#/components/schemas/UploadImageResponse"
     delete:
       operationId: deleteImage
-      description: Delete a pictrs image
+      description: "@summary Delete a pictrs image"
       requestBody:
         content:
           application/json:
@@ -2665,7 +2669,7 @@ paths:
   /image/health:
     get:
       operationId: imageHealth
-      description: Health check for image functionality
+      description: "@summary Health check for image functionality"
       tags:
         - Image
       responses:
