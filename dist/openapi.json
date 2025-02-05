@@ -4008,6 +4008,13 @@
             "schema": {
               "$ref": "#/components/schemas/ListReports/properties/page_back"
             }
+          },
+          {
+            "name": "show_mod_reports",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ListReports/properties/show_mod_reports"
+            }
           }
         ],
         "tags": [
@@ -4620,10 +4627,10 @@
             "title": "A shorter, one-line description of the site",
             "description": "A shorter, one-line description of the site."
           },
-          "actor_id": {
+          "ap_id": {
             "type": "string",
-            "title": "The federated actor_id",
-            "description": "The federated actor_id."
+            "title": "The federated ap_id",
+            "description": "The federated ap_id."
           },
           "last_refreshed_at": {
             "type": "string",
@@ -4650,7 +4657,7 @@
           "id",
           "name",
           "published",
-          "actor_id",
+          "ap_id",
           "last_refreshed_at",
           "inbox_url",
           "public_key",
@@ -5085,10 +5092,10 @@
           "updated": {
             "type": "string"
           },
-          "actor_id": {
+          "ap_id": {
             "type": "string",
-            "title": "The federated actor_id",
-            "description": "The federated actor_id."
+            "title": "The federated ap_id",
+            "description": "The federated ap_id."
           },
           "bio": {
             "type": "string",
@@ -5134,7 +5141,7 @@
           "name",
           "banned",
           "published",
-          "actor_id",
+          "ap_id",
           "local",
           "deleted",
           "bot_account",
@@ -6123,10 +6130,10 @@
             "title": "Whether its an NSFW community",
             "description": "Whether its an NSFW community."
           },
-          "actor_id": {
+          "ap_id": {
             "type": "string",
-            "title": "The federated actor_id",
-            "description": "The federated actor_id."
+            "title": "The federated ap_id",
+            "description": "The federated ap_id."
           },
           "local": {
             "type": "boolean",
@@ -6174,7 +6181,7 @@
           "published",
           "deleted",
           "nsfw",
-          "actor_id",
+          "ap_id",
           "local",
           "hidden",
           "posting_restricted_to_mods",
@@ -12622,6 +12629,10 @@
           },
           "page_back": {
             "type": "boolean"
+          },
+          "show_mod_reports": {
+            "type": "boolean",
+            "description": "Only for admins: also show reports destined to community mods"
           }
         },
         "nullable": false,
