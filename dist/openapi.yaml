@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Lemmy API
-  version: 0.20.0-show-mod-reports.0
+  version: 0.20.0-ap-id.1
 servers:
   - url: https://lemy.lol/api/v4
 security:
@@ -2388,10 +2388,6 @@ paths:
           in: query
           schema:
             $ref: "#/components/schemas/ListReports/properties/page_back"
-        - name: show_mod_reports
-          in: query
-          schema:
-            $ref: "#/components/schemas/ListReports/properties/show_mod_reports"
       tags:
         - Report
       responses:
@@ -8757,9 +8753,6 @@ components:
           type: string
         page_back:
           type: boolean
-        show_mod_reports:
-          type: boolean
-          description: "Only for admins: also show reports destined to community mods"
       nullable: false
       description: List reports.
     ListReportsResponse:
